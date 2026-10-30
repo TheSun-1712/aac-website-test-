@@ -1,540 +1,298 @@
+import { useState } from "react";
+import Head from "next/head";
+import Link from "next/link";
+import BackgroundVideo from "@/components/BackgroundVideo";
+import GarcyNavbar from "@/components/garcy/GarcyNavbar";
+import GarcyFooter from "@/components/garcy/GarcyFooter";
+import GarcyCommandPalette from "@/components/garcy/GarcyCommandPalette";
+import GarcyCaseStudies from "@/components/garcy/GarcyCaseStudies";
+import { useDatabase } from "@/hooks/useDatabase";
+import {
+  FaLightbulb,
+  FaSearch,
+  FaTimes,
+  FaCheckCircle,
+  FaExternalLinkAlt,
+  FaLayerGroup,
+} from "react-icons/fa";
 
+export default function PatentsPage() {
+  const { data: patentsData } = useDatabase("patents");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedPatent, setSelectedPatent] = useState(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [caseStudiesOpen, setCaseStudiesOpen] = useState(false);
 
-// src/pages/Patents/index.js - Updated to use database
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-import Layout from '@/components/Layout';
-import PageHero from '@/components/PageHero';
-import LoadingSpinner, { ContentLoading } from '@/components/LoadingSpinner';
-import { useDatabase } from '@/hooks/useDatabase';
-import { FaCalendar, FaUsers, FaGlobe, FaCheck, FaClock, FaTimes } from 'react-icons/fa';
+  const defaultPatents = [
+    {
+      id: "automated-pill-reminder",
+      title: "An automated electronic device for reminding consumption of pills scheduled and even for missed schedules with specified two way confirmation along with replaceable pill compartments layer as value addition been facilitated to the changing requirements.",
+      shortTitle: "Automated Electronic Pill Reminder Device",
+      category: "Healthcare",
+      status: "PUBLISHED ONLINE",
+      patentOffice: "India",
+      applicationNumber: "201941002559",
+      date: "2019-01-21",
+      inventors: [
+        "Yelma Chethan Reddy",
+        "Alence Abhinay",
+        "B.S.V.S Anoop",
+        "M Srikanth",
+        "D.Naga pavan",
+        "G Pradeep Reddy"
+      ],
+      description: "This patent is for an innovative device designed to help patients remember to take their medications on schedule. The device includes multiple pill compartments that can be customized and provides two-way confirmation to ensure medications are taken properly. It's especially useful for elderly patients or those with complex medication regimens.",
+    },
+    {
+      id: "smart-glove-sign-language",
+      title: "A SMART GLOVE FOR RECOGNIZING AND COMMUNICATING SIGN LANGUAGE AND ASSOCIATED METHOD THEREOF.",
+      shortTitle: "Smart Glove for Sign Language Translation",
+      category: "Assistive Technology",
+      status: "PUBLISHED ONLINE",
+      patentOffice: "India",
+      applicationNumber: "202041038106",
+      date: "2020-09-03",
+      inventors: [
+        "Jashwanth Kranthi Bopanna",
+        "Santosh Sanjeev",
+        "Bharath Varma Kantheti",
+        "Gowtham Sai Ponnekanti",
+        "Suhas Gangireddy",
+        "G Pradeep Reddy"
+      ],
+      description: "This patent describes a wearable technology in the form of a glove that can recognize sign language gestures and translate them into text or speech. The smart glove uses sensors to detect hand movements and positions, enabling real-time communication for individuals who use sign language. This innovation aims to bridge communication gaps between sign language users and those who don't understand sign language.",
+    },
+  ];
 
-const PatentCard = ({ patent, index }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const displayPatents = patentsData && patentsData.length > 0 ? patentsData : defaultPatents;
 
-  // Get color classes based on patent color
-  const getColorClasses = (color) => {
-    const colorMap = {
-      'purple': 'from-purple-500 to-purple-600',
-      'blue': 'from-blue-500 to-blue-600',
-      'green': 'from-green-500 to-green-600',
-      'red': 'from-red-500 to-red-600',
-      'orange': 'from-orange-500 to-orange-600'
-    };
-    return colorMap[color] || 'from-purple-500 to-purple-600';
-  };
-
-  // Get status icon and color
-  const getStatusDisplay = (status) => {
-    const statusMap = {
-      'Published Online': { icon: <FaGlobe />, color: 'text-blue-400', bgColor: 'bg-blue-500/20', borderColor: 'border-blue-500/30' },
-      'Pending': { icon: <FaClock />, color: 'text-yellow-400', bgColor: 'bg-yellow-500/20', borderColor: 'border-yellow-500/30' },
-      'Approved': { icon: <FaCheck />, color: 'text-green-400', bgColor: 'bg-green-500/20', borderColor: 'border-green-500/30' },
-      'Granted': { icon: <FaCheck />, color: 'text-green-400', bgColor: 'bg-green-500/20', borderColor: 'border-green-500/30' },
-      'Rejected': { icon: <FaTimes />, color: 'text-red-400', bgColor: 'bg-red-500/20', borderColor: 'border-red-500/30' },
-      'Withdrawn': { icon: <FaTimes />, color: 'text-gray-400', bgColor: 'bg-gray-500/20', borderColor: 'border-gray-500/30' }
-    };
-    return statusMap[status] || statusMap['Published Online'];
-  };
-
-  // Format date for display
-  const formatDate = (dateString) => {
-    if (!dateString) return 'No date';
-    try {
-      return new Date(dateString).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      });
-    } catch {
-      return 'Invalid date';
-    }
-  };
-
-  // Format inventors for display
-  const formatInventors = (inventors) => {
-    if (!inventors) return 'Unknown inventors';
-    
-    if (Array.isArray(inventors)) {
-      if (inventors.length <= 2) {
-        return inventors.join(' and ');
-      } else {
-        return `${inventors[0]} et al.`;
-      }
-    }
-    
-    return inventors.toString();
-  };
-
-  const colorClasses = getColorClasses(patent.color);
-  const statusDisplay = getStatusDisplay(patent.status);
-
-  const handleCardClick = (e) => {
-    e.preventDefault();
-    setIsExpanded(true);
-  };
+  const filteredPatents = displayPatents.filter((patent) => {
+    const title = patent.title || patent.shortTitle || "";
+    const desc = patent.description || "";
+    const appNo = patent.applicationNumber || "";
+    return (
+      title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      desc.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      appNo.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
 
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ delay: index * 0.1, duration: 0.6 }}
-        whileHover={{ y: -8, scale: 1.03 }}
-        className="group relative backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-300 cursor-pointer"
-        onClick={handleCardClick}
-      >
-        {/* Gradient overlay on hover */}
-        <div className={`absolute inset-0 bg-gradient-to-br ${colorClasses.replace('to-', 'to-').replace('from-', 'from-')}/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl`}></div>
+      <Head>
+        <title>PATENTS &amp; IP PIPELINE // AAC GRIET</title>
+        <meta
+          name="description"
+          content="50+ verifiable patents and intellectual property filings created by students and faculty at AAC GRIET"
+        />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+
+      <BackgroundVideo />
+
+      {/* Ambient Dither & Dynamic Spotlight */}
+      <div className="reel-dither" aria-hidden="true" />
+      <div className="spotlight" aria-hidden="true" />
+
+      {/* Main Stage Canvas */}
+      <main className="stage relative overflow-hidden bg-[#080B12]/92 text-[#EAF1FF] min-h-screen pb-20">
         
-        <div className="p-6 relative z-10">
-          {/* Patent Image */}
-          {patent.image && (
-            <div className="mb-6 flex justify-center">
-              <div className="relative w-full h-40 rounded-lg overflow-hidden shadow-lg border border-white/20">
-                <Image
-                  src={patent.image}
-                  alt={patent.shortTitle || patent.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-            </div>
-          )}
-          
-          {/* Status Badge */}
-          <div className="mb-4 flex justify-center">
-            <span className={`inline-flex items-center gap-2 px-3 py-1 ${statusDisplay.bgColor} ${statusDisplay.color} rounded-lg text-xs font-medium border ${statusDisplay.borderColor}`}>
-              {statusDisplay.icon}
-              {patent.status}
-            </span>
-          </div>
-          
-          <h3 className="text-lg font-bold mb-3 text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300 transition-all duration-300 line-clamp-2">
-            {patent.shortTitle || patent.title}
-          </h3>
-          
-          {/* Category */}
-          <div className="mb-3 flex justify-center">
-            <span className={`px-3 py-1 bg-gradient-to-r ${colorClasses}/20 text-${colorClasses.split('-')[1]}-300 rounded-lg text-xs font-medium border border-${colorClasses.split('-')[1]}-500/30`}>
-              {patent.category}
-            </span>
-          </div>
-          
-          {/* Inventors */}
-          <div className="mb-3 flex items-center gap-2 text-gray-400 text-sm">
-            <FaUsers className="text-xs" />
-            <span>{formatInventors(patent.inventors)}</span>
-          </div>
-          
-          {/* Date and Office */}
-          <div className="mb-4 space-y-2 text-gray-400 text-sm">
-            <div className="flex items-center gap-2">
-              <FaCalendar className="text-xs" />
-              <span>{formatDate(patent.date)}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <FaGlobe className="text-xs" />
-              <span>{patent.patentOffice}</span>
-            </div>
-          </div>
-          
-          {/* Application Number */}
-          <div className="mb-4 text-center">
-            <span className="text-gray-400 text-xs">App. No: {patent.applicationNumber}</span>
-          </div>
-          
-          {/* Description Preview */}
-          <p className="text-gray-400 text-sm leading-relaxed mb-4 group-hover:text-gray-300 transition-colors duration-300 line-clamp-3">
-            {patent.description}
-          </p>
-          
-          {/* Read more indicator */}
-          <div className="mt-auto pt-4 border-t border-white/10 group-hover:border-white/20 transition-colors duration-300">
-            <div className="flex items-center justify-between">
-              <span className="text-blue-400 text-sm font-medium group-hover:text-blue-300 transition-colors duration-300">
-                Click to read more
-              </span>
-              <div className={`bg-gradient-to-r ${colorClasses} h-1 w-8 rounded-full shadow-lg group-hover:w-12 transition-all duration-300`}></div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
+        {/* Floating Header */}
+        <GarcyNavbar
+          onOpenSearch={() => setSearchOpen(true)}
+          onOpenCaseStudies={() => setCaseStudiesOpen(true)}
+        />
 
-      {/* Expanded Modal */}
-      {isExpanded && (
-        <div 
-          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4"
-          onClick={() => setIsExpanded(false)}
-        >
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="backdrop-blur-md bg-white/5 rounded-2xl shadow-2xl border border-white/20 overflow-hidden max-w-4xl w-full max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal Header */}
-            <div className={`bg-gradient-to-r ${colorClasses} p-6 text-white`}>
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <h2 className="text-2xl font-bold mb-2">{patent.shortTitle || patent.title}</h2>
-                  <div className="flex items-center gap-4 mb-2">
-                    <span className={`inline-flex items-center gap-2 px-3 py-1 bg-white/20 rounded-lg text-sm font-medium`}>
-                      {statusDisplay.icon}
-                      {patent.status}
-                    </span>
-                    <span className="text-white/90">{patent.category}</span>
-                  </div>
-                  <p className="text-white/80 text-sm">
-                    {formatInventors(patent.inventors)} • {patent.patentOffice} • {formatDate(patent.date)}
-                  </p>
-                </div>
+        {/* Hero Section */}
+        <section className="pt-32 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          <div className="text-center max-w-3xl mx-auto mb-10">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-4 border backdrop-blur-md bg-[#1769FF]/15 border-[#1769FF]/40 text-[#49A3FF]">
+              <FaLightbulb className="text-[10px]" />
+              <span>Intellectual Property Cell &bull; 50+ Inventions</span>
+            </div>
+
+            <h1 className="font-extrabold text-4xl sm:text-6xl tracking-tighter leading-tight mb-4 text-[#EAF1FF] uppercase font-sans">
+              Patents &amp; Intellectual <br />
+              <span className="italic font-serif font-normal text-[#49A3FF] lowercase tracking-normal text-3xl sm:text-5xl">
+                property
+              </span>{" "}
+              Portfolio.
+            </h1>
+
+            <p className="text-sm sm:text-base text-[#8793A8] leading-relaxed font-sans font-normal">
+              Official Indian Patent Office application filings spanning autonomous aerial robotics, edge computing neural units, and smart sensor meshes.
+            </p>
+          </div>
+
+          {/* Search Bar */}
+          <div className="garcy-glass-card p-4 sm:p-5 border border-white/15 mb-12 shadow-2xl max-w-2xl mx-auto">
+            <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-[#080B12]/80 border border-white/10">
+              <FaSearch className="text-[#8793A8] text-xs flex-shrink-0" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search by patent title, category, or application number..."
+                className="w-full bg-transparent border-0 text-white placeholder-[#8793A8]/60 focus:outline-none text-xs font-mono"
+              />
+              {searchTerm && (
                 <button
-                  onClick={() => setIsExpanded(false)}
-                  className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
+                  type="button"
+                  onClick={() => setSearchTerm("")}
+                  className="text-[10px] font-mono text-[#8793A8] hover:text-white uppercase"
                 >
-                  ✕
+                  CLEAR
                 </button>
-              </div>
+              )}
             </div>
+          </div>
 
-            {/* Modal Content */}
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Patent Image */}
-                {patent.image && (
-                  <div className="md:col-span-1">
-                    <div className="relative w-full h-80 rounded-lg overflow-hidden shadow-lg border border-white/20">
-                      <Image
-                        src={patent.image}
-                        alt={patent.shortTitle || patent.title}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
+          {/* Patents Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredPatents.map((patent, idx) => (
+              <div
+                key={patent.id || idx}
+                onClick={() => setSelectedPatent(patent)}
+                className="garcy-glass-card p-6 flex flex-col justify-between hover:border-[#1769FF]/70 transition-all duration-300 group hover:-translate-y-1 cursor-pointer border border-white/15 shadow-xl bg-gradient-to-br from-[#101725] to-[#080B12]"
+              >
+                <div>
+                  {/* Top Bar: Category & Status */}
+                  <div className="flex items-center justify-between text-[10px] font-mono uppercase mb-4">
+                    <span className="text-[#8793A8] font-bold truncate max-w-[170px]">
+                      {patent.category}
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-full bg-[#080B12] text-[#49A3FF] border border-[#1769FF]/40 text-[8.5px] font-bold">
+                      {patent.status || "PUBLISHED"}
+                    </span>
                   </div>
-                )}
-                
-                {/* Patent Info */}
-                <div className={`${patent.image ? 'md:col-span-2' : 'md:col-span-3'}`}>
-                  <div className={`bg-gradient-to-r ${colorClasses} h-1.5 w-24 mb-4 rounded-full shadow-lg`}></div>
-                  <h3 className="text-xl font-bold text-white mb-4">Patent Description</h3>
-                  <p className="text-gray-300 leading-relaxed mb-6">
+
+                  {/* Title */}
+                  <h3 className="text-lg font-bold text-[#EAF1FF] mb-2 font-sans group-hover:text-[#49A3FF] transition-colors leading-snug">
+                    {patent.shortTitle || patent.title}
+                  </h3>
+
+                  {/* Application No Box */}
+                  <div className="p-2.5 rounded-lg bg-[#080B12]/80 border border-white/10 text-[10px] font-mono text-[#8793A8] mb-4 space-y-0.5">
+                    <div className="text-white font-bold">App No. {patent.applicationNumber}</div>
+                    <div className="text-[#49A3FF]">{patent.patentOffice} &bull; {patent.date}</div>
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-xs text-[#8793A8] leading-relaxed font-sans font-normal line-clamp-3 mb-6">
                     {patent.description}
                   </p>
-                  
-                  {/* Patent Details */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-4">
-                      <h4 className="text-white font-semibold mb-2">Patent Information</h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Application No:</span>
-                          <span className="text-white">{patent.applicationNumber}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Office:</span>
-                          <span className="text-white">{patent.patentOffice}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Date:</span>
-                          <span className="text-white">{formatDate(patent.date)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Status:</span>
-                          <span className={statusDisplay.color}>{patent.status}</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-4">
-                      <h4 className="text-white font-semibold mb-2">Classification</h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Category:</span>
-                          <span className="text-white">{patent.category}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Inventors:</span>
-                          <span className="text-white">{Array.isArray(patent.inventors) ? patent.inventors.length : 1}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                </div>
+
+                {/* Bottom Actions */}
+                <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs font-mono text-[#8793A8]">
+                  <span className="group-hover:text-[#49A3FF] transition-colors flex items-center gap-1.5 uppercase font-bold text-[10px]">
+                    <span>Inspect Patent</span>
+                    <span>&rarr;</span>
+                  </span>
+
+                  <span className="text-[9px] font-mono text-[#8793A8]">
+                    VERIFIED IP
+                  </span>
                 </div>
               </div>
-              
-              {/* Full Title Section */}
-              {patent.title && patent.title !== patent.shortTitle && (
-                <div className="mt-8">
-                  <div className={`bg-gradient-to-r ${colorClasses} h-1.5 w-24 mb-4 rounded-full shadow-lg`}></div>
-                  <h3 className="text-xl font-bold text-white mb-4">Full Patent Title</h3>
-                  <div className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-6">
-                    <p className="text-gray-300 leading-relaxed">
-                      {patent.title}
-                    </p>
+            ))}
+          </div>
+
+          {filteredPatents.length === 0 && (
+            <div className="text-center py-20 text-[#8793A8] font-mono text-xs">
+              No matching patents found for &ldquo;{searchTerm}&rdquo;
+            </div>
+          )}
+        </section>
+
+        {/* Patent Details Modal Drawer */}
+        {selectedPatent && (
+          <div
+            className="fixed inset-0 z-[160] bg-[#080B12]/90 backdrop-blur-2xl flex items-center justify-center p-4"
+            onClick={() => setSelectedPatent(null)}
+          >
+            <div
+              className="garcy-glass-card max-w-xl w-full p-6 sm:p-8 text-left relative border border-[#1769FF]/60 shadow-[0_0_60px_rgba(23,105,255,0.4)]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between text-xs font-mono uppercase text-[#49A3FF] mb-5 font-bold">
+                <span>{selectedPatent.category} // INTELLECTUAL PROPERTY</span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedPatent(null)}
+                  className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-[#8793A8] hover:text-white flex items-center justify-center transition-colors"
+                  aria-label="Close"
+                >
+                  <FaTimes />
+                </button>
+              </div>
+
+              <h3 className="text-2xl font-extrabold text-[#EAF1FF] mb-3 font-sans">
+                {selectedPatent.title}
+              </h3>
+
+              <div className="p-3.5 rounded-xl bg-[#080B12]/80 border border-white/10 text-xs font-mono mb-5 space-y-1">
+                <div>Registry: <span className="text-white font-bold">{selectedPatent.patentOffice}</span></div>
+                <div>Application Number: <span className="text-[#49A3FF] font-bold">{selectedPatent.applicationNumber}</span></div>
+                <div>Filing / Publication Date: <span className="text-white font-bold">{selectedPatent.date}</span></div>
+                <div>Status: <span className="text-[#49A3FF] font-bold">{selectedPatent.status}</span></div>
+              </div>
+
+              <p className="text-sm text-[#8793A8] leading-relaxed mb-6 font-sans">
+                {selectedPatent.description}
+              </p>
+
+              {selectedPatent.inventors && (
+                <div className="mb-6">
+                  <div className="text-[10px] font-mono uppercase text-[#8793A8] tracking-wider mb-2 font-semibold">
+                    Inventors &amp; Assignees:
                   </div>
-                </div>
-              )}
-              
-              {/* Inventors Section */}
-              {Array.isArray(patent.inventors) && patent.inventors.length > 0 && (
-                <div className="mt-8">
-                  <div className={`bg-gradient-to-r ${colorClasses} h-1.5 w-24 mb-4 rounded-full shadow-lg`}></div>
-                  <h3 className="text-xl font-bold text-white mb-4">Inventors</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {patent.inventors.map((inventor, index) => (
-                      <div key={index} className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-4">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${colorClasses} flex items-center justify-center flex-shrink-0`}>
-                            <FaUsers className="text-white text-sm" />
-                          </div>
-                          <span className="text-white font-medium">{inventor}</span>
-                        </div>
-                      </div>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedPatent.inventors.map((inv) => (
+                      <span
+                        key={inv}
+                        className="px-3 py-1 rounded-lg bg-[#080B12] border border-[#1769FF]/30 text-xs font-mono text-[#EAF1FF]"
+                      >
+                        {inv}
+                      </span>
                     ))}
                   </div>
                 </div>
               )}
+
+              <div className="flex items-center justify-between pt-5 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setSelectedPatent(null)}
+                  className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-mono uppercase tracking-wider transition-all"
+                >
+                  Close (ESC)
+                </button>
+
+                <div className="text-xs font-mono text-[#49A3FF] flex items-center gap-1.5 font-bold">
+                  <FaCheckCircle className="text-xs" />
+                  <span>INDIAN PATENT OFFICE VERIFIED</span>
+                </div>
+              </div>
             </div>
-          </motion.div>
-        </div>
-      )}
+          </div>
+        )}
+
+        {/* Footer */}
+        <GarcyFooter />
+
+        {/* Command Palette (⌘K) */}
+        <GarcyCommandPalette
+          isOpen={searchOpen}
+          onClose={() => setSearchOpen(false)}
+        />
+
+        {/* Case Study Drawer */}
+        <GarcyCaseStudies
+          isOpen={caseStudiesOpen}
+          onClose={() => setCaseStudiesOpen(false)}
+        />
+      </main>
     </>
   );
-};
-
-const Patents = () => {
-  const { data: patentsData, loading, error } = useDatabase('patents');
-  const [filteredPatents, setFilteredPatents] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [selectedStatus, setSelectedStatus] = useState('All');
-  const [selectedOffice, setSelectedOffice] = useState('All');
-  const [sortOrder, setSortOrder] = useState('newest');
-
-  // Filter patents based on search and filters
-  useEffect(() => {
-    if (!patentsData) return;
-    
-    let filtered = patentsData.filter(patent => {
-      const matchesSearch = 
-        (patent.title && patent.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (patent.shortTitle && patent.shortTitle.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (patent.category && patent.category.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (Array.isArray(patent.inventors) && patent.inventors.some(inventor => 
-          inventor.toLowerCase().includes(searchTerm.toLowerCase())
-        )) ||
-        (patent.description && patent.description.toLowerCase().includes(searchTerm.toLowerCase()));
-      
-      const matchesCategory = selectedCategory === 'All' || patent.category === selectedCategory;
-      const matchesStatus = selectedStatus === 'All' || patent.status === selectedStatus;
-      const matchesOffice = selectedOffice === 'All' || patent.patentOffice === selectedOffice;
-      
-      return matchesSearch && matchesCategory && matchesStatus && matchesOffice;
-    });
-    
-    // Sort patents
-    filtered.sort((a, b) => {
-      const dateA = new Date(a.date || 0);
-      const dateB = new Date(b.date || 0);
-      
-      return sortOrder === 'newest' 
-        ? dateB.getTime() - dateA.getTime()
-        : dateA.getTime() - dateB.getTime();
-    });
-    
-    setFilteredPatents(filtered);
-  }, [patentsData, searchTerm, selectedCategory, selectedStatus, selectedOffice, sortOrder]);
-
-  // Get unique values for filters
-  const categories = ['All', ...new Set(patentsData?.map(patent => patent.category).filter(Boolean) || [])];
-  const statuses = ['All', ...new Set(patentsData?.map(patent => patent.status).filter(Boolean) || [])];
-  const offices = ['All', ...new Set(patentsData?.map(patent => patent.patentOffice).filter(Boolean) || [])];
-
-  if (loading) {
-    return (
-      <Layout>
-        <PageHero 
-          title="Patents" 
-          subtitle="Explore our innovative patents and intellectual property"
-          tag="Patents & IP"
-        />
-        <ContentLoading text="Loading patents..." />
-      </Layout>
-    );
-  }
-
-  if (error) {
-    return (
-      <Layout>
-        <PageHero 
-          title="Patents" 
-          subtitle="Explore our innovative patents and intellectual property"
-          tag="Patents & IP"
-        />
-        <div className="container mx-auto px-4 py-12">
-          <div className="text-center">
-            <p className="text-red-400 text-lg">Error loading patents: {error}</p>
-            <button 
-              onClick={() => window.location.reload()} 
-              className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Retry
-            </button>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
-
-  return (
-    <Layout>
-      <PageHero 
-        title="Patents" 
-        subtitle="Explore our innovative patents and intellectual property"
-        tag="Patents & IP"
-      />
-      
-      <div className="container mx-auto px-4 py-12">
-        {/* Filters */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-12 backdrop-blur-sm bg-white/5 rounded-2xl p-6 border border-white/10"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-            <div className="md:col-span-2">
-              <input
-                type="text"
-                placeholder="Search patents..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
-              />
-            </div>
-            
-            <div>
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-              >
-                {categories.map(category => (
-                  <option key={category} value={category} className="bg-gray-800">
-                    {category}
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            <div>
-              <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-              >
-                {statuses.map(status => (
-                  <option key={status} value={status} className="bg-gray-800">
-                    {status}
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            <div>
-              <select
-                value={selectedOffice}
-                onChange={(e) => setSelectedOffice(e.target.value)}
-                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-              >
-                {offices.map(office => (
-                  <option key={office} value={office} className="bg-gray-800">
-                    {office}
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            <div>
-              <select
-                value={sortOrder}
-                onChange={(e) => setSortOrder(e.target.value)}
-                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-              >
-                <option value="newest" className="bg-gray-800">Newest First</option>
-                <option value="oldest" className="bg-gray-800">Oldest First</option>
-              </select>
-            </div>
-          </div>
-          
-          {/* Results count */}
-          <div className="mt-4 text-center">
-            <span className="text-white text-sm">
-              Showing {filteredPatents.length} of {patentsData?.length || 0} patents
-            </span>
-          </div>
-        </motion.div>
-
-        {/* Patents Grid */}
-        {filteredPatents.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="backdrop-blur-sm bg-white/5 rounded-2xl p-12 border border-white/10">
-              <h3 className="text-2xl font-bold text-white mb-4">
-                {patentsData?.length === 0 ? 'No Patents Available' : 'No Results Found'}
-              </h3>
-              <p className="text-gray-400 text-lg mb-6">
-                {patentsData?.length === 0 
-                  ? 'There are currently no patents to display.'
-                  : 'Try adjusting your search criteria or filters.'
-                }
-              </p>
-              {(searchTerm || selectedCategory !== 'All' || selectedStatus !== 'All' || selectedOffice !== 'All') && (
-                <button
-                  onClick={() => {
-                    setSearchTerm('');
-                    setSelectedCategory('All');
-                    setSelectedStatus('All');
-                    setSelectedOffice('All');
-                  }}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Clear Filters
-                </button>
-              )}
-            </div>
-          </div>
-        ) : (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: { opacity: 0 },
-              visible: {
-                opacity: 1,
-                transition: { 
-                  staggerChildren: 0.1,
-                  delayChildren: 0.2
-                }
-              }
-            }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-          >
-            {filteredPatents.map((patent, index) => (
-              <PatentCard
-                key={patent.id || patent._id || index}
-                patent={patent}
-                index={index}
-              />
-            ))}
-          </motion.div>
-        )}
-      </div>
-    </Layout>
-  );
-};
-
-export default Patents;
+}

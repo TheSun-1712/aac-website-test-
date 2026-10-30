@@ -303,26 +303,26 @@ export default async function handler(req, res) {
 
     switch (req.method) {
       case 'GET':
-        if (id) {
-          // Get single item
-          const item = await model.findUnique({
-            where: { id: id }
-          });
-          
-          if (!item) {
-            return res.status(404).json({ error: 'Item not found' });
+        try {
+          if (id) {
+            const item = await model.findUnique({
+              where: { id: id }
+            });
+            if (!item) {
+              return res.status(404).json({ error: 'Item not found' });
+            }
+            const transformedItem = transformDataFromDB(tableName, item);
+            return res.status(200).json({ data: transformedItem });
+          } else {
+            const items = await model.findMany({
+              orderBy: { createdAt: 'desc' }
+            });
+            const transformedItems = items.map(item => transformDataFromDB(tableName, item));
+            return res.status(200).json({ data: transformedItems });
           }
-          
-          const transformedItem = transformDataFromDB(tableName, item);
-          return res.status(200).json({ data: transformedItem });
-        } else {
-          // Get all items
-          const items = await model.findMany({
-            orderBy: { createdAt: 'desc' }
-          });
-          
-          const transformedItems = items.map(item => transformDataFromDB(tableName, item));
-          return res.status(200).json({ data: transformedItems });
+        } catch (dbErr) {
+          // Gracefully fallback when PostgreSQL database is offline
+          return res.status(200).json({ data: [], offlineFallback: true });
         }
 
       case 'POST':

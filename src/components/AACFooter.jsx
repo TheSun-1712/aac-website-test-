@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { FaArrowUp, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
+import { FaArrowUp, FaEnvelope, FaMapMarkerAlt, FaInstagram } from "react-icons/fa";
 
 export default function AACFooter({ isDark }) {
   const scrollToTop = () => {
@@ -30,7 +30,7 @@ export default function AACFooter({ isDark }) {
         <div className={`inline-block animate-marquee font-heading font-extrabold text-[5vw] uppercase tracking-tight ${
           isDark ? "text-stroke-red" : "text-stroke-gold"
         }`}>
-          Advanced Academic Center // AAC GRIET // Research &amp; Development // Patents // Autonomous Systems &nbsp;
+          Advanced Academic Center // AAC GRIET // Research &amp; Innovation // Excellence &amp; Discovery &nbsp;
         </div>
       </div>
 
@@ -45,7 +45,7 @@ export default function AACFooter({ isDark }) {
             </div>
 
             <p className="font-sans text-sm text-gray-200 leading-relaxed max-w-sm">
-              Advanced Academic Center (AAC) is an interdisciplinary research and innovation center committed to student research, patent creation, and technology development at GRIET.
+              Advanced Academic Center (AAC) is an interdisciplinary research centre at Gokaraju Rangaraju Institute of Engineering and Technology (GRIET), Hyderabad focused on innovation, research, and excellence.
             </p>
 
             <div className="space-y-1.5 font-sans text-xs text-gray-300 pt-1">
@@ -55,7 +55,7 @@ export default function AACFooter({ isDark }) {
               </div>
               <div className="flex items-center gap-2">
                 <FaEnvelope className={isDark ? "text-[#DC2626]" : "text-[#F0D375]"} />
-                <span>aac@griet.ac.in</span>
+                <span>aacgriet.org@gmail.com</span>
               </div>
             </div>
           </div>
@@ -95,11 +95,21 @@ export default function AACFooter({ isDark }) {
               </Link>
 
               <div className="flex gap-2.5 pt-1">
-                <a href="#" className="p-2.5 border border-white/20 rounded-xl flex-1 text-center font-bold text-gray-200 hover:text-white bg-black/30 hover:border-white transition-all">
-                  LinkedIn
+                <a
+                  href="https://instagram.com/aac_grietofficial?igshid=YmMyMTA2M2Y="
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 border border-white/20 rounded-xl flex-1 flex items-center justify-center gap-1.5 text-center font-bold text-gray-200 hover:text-white bg-black/30 hover:border-white transition-all"
+                >
+                  <FaInstagram />
+                  <span>Instagram</span>
                 </a>
-                <a href="#" className="p-2.5 border border-white/20 rounded-xl flex-1 text-center font-bold text-gray-200 hover:text-white bg-black/30 hover:border-white transition-all">
-                  GitHub
+                <a
+                  href="mailto:aacgriet.org@gmail.com"
+                  className="p-2.5 border border-white/20 rounded-xl flex-1 flex items-center justify-center gap-1.5 text-center font-bold text-gray-200 hover:text-white bg-black/30 hover:border-white transition-all"
+                >
+                  <FaEnvelope />
+                  <span>Email Us</span>
                 </a>
               </div>
             </div>

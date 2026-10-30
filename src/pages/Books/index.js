@@ -1,377 +1,272 @@
+import { useState } from "react";
+import Head from "next/head";
+import Image from "next/image";
+import BackgroundVideo from "@/components/BackgroundVideo";
+import GarcyNavbar from "@/components/garcy/GarcyNavbar";
+import GarcyFooter from "@/components/garcy/GarcyFooter";
+import GarcyCommandPalette from "@/components/garcy/GarcyCommandPalette";
+import GarcyCaseStudies from "@/components/garcy/GarcyCaseStudies";
+import { useDatabase } from "@/hooks/useDatabase";
+import booksData from "@/components/Data/booksData";
+import {
+  FaBook,
+  FaSearch,
+  FaCalendarAlt,
+  FaUserGraduate,
+  FaExternalLinkAlt,
+  FaTimes,
+} from "react-icons/fa";
 
+export default function BooksPage() {
+  const { data: dbBooks } = useDatabase("books");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedBook, setSelectedBook] = useState(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [caseStudiesOpen, setCaseStudiesOpen] = useState(false);
 
-// src/pages/Books/index.js - Updated to use database
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-import Layout from '@/components/Layout';
-import PageHero from '@/components/PageHero';
-import LoadingSpinner, { ContentLoading } from '@/components/LoadingSpinner';
-import { useDatabase } from '@/hooks/useDatabase';
+  const displayBooks = dbBooks && dbBooks.length > 0 ? dbBooks : booksData;
 
-const BookCard = ({ book, index }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  
-  // Get color classes
-  const getColorClasses = (color) => {
-    const colorMap = {
-      'blue': 'from-blue-500 to-blue-600',
-      'indigo': 'from-indigo-500 to-indigo-600', 
-      'purple': 'from-purple-500 to-purple-600',
-      'green': 'from-green-500 to-green-600',
-      'orange': 'from-orange-500 to-orange-600'
-    };
-    return colorMap[color] || 'from-blue-500 to-blue-600';
-  };
+  const categories = [
+    { id: "all", label: "All Treatises" },
+    { id: "Game Development", label: "Game Dev" },
+    { id: "Programming", label: "Python & Programming" },
+    { id: "Machine Learning", label: "Machine Learning" },
+    { id: "IoT", label: "IoT" },
+    { id: "Java Programming", label: "Java" },
+  ];
 
-  const colorClasses = getColorClasses(book.color);
+  const filteredBooks = displayBooks.filter((book) => {
+    const titleMatch = (book.title || "").toLowerCase().includes(searchTerm.toLowerCase());
+    const authorMatch = (Array.isArray(book.authors) ? book.authors.join(" ") : String(book.authors || ""))
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const categoryMatch = selectedCategory === "all" || book.category === selectedCategory;
+    return (titleMatch || authorMatch) && categoryMatch;
+  });
 
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ delay: index * 0.1, duration: 0.6 }}
-        whileHover={{ y: -8, scale: 1.03 }}
-        className="group relative backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-300 cursor-pointer"
-        onClick={() => setIsExpanded(true)}
-      >
-        {/* Gradient overlay on hover */}
-        <div className={`absolute inset-0 bg-gradient-to-br ${colorClasses.replace('to-', 'to-').replace('from-', 'from-')}/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl`}></div>
+      <Head>
+        <title>TECHNICAL BOOKS &amp; TREATISES // AAC GRIET</title>
+        <meta
+          name="description"
+          content="Student-authored technical books, programming treatises, and engineering guides published at Advanced Academic Center, GRIET."
+        />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+
+      <BackgroundVideo />
+
+      {/* Ambient Dither & Dynamic Spotlight */}
+      <div className="reel-dither" aria-hidden="true" />
+      <div className="spotlight" aria-hidden="true" />
+
+      {/* Main Stage Canvas */}
+      <main className="stage relative overflow-hidden bg-[#080B12]/92 text-[#EAF1FF] min-h-screen pb-20">
         
-        <div className="p-6 relative z-10">
-          {/* Book Cover */}
-          {book.cover && (
-            <div className="mb-6 flex justify-center">
-              <div className="relative w-32 h-40 rounded-lg overflow-hidden shadow-lg border border-white/20">
-                <Image
-                  src={book.cover}
-                  alt={book.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
+        {/* Floating Header */}
+        <GarcyNavbar
+          onOpenSearch={() => setSearchOpen(true)}
+          onOpenCaseStudies={() => setCaseStudiesOpen(true)}
+        />
+
+        {/* Hero Section */}
+        <section className="pt-32 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          <div className="text-center max-w-3xl mx-auto mb-14">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-4 border backdrop-blur-md bg-[#1769FF]/15 border-[#1769FF]/40 text-[#49A3FF]">
+              <FaBook className="text-[10px]" />
+              <span>Authored Literature &bull; AAC Press</span>
             </div>
-          )}
-          
-          {/* Category Badge */}
-          <div className="mb-4 flex justify-center">
-            <span className={`px-3 py-1 bg-gradient-to-r ${colorClasses}/20 text-${colorClasses.split('-')[1]}-300 rounded-lg text-xs font-medium border border-${colorClasses.split('-')[1]}-500/30`}>
-              {book.category}
-            </span>
-          </div>
-          
-          <h3 className="text-lg font-bold mb-3 text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300 transition-all duration-300 line-clamp-2 text-center">
-            {book.title}
-          </h3>
-          
-          {/* Authors */}
-          <div className="mb-4">
-            <p className="text-gray-400 text-sm text-center">
-              {Array.isArray(book.authors) ? book.authors.length : 1} author{Array.isArray(book.authors) && book.authors.length !== 1 ? 's' : ''}
+
+            <h1 className="font-extrabold text-4xl sm:text-6xl tracking-tighter leading-tight mb-4 text-[#EAF1FF] uppercase font-sans">
+              Books &amp; <br />
+              <span className="italic font-serif font-normal text-[#49A3FF] lowercase tracking-normal text-3xl sm:text-5xl">
+                treatises
+              </span>{" "}
+              Archived.
+            </h1>
+
+            <p className="text-sm sm:text-base text-[#8793A8] leading-relaxed font-sans font-normal">
+              Technical treatises, programming guides, and engineering deep-dives documented and published by AAC student researchers.
             </p>
           </div>
-          
-          {/* Year */}
-          <div className="mb-4 text-center">
-            <span className="text-gray-400 text-sm">Published {book.year}</span>
-          </div>
-          
-          {/* Description Preview */}
-          <p className="text-gray-400 text-sm leading-relaxed mb-4 group-hover:text-gray-300 transition-colors duration-300 line-clamp-3">
-            {book.description}
-          </p>
-          
-          {/* Read more indicator */}
-          <div className="mt-auto pt-4 border-t border-white/10 group-hover:border-white/20 transition-colors duration-300">
-            <div className="flex items-center justify-between">
-              <span className="text-blue-400 text-sm font-medium group-hover:text-blue-300 transition-colors duration-300">
-                Click to read more
-              </span>
-              <div className={`bg-gradient-to-r ${colorClasses} h-1 w-8 rounded-full shadow-lg group-hover:w-12 transition-all duration-300`}></div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
 
-      {/* Expanded Modal */}
-      {isExpanded && (
-        <div 
-          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4"
-          onClick={() => setIsExpanded(false)}
-        >
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="backdrop-blur-md bg-white/5 rounded-2xl shadow-2xl border border-white/20 overflow-hidden max-w-4xl w-full max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal Header */}
-            <div className={`bg-gradient-to-r ${colorClasses} p-6 text-white`}>
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <h2 className="text-2xl font-bold mb-2">{book.title}</h2>
-                  <p className="text-white/90 mb-2">{book.category} • {book.year}</p>
-                  <p className="text-white/80 text-sm">
-                    {Array.isArray(book.authors) ? book.authors.length : 1} author{Array.isArray(book.authors) && book.authors.length !== 1 ? 's' : ''}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setIsExpanded(false)}
-                  className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-
-            {/* Modal Content */}
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Book Cover */}
-                {book.cover && (
-                  <div className="md:col-span-1">
-                    <div className="relative w-full h-80 rounded-lg overflow-hidden shadow-lg border border-white/20">
-                      <Image
-                        src={book.cover}
-                        alt={book.title}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  </div>
-                )}
-                
-                {/* Book Info */}
-                <div className={`${book.cover ? 'md:col-span-2' : 'md:col-span-3'}`}>
-                  <div className={`bg-gradient-to-r ${colorClasses} h-1.5 w-24 mb-4 rounded-full shadow-lg`}></div>
-                  <h3 className="text-xl font-bold text-white mb-4">About This Book</h3>
-                  <p className="text-gray-300 leading-relaxed mb-6">
-                    {book.description}
-                  </p>
-                  
-                  {/* Book Details */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-4">
-                      <h4 className="text-white font-semibold mb-2">Publication Details</h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Category:</span>
-                          <span className="text-white">{book.category}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Year:</span>
-                          <span className="text-white">{book.year}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Status:</span>
-                          <span className="text-green-400">Published</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-4">
-                      <h4 className="text-white font-semibold mb-2">Author Information</h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Authors:</span>
-                          <span className="text-white">{Array.isArray(book.authors) ? book.authors.length : 1}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Authors Section */}
-              {Array.isArray(book.authors) && book.authors.length > 0 && (
-                <div className="mt-8">
-                  <div className={`bg-gradient-to-r ${colorClasses} h-1.5 w-24 mb-4 rounded-full shadow-lg`}></div>
-                  <h3 className="text-xl font-bold text-white mb-4">Authors</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {book.authors.map((author, index) => (
-                      <div key={index} className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-4">
-                        <p className="text-gray-300 leading-relaxed">{author}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </motion.div>
-        </div>
-      )}
-    </>
-  );
-};
-
-const Books = () => {
-  const { data: booksData, loading, error } = useDatabase('books');
-  const [filteredBooks, setFilteredBooks] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [selectedYear, setSelectedYear] = useState('All');
-
-  // Filter books based on search and filters
-  useEffect(() => {
-    if (!booksData) return;
-    
-    let filtered = booksData.filter(book => {
-      const matchesSearch = 
-        book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        book.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (Array.isArray(book.authors) && book.authors.some(author => 
-          author.toLowerCase().includes(searchTerm.toLowerCase())
-        ));
-      
-      const matchesCategory = selectedCategory === 'All' || book.category === selectedCategory;
-      const matchesYear = selectedYear === 'All' || book.year.toString() === selectedYear;
-      
-      return matchesSearch && matchesCategory && matchesYear;
-    });
-    
-    setFilteredBooks(filtered);
-  }, [booksData, searchTerm, selectedCategory, selectedYear]);
-
-  // Get unique categories and years for filters
-  const categories = ['All', ...new Set(booksData?.map(book => book.category).filter(Boolean) || [])];
-  const years = ['All', ...new Set(booksData?.map(book => book.year).filter(Boolean).sort((a, b) => b - a) || [])];
-
-  if (loading) {
-    return (
-      <Layout>
-        <PageHero 
-          title="Books & Blogs" 
-          subtitle="Explore our collection of published books and educational content"
-          tag="Publications"
-        />
-        <ContentLoading text="Loading books data..." />
-      </Layout>
-    );
-  }
-
-  if (error) {
-    return (
-      <Layout>
-        <PageHero 
-          title="Books & Blogs" 
-          subtitle="Explore our collection of published books and educational content"
-          tag="Publications"
-        />
-        <div className="container mx-auto px-4 py-12">
-          <div className="text-center">
-            <p className="text-red-400 text-lg">Error loading books data: {error}</p>
-            <button 
-              onClick={() => window.location.reload()} 
-              className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Retry
-            </button>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
-
-  return (
-    <Layout>
-      <PageHero 
-        title="Books & Blogs" 
-        subtitle="Explore our collection of published books and educational content"
-        tag="Publications"
-      />
-      
-      <div className="container mx-auto px-4 py-12">
-        {/* Filters */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-12 backdrop-blur-sm bg-white/5 rounded-2xl p-6 border border-white/10"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
+          {/* Search & Filter Bar */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-10 garcy-glass-header p-3">
+            <div className="relative w-full sm:w-80">
+              <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8793A8] text-xs" />
               <input
                 type="text"
-                placeholder="Search books..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                placeholder="Search by book title or author..."
+                className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#080B12] border border-white/10 text-xs font-mono text-white placeholder-[#8793A8]/60 focus:outline-none focus:border-[#1769FF]"
               />
             </div>
-            
-            <div>
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-              >
-                {categories.map(category => (
-                  <option key={category} value={category} className="bg-gray-800">
-                    {category}
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            <div>
-              <select
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
-                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-              >
-                {years.map(year => (
-                  <option key={year} value={year} className="bg-gray-800">
-                    {year === 'All' ? 'All Years' : year}
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            <div className="text-center">
-              <span className="text-white text-sm">
-                Showing {filteredBooks.length} of {booksData?.length || 0} books
-              </span>
-            </div>
-          </div>
-        </motion.div>
 
-        {/* Books Grid */}
-        {filteredBooks.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-400 text-lg">
-              {booksData?.length === 0 ? 'No books available.' : 'No books match your search criteria.'}
-            </p>
+            <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+              {categories.map((cat) => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-mono uppercase tracking-wider transition-all whitespace-nowrap ${
+                    selectedCategory === cat.id
+                      ? "bg-[#1769FF] text-white font-bold"
+                      : "text-[#8793A8] hover:text-white"
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
           </div>
-        ) : (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: { opacity: 0 },
-              visible: {
-                opacity: 1,
-                transition: { 
-                  staggerChildren: 0.1,
-                  delayChildren: 0.2
-                }
-              }
-            }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-          >
-            {filteredBooks.map((book, index) => (
-              <BookCard
-                key={book.id || book._id || index}
-                book={book}
-                index={index}
-              />
+
+          {/* Books Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredBooks.map((book) => (
+              <div
+                key={book.id}
+                onClick={() => setSelectedBook(book)}
+                className="garcy-glass-card p-6 flex flex-col justify-between hover:border-[#1769FF]/70 transition-all duration-300 group hover:-translate-y-1 cursor-pointer border border-white/15 shadow-xl bg-gradient-to-br from-[#101725] to-[#080B12]"
+              >
+                <div>
+                  <div className="flex items-center justify-between text-xs font-mono uppercase text-[#8793A8] mb-4">
+                    <span className="text-[9.5px] font-bold text-[#49A3FF] px-2.5 py-0.5 rounded-full bg-[#080B12] border border-[#1769FF]/30">
+                      {book.category}
+                    </span>
+                    <span className="text-[#8793A8] font-mono text-[10px] flex items-center gap-1">
+                      <FaCalendarAlt className="text-[9px]" />
+                      <span>{book.year}</span>
+                    </span>
+                  </div>
+
+                  {/* Book Cover Image */}
+                  {book.cover && (
+                    <div className="w-full h-48 rounded-xl overflow-hidden mb-5 border border-white/10 bg-[#080B12] flex items-center justify-center relative">
+                      <img
+                        src={book.cover}
+                        alt={book.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  <h2 className="text-lg font-bold text-[#EAF1FF] mb-2 font-sans group-hover:text-[#49A3FF] transition-colors leading-snug">
+                    {book.title}
+                  </h2>
+
+                  <p className="text-xs text-[#8793A8] leading-relaxed font-sans line-clamp-3 mb-6 font-normal">
+                    {book.description}
+                  </p>
+                </div>
+
+                <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-[#8793A8]">
+                  <span className="group-hover:text-white transition-colors flex items-center gap-1.5 uppercase font-bold text-[10px]">
+                    <span>Inspect Treatise</span>
+                    <span className="text-[#49A3FF]">&rarr;</span>
+                  </span>
+
+                  <span className="text-[9.5px] font-mono text-[#49A3FF] uppercase font-bold">
+                    AAC AUTHOR
+                  </span>
+                </div>
+              </div>
             ))}
-          </motion.div>
-        )}
-      </div>
-    </Layout>
-  );
-};
+          </div>
 
-export default Books;
+          {filteredBooks.length === 0 && (
+            <div className="text-center py-16 text-[#8793A8] font-mono text-sm">
+              No books found matching your filter criteria.
+            </div>
+          )}
+        </section>
+
+        {/* Book Details Modal */}
+        {selectedBook && (
+          <div
+            className="fixed inset-0 z-[160] bg-[#080B12]/90 backdrop-blur-2xl flex items-center justify-center p-4 overflow-y-auto"
+            onClick={() => setSelectedBook(null)}
+          >
+            <div
+              className="garcy-glass-card max-w-2xl w-full p-6 sm:p-8 text-left relative border border-[#1769FF]/60 shadow-[0_0_60px_rgba(23,105,255,0.4)] my-8"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between text-xs font-mono uppercase text-[#49A3FF] mb-5 font-bold">
+                <span>{selectedBook.category} // BOOK TREATISE</span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedBook(null)}
+                  className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-[#8793A8] hover:text-white flex items-center justify-center transition-colors"
+                  aria-label="Close"
+                >
+                  <FaTimes />
+                </button>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-6 mb-6">
+                {selectedBook.cover && (
+                  <div className="w-full sm:w-44 h-56 rounded-xl overflow-hidden border border-white/15 bg-black flex-shrink-0">
+                    <img
+                      src={selectedBook.cover}
+                      alt={selectedBook.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <h3 className="text-2xl font-extrabold text-[#EAF1FF] font-sans mb-2">
+                    {selectedBook.title}
+                  </h3>
+                  <div className="text-xs font-mono text-[#49A3FF] font-bold mb-4">
+                    Published: {selectedBook.year} &bull; {selectedBook.category}
+                  </div>
+                  <div className="text-xs font-mono text-[#8793A8] uppercase mb-2">Authors:</div>
+                  <div className="space-y-1.5 text-xs text-[#EAF1FF] font-sans">
+                    {Array.isArray(selectedBook.authors) ? (
+                      selectedBook.authors.map((a, i) => (
+                        <div key={i} className="text-xs text-[#8793A8] leading-relaxed">
+                          &bull; {a}
+                        </div>
+                      ))
+                    ) : (
+                      <div>{selectedBook.authors}</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-white/10">
+                <div className="text-[10px] font-mono uppercase text-[#8793A8] tracking-wider mb-2 font-semibold">
+                  Treatise Overview:
+                </div>
+                <p className="text-xs sm:text-sm text-[#8793A8] leading-relaxed font-sans">
+                  {selectedBook.description}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Global Footer */}
+        <GarcyFooter />
+
+        {/* Command Palette */}
+        <GarcyCommandPalette
+          isOpen={searchOpen}
+          onClose={() => setSearchOpen(false)}
+        />
+
+        {/* Case Studies Drawer */}
+        <GarcyCaseStudies
+          isOpen={caseStudiesOpen}
+          onClose={() => setCaseStudiesOpen(false)}
+        />
+      </main>
+    </>
+  );
+}

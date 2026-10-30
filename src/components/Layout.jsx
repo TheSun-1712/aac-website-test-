@@ -1,23 +1,32 @@
 // src/components/Layout.jsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Navbar from './Navbar';
-import Footer from './Footer';
+import GarcyNavbar from './garcy/GarcyNavbar';
+import GarcyFooter from './garcy/GarcyFooter';
+import GarcyCommandPalette from './garcy/GarcyCommandPalette';
 
 const Layout = ({ children }) => {
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  // Global Keyboard shortcuts: ⌘K / Ctrl+K for search
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   // Effect for smooth scroll behavior
   useEffect(() => {
     document.documentElement.style.scrollBehavior = 'smooth';
-    
-    // Prevent horizontal scrolling
     document.body.style.overflowX = 'hidden';
     document.documentElement.style.overflowX = 'hidden';
-    
-    // Set background color
-    document.body.style.backgroundColor = '#0e1421';
-    document.documentElement.style.backgroundColor = '#0e1421';
-    
-    // Prevent multiple scrollbars
+    document.body.style.backgroundColor = '#080B12';
+    document.documentElement.style.backgroundColor = '#080B12';
     document.documentElement.style.overflow = 'auto';
     
     return () => {
@@ -29,48 +38,50 @@ const Layout = ({ children }) => {
   const pageVariants = {
     initial: {
       opacity: 0,
-      y: 20
+      y: 16
     },
     animate: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.6,
-        ease: [0.6, 0.05, 0.01, 0.99],
+        duration: 0.45,
+        ease: [0.16, 1, 0.3, 1],
       }
     },
     exit: {
       opacity: 0,
-      y: -20,
+      y: -16,
       transition: {
-        duration: 0.4
+        duration: 0.25
       }
     }
   };
 
   return (
     <div 
-      className="flex flex-col min-h-screen" 
-      style={{ 
-        backgroundColor: '#0e1421',
-        overflow: 'hidden'  // Prevent double scrollbars
-      }}
+      className="flex flex-col min-h-screen bg-[#080B12] text-[#EAF1FF]" 
+      style={{ overflow: 'hidden' }}
     >
-      <Navbar />
+      <GarcyNavbar onOpenSearch={() => setSearchOpen(true)} />
+
       <AnimatePresence mode="wait">
         <motion.main 
-          className="flex-grow w-full"
+          className="flex-grow w-full pt-20"
           initial="initial"
           animate="animate"
           exit="exit"
           variants={pageVariants}
-          style={{ backgroundColor: '#0e1421' }}
         >
           {children}
         </motion.main>
       </AnimatePresence>
       
-      <Footer />
+      <GarcyFooter />
+
+      <GarcyCommandPalette
+        isOpen={searchOpen}
+        onClose={() => setSearchOpen(false)}
+      />
     </div>
   );
 };

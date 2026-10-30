@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaCompass, FaUsers, FaLightbulb, FaTimes, FaArrowRight } from "react-icons/fa";
+import { FaCompass, FaUsers, FaLightbulb, FaTimes, FaArrowRight, FaRocket, FaSearch, FaGraduationCap } from "react-icons/fa";
 
 export default function AACExploreSection({ isDark }) {
   const [activeModal, setActiveModal] = useState(null);
@@ -9,25 +9,25 @@ export default function AACExploreSection({ isDark }) {
     {
       id: "vision",
       title: "Vision & Mission",
-      icon: FaCompass,
+      icon: FaRocket,
       subtitle: "Student-Focused Research Unit",
-      body: "Advanced Academic Center (AAC) aspires to be a pre-eminent and inclusive student-focused research unit, preparing young minds in design thinking and innovation for societal problems. As an innovation center with the capacity to attract and engage the best talent in the institute, a culture of innovation and discovery is cultivated by supporting experiential learning and entrepreneurial endeavors among students.",
+      body: "AAC aspires to be a pre-eminent student-focused research unit, preparing young minds in design thinking and innovation for societal problems. As an innovation center with the capacity to attract and engage the best talent in the institute, a culture of innovation and discovery is cultivated by supporting experiential learning and entrepreneurial endeavors among students.",
       tag: "Core Vision",
     },
     {
       id: "who",
-      title: "Who Are We?",
-      icon: FaUsers,
+      title: "Who We Are",
+      icon: FaSearch,
       subtitle: "Inter-Disciplinary Research Center",
-      body: "The Advanced Academic Center (AAC) of GRIET, Hyderabad is an inter-disciplinary research centre. We are committed to excellence in teaching, learning, and research at AAC, and we continue to flourish in this modern age. Focusing mainly on a broad area of research and development, bringing together experts with diverse backgrounds to address complex engineering problems.",
+      body: "An inter-disciplinary research centre committed to excellence in teaching, learning, and research, bringing together experts with diverse backgrounds to address complex engineering and technological challenges.",
       tag: "Community",
     },
     {
       id: "offer",
-      title: "What Do We Offer?",
-      icon: FaLightbulb,
+      title: "What We Offer",
+      icon: FaGraduationCap,
       subtitle: "Mentorship & Hands-on R&D",
-      body: "Students are engaged in designing and executing projects with AAC. We organize workshops and lectures on specialized engineering software and hardware tools, offering mentorship from real-time industrial experts as well as sponsored consultancy projects.",
+      body: "Workshops, mentorship from industry experts, sponsored R&D projects, and opportunities to learn scientific and technical skills for real-world applications.",
       tag: "Opportunities",
     },
   ];
@@ -42,7 +42,7 @@ export default function AACExploreSection({ isDark }) {
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ amount: 0.5 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full font-sans text-xs font-semibold tracking-wide uppercase mb-3 border backdrop-blur-md ${
               isDark
                 ? "bg-[#DC2626]/20 border-[#DC2626]/40 text-[#DC2626]"
@@ -57,29 +57,35 @@ export default function AACExploreSection({ isDark }) {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ amount: 0.5 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+            transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
             className="font-heading font-extrabold text-3xl sm:text-4xl tracking-tight text-white mb-2"
           >
-            Explore <span className={isDark ? "text-red-gradient" : "text-gold-gradient"}>AAC Center</span>
+            Explore <span className={isDark ? "text-red-gradient" : "text-gold-gradient"}>What We Do</span>
           </motion.h2>
 
           <p className="font-sans text-sm sm:text-base leading-relaxed text-gray-200">
-            Learn about our mission, multidisciplinary research community, and student mentorship opportunities.
+            Discover our commitment to academic excellence, innovation, and research that drives the future.
           </p>
         </div>
 
-        {/* Horizontal Flash Cards - Slide in horizontally on vertical scroll */}
+        {/* Fluid Horizontal Flash Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {exploreData.map((item, idx) => {
             const Icon = item.icon;
             return (
               <motion.div
                 key={item.id}
-                initial={{ opacity: 0, x: 140 + idx * 40 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ amount: 0.2 }}
-                whileHover={{ scale: 1.03, y: -8 }}
-                transition={{ type: "spring", stiffness: 100, damping: 20, delay: idx * 0.15 }}
+                initial={{ opacity: 0, x: 160 + idx * 60, scale: 0.94 }}
+                whileInView={{ opacity: 1, x: 0, scale: 1 }}
+                viewport={{ amount: 0.25 }}
+                whileHover={{ scale: 1.03, y: -8, x: -4 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 70,
+                  damping: 22,
+                  mass: 0.6,
+                  delay: idx * 0.12,
+                }}
                 onClick={() => setActiveModal(item)}
                 className={`p-7 rounded-3xl cursor-pointer group transition-all flex flex-col justify-between border shadow-2xl ${
                   isDark
@@ -124,7 +130,7 @@ export default function AACExploreSection({ isDark }) {
                   isDark ? "text-[#DC2626]" : "text-[#F0D375]"
                 }`}>
                   <span>Read Full Card</span>
-                  <FaArrowRight className="group-hover:translate-x-1.5 transition-transform" />
+                  <FaArrowRight className="group-hover:translate-x-2 transition-transform duration-300" />
                 </div>
               </motion.div>
             );
@@ -136,10 +142,10 @@ export default function AACExploreSection({ isDark }) {
           {activeModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
               <motion.div
-                initial={{ opacity: 0, scale: 0.85, x: 100 }}
+                initial={{ opacity: 0, scale: 0.88, x: 120 }}
                 animate={{ opacity: 1, scale: 1, x: 0 }}
-                exit={{ opacity: 0, scale: 0.85, x: 100 }}
-                transition={{ type: "spring", stiffness: 150, damping: 20 }}
+                exit={{ opacity: 0, scale: 0.88, x: 120 }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 className={`p-8 rounded-3xl max-w-xl w-full shadow-2xl relative border ${
                   isDark ? "liquid-glass-dark border-[#DC2626]/50" : "liquid-glass-blue border-[#E5C158]/50"
                 }`}
@@ -177,7 +183,7 @@ export default function AACExploreSection({ isDark }) {
                   <button
                     onClick={() => setActiveModal(null)}
                     className={`px-6 py-2.5 font-sans font-bold text-xs rounded-full ${
-                      isDark ? "bg-[#DC2626] text-white hover:bg-[#b91c1c]" : "bg-[#E5C158] text-black hover:bg-[#d4af37]"
+                      isDark ? "bg-[#DC2626] text-[#FFFFFF] hover:bg-[#b91c1c]" : "bg-[#E5C158] text-black hover:bg-[#d4af37]"
                     }`}
                   >
                     Close Card

@@ -1,621 +1,257 @@
+import { useState } from "react";
+import Head from "next/head";
+import Link from "next/link";
+import BackgroundVideo from "@/components/BackgroundVideo";
+import GarcyNavbar from "@/components/garcy/GarcyNavbar";
+import GarcyFooter from "@/components/garcy/GarcyFooter";
+import GarcyCommandPalette from "@/components/garcy/GarcyCommandPalette";
+import GarcyCaseStudies from "@/components/garcy/GarcyCaseStudies";
+import { useDatabase } from "@/hooks/useDatabase";
+import {
+  FaRocket,
+  FaSearch,
+  FaBuilding,
+  FaExternalLinkAlt,
+  FaLightbulb,
+  FaCheckCircle,
+  FaHandshake,
+} from "react-icons/fa";
 
-// src/pages/Startups/index.js - Updated to use database
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-import Layout from '@/components/Layout';
-import PageHero from '@/components/PageHero';
-import LoadingSpinner, { ContentLoading } from '@/components/LoadingSpinner';
-import { useDatabase } from '@/hooks/useDatabase';
-import { FaCalendar, FaUsers, FaGlobe, FaExternalLinkAlt, FaRocket, FaPause, FaTimes, FaEye } from 'react-icons/fa';
+export default function StartupsPage() {
+  const { data: dbStartups } = useDatabase("startups");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [caseStudiesOpen, setCaseStudiesOpen] = useState(false);
 
-const StartupCard = ({ startup, index }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const defaultStartups = [
+    {
+      id: "koolgen",
+      name: "Koolgen Interactives",
+      founder: "Raunak Bagga (AAC Alumnus)",
+      category: "Interactive Tech & Gaming",
+      status: "Active Enterprise",
+      color: "blue",
+      description: "Pioneering interactive 3D virtual environments, interactive digital twins, and immersive game engine architectures. Keynote speaker at Opulence 2024.",
+      metric: "Opulence Keynote",
+      link: "https://koolgen.com",
+    },
+    {
+      id: "great-honey",
+      name: "The Great Honey Company",
+      founder: "Srikanth Reddy Tenneti (AAC Alumnus)",
+      category: "Food & Sustainability",
+      status: "Commercial Scale",
+      color: "orange",
+      description: "Sustainable agricultural venture connecting ethically harvested natural produce directly to consumers through digital traceability and testing.",
+      metric: "Opulence Speaker",
+      link: "#",
+    },
+    {
+      id: "meditech-systems",
+      name: "AAC MediTech Inventions",
+      founder: "Chethan Reddy & AAC IP Fellows",
+      category: "HealthTech & Patents",
+      status: "Patent Commercialization",
+      color: "purple",
+      description: "Commercializing the patented Automated Electronic Pill Reminder Device (Application No. 201941002559) with customizable compartments and verified two-way adherence.",
+      metric: "Patent 201941002559",
+      link: "/Patents",
+    },
+    {
+      id: "assistive-wearables",
+      name: "GestureVoice Assistive Technologies",
+      founder: "Jashwanth Bopanna & AAC Fellows",
+      category: "Assistive Wearables",
+      status: "Patent Commercialization",
+      color: "green",
+      description: "Engineering wearable sensory gloves translating sign language hand gestures into real-time synthesized speech and text (Patent Application No. 202041038106).",
+      metric: "Patent 202041038106",
+      link: "/Patents",
+    },
+    {
+      id: "campus-nav",
+      name: "CampusNav Spatial Systems",
+      founder: "Abhiram Pedamallu & Dinesh Chandra",
+      category: "AR & Spatial AI",
+      status: "Campus Deployment",
+      color: "indigo",
+      description: "Augmented reality indoor orientation and positioning platform mapping institutional campuses and large-scale complex facilities without GPS dependency.",
+      metric: "100% GRIET Mapped",
+      link: "/projects",
+    },
+  ];
 
-  // Get color classes based on startup color
-  const getColorClasses = (color) => {
-    const colorMap = {
-      'blue': 'from-blue-500 to-blue-600',
-      'purple': 'from-purple-500 to-purple-600',
-      'orange': 'from-orange-500 to-orange-600',
-      'green': 'from-green-500 to-green-600',
-      'indigo': 'from-indigo-500 to-indigo-600',
-      'red': 'from-red-500 to-red-600'
-    };
-    return colorMap[color] || 'from-blue-500 to-blue-600';
-  };
+  const displayStartups = dbStartups && dbStartups.length > 0 ? dbStartups : defaultStartups;
 
-  // Get status icon and color
-  const getStatusDisplay = (status) => {
-    const statusMap = {
-      'Active': { icon: <FaRocket />, color: 'text-green-400', bgColor: 'bg-green-500/20', borderColor: 'border-green-500/30' },
-      'Acquired': { icon: <FaRocket />, color: 'text-blue-400', bgColor: 'bg-blue-500/20', borderColor: 'border-blue-500/30' },
-      'Closed': { icon: <FaTimes />, color: 'text-red-400', bgColor: 'bg-red-500/20', borderColor: 'border-red-500/30' },
-      'Paused': { icon: <FaPause />, color: 'text-yellow-400', bgColor: 'bg-yellow-500/20', borderColor: 'border-yellow-500/30' },
-      'Stealth Mode': { icon: <FaEye />, color: 'text-purple-400', bgColor: 'bg-purple-500/20', borderColor: 'border-purple-500/30' }
-    };
-    return statusMap[status] || statusMap['Active'];
-  };
+  const categories = [
+    { id: "all", label: "All Ventures" },
+    { id: "Interactive Tech & Gaming", label: "Interactive / Gaming" },
+    { id: "Food & Sustainability", label: "Sustainability" },
+    { id: "HealthTech & Patents", label: "HealthTech IP" },
+    { id: "Assistive Wearables", label: "Assistive Tech" },
+    { id: "AR & Spatial AI", label: "Spatial AI" },
+  ];
 
-  // Format date for display
-  const formatDate = (dateString) => {
-    if (!dateString) return 'No date';
-    try {
-      return new Date(dateString).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      });
-    } catch {
-      return 'Invalid date';
-    }
-  };
-
-  // Format founders for display
-  const formatFounders = (founders) => {
-    if (!founders) return 'Unknown founders';
-    
-    if (Array.isArray(founders)) {
-      if (founders.length <= 2) {
-        return founders.join(' and ');
-      } else {
-        return `${founders[0]} et al.`;
-      }
-    }
-    
-    return founders.toString();
-  };
-
-  const colorClasses = getColorClasses(startup.color);
-  const statusDisplay = getStatusDisplay(startup.status);
-
-  const handleCardClick = (e) => {
-    e.preventDefault();
-    setIsExpanded(true);
-  };
-
-  const handleWebsiteClick = (e, url) => {
-    e.stopPropagation();
-    if (url) {
-      window.open(url, '_blank');
-    }
-  };
+  const filteredStartups = displayStartups.filter((item) => {
+    const nameMatch = (item.name || item.title || "").toLowerCase().includes(searchTerm.toLowerCase());
+    const founderMatch = (item.founder || "").toLowerCase().includes(searchTerm.toLowerCase());
+    const categoryMatch = selectedCategory === "all" || item.category === selectedCategory;
+    return (nameMatch || founderMatch) && categoryMatch;
+  });
 
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ delay: index * 0.1, duration: 0.6 }}
-        whileHover={{ y: -8, scale: 1.03 }}
-        className="group relative backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-300 cursor-pointer"
-        onClick={handleCardClick}
-      >
-        {/* Gradient overlay on hover */}
-        <div className={`absolute inset-0 bg-gradient-to-br ${colorClasses.replace('to-', 'to-').replace('from-', 'from-')}/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl`}></div>
+      <Head>
+        <title>INCUBATED STARTUPS // AAC GRIET</title>
+        <meta
+          name="description"
+          content="Student technology ventures, deep-tech commercial spinoffs, and alumni startups founded at Advanced Academic Center, GRIET."
+        />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+
+      <BackgroundVideo />
+
+      {/* Ambient Dither & Dynamic Spotlight */}
+      <div className="reel-dither" aria-hidden="true" />
+      <div className="spotlight" aria-hidden="true" />
+
+      {/* Main Stage Canvas */}
+      <main className="stage relative overflow-hidden bg-[#080B12]/92 text-[#EAF1FF] min-h-screen pb-20">
         
-        <div className="p-6 relative z-10">
-          {/* Startup Logo */}
-          {startup.logo && (
-            <div className="mb-6 flex justify-center">
-              <div className="relative w-20 h-20 rounded-full overflow-hidden shadow-lg border border-white/20 bg-white/5">
-                <Image
-                  src={startup.logo}
-                  alt={startup.name}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-            </div>
-          )}
-          
-          {/* Status Badge */}
-          <div className="mb-4 flex justify-center">
-            <span className={`inline-flex items-center gap-2 px-3 py-1 ${statusDisplay.bgColor} ${statusDisplay.color} rounded-lg text-xs font-medium border ${statusDisplay.borderColor}`}>
-              {statusDisplay.icon}
-              {startup.status}
-            </span>
-          </div>
-          
-          <h3 className="text-xl font-bold mb-3 text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300 transition-all duration-300 text-center">
-            {startup.name}
-          </h3>
-          
-          {/* Category */}
-          <div className="mb-4 flex justify-center">
-            <span className={`px-3 py-1 bg-gradient-to-r ${colorClasses}/20 text-${colorClasses.split('-')[1]}-300 rounded-lg text-xs font-medium border border-${colorClasses.split('-')[1]}-500/30`}>
-              {startup.category}
-            </span>
-          </div>
-          
-          {/* Founders */}
-          <div className="mb-3 flex items-center justify-center gap-2 text-gray-400 text-sm">
-            <FaUsers className="text-xs" />
-            <span>{formatFounders(startup.founders)}</span>
-          </div>
-          
-          {/* Established Date */}
-          {/* <div className="mb-4 flex items-center justify-center gap-2 text-gray-400 text-sm">
-            <FaCalendar className="text-xs" />
-            <span>Est. {formatDate(startup.establishedDate)}</span>
-          </div> */}
-          
-          {/* Description Preview */}
-          <p className="text-gray-400 text-sm leading-relaxed mb-4 group-hover:text-gray-300 transition-colors duration-300 line-clamp-3 text-center">
-            {startup.description}
-          </p>
-          
-          {/* Website Button */}
-          {startup.website && (
-            <div className="mb-4 flex justify-center">
-              <button
-                onClick={(e) => handleWebsiteClick(e, startup.website)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/20 text-blue-300 rounded-lg text-sm font-medium border border-blue-500/30 hover:bg-blue-500/30 transition-colors"
-              >
-                <FaGlobe className="text-xs" />
-                Visit Website
-              </button>
-            </div>
-          )}
-          
-          {/* Read more indicator */}
-          <div className="mt-auto pt-4 border-t border-white/10 group-hover:border-white/20 transition-colors duration-300">
-            <div className="flex items-center justify-between">
-              <span className="text-blue-400 text-sm font-medium group-hover:text-blue-300 transition-colors duration-300">
-                Click to learn more
-              </span>
-              <div className={`bg-gradient-to-r ${colorClasses} h-1 w-8 rounded-full shadow-lg group-hover:w-12 transition-all duration-300`}></div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Expanded Modal */}
-      {isExpanded && (
-        <div 
-          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4"
-          onClick={() => setIsExpanded(false)}
-        >
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="backdrop-blur-md bg-white/5 rounded-2xl shadow-2xl border border-white/20 overflow-hidden max-w-4xl w-full max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal Header */}
-            <div className={`bg-gradient-to-r ${colorClasses} p-6 text-white`}>
-              <div className="flex justify-between items-start">
-                <div className="flex items-center gap-4 flex-1">
-                  {startup.logo && (
-                    <div className="w-16 h-16 rounded-full overflow-hidden bg-white/20 flex-shrink-0">
-                      <Image
-                        src={startup.logo}
-                        alt={startup.name}
-                        width={64}
-                        height={64}
-                        className="object-cover"
-                      />
-                    </div>
-                  )}
-                  <div>
-                    <h2 className="text-2xl font-bold mb-2">{startup.name}</h2>
-                    <div className="flex items-center gap-4 mb-2">
-                      <span className={`inline-flex items-center gap-2 px-3 py-1 bg-white/20 rounded-lg text-sm font-medium`}>
-                        {statusDisplay.icon}
-                        {startup.status}
-                      </span>
-                      <span className="text-white/90">{startup.category}</span>
-                    </div>
-                    <p className="text-white/80 text-sm">
-                      Founded by {formatFounders(startup.founders)} • Est. {formatDate(startup.establishedDate)}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setIsExpanded(false)}
-                  className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-
-            {/* Modal Content */}
-            <div className="p-6">
-              {/* Main Product Image */}
-              {startup.image && (
-                <div className="mb-8">
-                  <div className="relative w-full h-80 rounded-2xl overflow-hidden shadow-xl border border-white/10">
-                    <Image
-                      src={startup.image}
-                      alt={startup.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Description */}
-              <div className="mb-8">
-                <div className={`bg-gradient-to-r ${colorClasses} h-1.5 w-24 mb-4 rounded-full shadow-lg`}></div>
-                <h3 className="text-xl font-bold text-white mb-4">About {startup.name}</h3>
-                <p className="text-gray-300 leading-relaxed mb-6">
-                  {startup.description}
-                </p>
-              </div>
-
-              {/* Mission/Vision */}
-              <div className="mb-8">
-                <div className={`bg-gradient-to-r ${colorClasses} h-1.5 w-24 mb-4 rounded-full shadow-lg`}></div>
-                <h3 className="text-xl font-bold text-white mb-4">Mission & Vision</h3>
-                <div className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-6">
-                  <p className="text-gray-300 leading-relaxed">
-                    {startup.mission}
-                  </p>
-                </div>
-              </div>
-
-              {/* Company Details */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-4">
-                  <h4 className="text-white font-semibold mb-2">Company Information</h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Category:</span>
-                      <span className="text-white">{startup.category}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Status:</span>
-                      <span className={statusDisplay.color}>{startup.status}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Established:</span>
-                      <span className="text-white">{formatDate(startup.establishedDate)}</span>
-                    </div>
-                    {startup.website && (
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Website:</span>
-                        <a 
-                          href={startup.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-400 hover:text-blue-300 flex items-center gap-1"
-                        >
-                          Visit <FaExternalLinkAlt className="text-xs" />
-                        </a>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-4">
-                  <h4 className="text-white font-semibold mb-2">Team Information</h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Founders:</span>
-                      <span className="text-white">{Array.isArray(startup.founders) ? startup.founders.length : 1}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Founders Section */}
-              {Array.isArray(startup.founders) && startup.founders.length > 0 && (
-                <div className="mb-8">
-                  <div className={`bg-gradient-to-r ${colorClasses} h-1.5 w-24 mb-4 rounded-full shadow-lg`}></div>
-                  <h3 className="text-xl font-bold text-white mb-4">Founders</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {startup.founders.map((founder, index) => (
-                      <div key={index} className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-4">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${colorClasses} flex items-center justify-center flex-shrink-0`}>
-                            <FaUsers className="text-white text-sm" />
-                          </div>
-                          <span className="text-white font-medium">{founder}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* App Screenshots */}
-              {Array.isArray(startup.appScreenshots) && startup.appScreenshots.length > 0 && (
-                <div className="mb-8">
-                  <div className={`bg-gradient-to-r ${colorClasses} h-1.5 w-24 mb-4 rounded-full shadow-lg`}></div>
-                  <h3 className="text-xl font-bold text-white mb-4">Product Screenshots</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {startup.appScreenshots.filter(screenshot => screenshot.trim()).map((screenshot, index) => (
-                      <div key={index} className="relative aspect-video rounded-lg overflow-hidden shadow-lg border border-white/10">
-                        <Image
-                          src={screenshot}
-                          alt={`${startup.name} screenshot ${index + 1}`}
-                          fill
-                          className="object-cover hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Action Buttons */}
-              <div className="flex flex-wrap gap-3 justify-center">
-                {startup.website && (
-                  <a
-                    href={startup.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500/20 text-blue-300 rounded-xl font-medium border border-blue-500/30 hover:bg-blue-500/30 transition-colors"
-                  >
-                    <FaGlobe />
-                    Visit Website
-                    <FaExternalLinkAlt className="text-xs" />
-                  </a>
-                )}
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      )}
-    </>
-  );
-};
-
-const Startups = () => {
-  const { data: startupsData, loading, error } = useDatabase('startups');
-  const [filteredStartups, setFilteredStartups] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [selectedStatus, setSelectedStatus] = useState('All');
-  const [sortOrder, setSortOrder] = useState('newest');
-
-  // Filter startups based on search and filters
-  useEffect(() => {
-    if (!startupsData) return;
-    
-    let filtered = startupsData.filter(startup => {
-      const matchesSearch = 
-        startup.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        startup.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (Array.isArray(startup.founders) && startup.founders.some(founder => 
-          founder.toLowerCase().includes(searchTerm.toLowerCase())
-        )) ||
-        startup.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        startup.mission.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesCategory = selectedCategory === 'All' || startup.category === selectedCategory;
-      const matchesStatus = selectedStatus === 'All' || startup.status === selectedStatus;
-      
-      return matchesSearch && matchesCategory && matchesStatus;
-    });
-    
-    // Sort startups
-    filtered.sort((a, b) => {
-      const dateA = new Date(a.establishedDate || 0);
-      const dateB = new Date(b.establishedDate || 0);
-      
-      return sortOrder === 'newest' 
-        ? dateB.getTime() - dateA.getTime()
-        : dateA.getTime() - dateB.getTime();
-    });
-    
-    setFilteredStartups(filtered);
-  }, [startupsData, searchTerm, selectedCategory, selectedStatus, sortOrder]);
-
-  // Get unique values for filters
-  const categories = ['All', ...new Set(startupsData?.map(startup => startup.category).filter(Boolean) || [])];
-  const statuses = ['All', ...new Set(startupsData?.map(startup => startup.status).filter(Boolean) || [])];
-
-  if (loading) {
-    return (
-      <Layout>
-        <PageHero 
-          title="Startups" 
-          subtitle="Explore innovative startups founded by our community"
-          tag="Student Startups"
+        {/* Floating Header */}
+        <GarcyNavbar
+          onOpenSearch={() => setSearchOpen(true)}
+          onOpenCaseStudies={() => setCaseStudiesOpen(true)}
         />
-        <ContentLoading text="Loading startups..." />
-      </Layout>
-    );
-  }
 
-  if (error) {
-    return (
-      <Layout>
-        <PageHero 
-          title="Startups" 
-          subtitle="Explore innovative startups founded by our community"
-          tag="Student Startups"
-        />
-        <div className="container mx-auto px-4 py-12">
-          <div className="text-center">
-            <p className="text-red-400 text-lg">Error loading startups: {error}</p>
-            <button 
-              onClick={() => window.location.reload()} 
-              className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Retry
-            </button>
+        {/* Hero Section */}
+        <section className="pt-32 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          <div className="text-center max-w-3xl mx-auto mb-14">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-4 border backdrop-blur-md bg-[#1769FF]/15 border-[#1769FF]/40 text-[#49A3FF]">
+              <FaRocket className="text-[10px]" />
+              <span>Incubation Cell &bull; Commercial Spinoffs</span>
+            </div>
+
+            <h1 className="font-extrabold text-4xl sm:text-6xl tracking-tighter leading-tight mb-4 text-[#EAF1FF] uppercase font-sans">
+              Student <br />
+              <span className="italic font-serif font-normal text-[#49A3FF] lowercase tracking-normal text-3xl sm:text-5xl">
+                startups
+              </span>{" "}
+              &amp; Spinoffs.
+            </h1>
+
+            <p className="text-sm sm:text-base text-[#8793A8] leading-relaxed font-sans font-normal">
+              From collegiate engineering prototypes to commercial enterprises. Mentorship, intellectual property protection, and alumni ventures founded at GRIET.
+            </p>
           </div>
-        </div>
-      </Layout>
-    );
-  }
 
-  return (
-    <Layout>
-      <PageHero 
-        title="Startups" 
-        subtitle="Explore innovative startups founded by our community"
-        tag="Student Startups"
-      />
-      
-      <div className="container mx-auto px-4 py-12">
-        {/* Filters */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-12 backdrop-blur-sm bg-white/5 rounded-2xl p-6 border border-white/10"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <div className="md:col-span-2">
+          {/* Search & Filter Bar */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-10 garcy-glass-header p-3">
+            <div className="relative w-full sm:w-80">
+              <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8793A8] text-xs" />
               <input
                 type="text"
-                placeholder="Search startups..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                placeholder="Search startups or founders..."
+                className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#080B12] border border-white/10 text-xs font-mono text-white placeholder-[#8793A8]/60 focus:outline-none focus:border-[#1769FF]"
               />
             </div>
-            
-            <div>
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-              >
-                {categories.map(category => (
-                  <option key={category} value={category} className="bg-gray-800">
-                    {category}
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            <div>
-              <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-              >
-                {statuses.map(status => (
-                  <option key={status} value={status} className="bg-gray-800">
-                    {status}
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            <div>
-              <select
-                value={sortOrder}
-                onChange={(e) => setSortOrder(e.target.value)}
-                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-              >
-                <option value="newest" className="bg-gray-800">Newest First</option>
-                <option value="oldest" className="bg-gray-800">Oldest First</option>
-              </select>
-            </div>
-          </div>
-          
-          {/* Results count */}
-          <div className="mt-4 text-center">
-            <span className="text-white text-sm">
-              Showing {filteredStartups.length} of {startupsData?.length || 0} startups
-            </span>
-          </div>
-        </motion.div>
 
-        {/* Startups Grid */}
-        {filteredStartups.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="backdrop-blur-sm bg-white/5 rounded-2xl p-12 border border-white/10">
-              <h3 className="text-2xl font-bold text-white mb-4">
-                {startupsData?.length === 0 ? 'No Startups Available' : 'No Results Found'}
-              </h3>
-              <p className="text-gray-400 text-lg mb-6">
-                {startupsData?.length === 0 
-                  ? 'There are currently no startups to display.'
-                  : 'Try adjusting your search criteria or filters.'
-                }
-              </p>
-              {(searchTerm || selectedCategory !== 'All' || selectedStatus !== 'All') && (
+            <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+              {categories.map((cat) => (
                 <button
-                  onClick={() => {
-                    setSearchTerm('');
-                    setSelectedCategory('All');
-                    setSelectedStatus('All');
-                  }}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-mono uppercase tracking-wider transition-all whitespace-nowrap ${
+                    selectedCategory === cat.id
+                      ? "bg-[#1769FF] text-white font-bold"
+                      : "text-[#8793A8] hover:text-white"
+                  }`}
                 >
-                  Clear Filters
+                  {cat.label}
                 </button>
-              )}
+              ))}
             </div>
           </div>
-        ) : (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: { opacity: 0 },
-              visible: {
-                opacity: 1,
-                transition: { 
-                  staggerChildren: 0.1,
-                  delayChildren: 0.2
-                }
-              }
-            }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-          >
-            {filteredStartups.map((startup, index) => (
-              <StartupCard
-                key={startup.id || startup._id || index}
-                startup={startup}
-                index={index}
-              />
+
+          {/* Startups Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredStartups.map((startup, idx) => (
+              <div
+                key={startup.id || idx}
+                className="garcy-glass-card p-6 sm:p-7 flex flex-col justify-between hover:border-[#1769FF]/70 transition-all duration-300 group hover:-translate-y-1 border border-white/15 shadow-xl bg-gradient-to-br from-[#101725] to-[#080B12]"
+              >
+                <div>
+                  <div className="flex items-center justify-between text-xs font-mono uppercase text-[#8793A8] mb-4">
+                    <span className="text-[9.5px] font-bold text-[#49A3FF] px-2.5 py-0.5 rounded-full bg-[#080B12] border border-[#1769FF]/30">
+                      {startup.category}
+                    </span>
+                    <span className="px-2 py-0.5 rounded-full bg-[#080B12] text-[#49A3FF] border border-[#1769FF]/40 text-[8.5px] font-bold flex items-center gap-1">
+                      <FaCheckCircle className="text-[7.5px]" />
+                      <span>{startup.status}</span>
+                    </span>
+                  </div>
+
+                  <h2 className="text-xl font-bold text-[#EAF1FF] mb-1 font-sans group-hover:text-[#49A3FF] transition-colors leading-snug">
+                    {startup.name || startup.title}
+                  </h2>
+
+                  <div className="text-xs font-mono text-[#8793A8] mb-4">
+                    Founded by: <strong className="text-white">{startup.founder}</strong>
+                  </div>
+
+                  <p className="text-xs text-[#8793A8] leading-relaxed font-sans mb-6 font-normal">
+                    {startup.description}
+                  </p>
+                </div>
+
+                <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-[#8793A8]">
+                  <span className="text-[10px] text-[#49A3FF] font-bold uppercase">
+                    {startup.metric || "AAC INCUBATED"}
+                  </span>
+
+                  {startup.link && startup.link !== "#" ? (
+                    <Link
+                      href={startup.link}
+                      className="inline-flex items-center gap-1.5 text-xs text-[#49A3FF] hover:text-white uppercase font-bold transition-colors"
+                    >
+                      <span>Explore</span>
+                      <FaExternalLinkAlt className="text-[9px]" />
+                    </Link>
+                  ) : (
+                    <span className="text-[9px] font-mono text-[#8793A8]">GRIET ECOSYSTEM</span>
+                  )}
+                </div>
+              </div>
             ))}
-          </motion.div>
-        )}
+          </div>
 
-        {/* Statistics Section */}
-        {startupsData && startupsData.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="mt-16 backdrop-blur-sm bg-white/5 rounded-2xl p-8 border border-white/10"
-          >
-            <h3 className="text-2xl font-bold text-white mb-6 text-center">Startup Ecosystem</h3>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-400 mb-2">
-                  {startupsData.length}
-                </div>
-                <div className="text-gray-400">Total Startups</div>
-              </div>
-              
-              <div className="text-center">
-                <div className="text-3xl font-bold text-green-400 mb-2">
-                  {startupsData.filter(s => s.status === 'Active').length}
-                </div>
-                <div className="text-gray-400">Active</div>
-              </div>
-              
-              <div className="text-center">
-                <div className="text-3xl font-bold text-purple-400 mb-2">
-                  {categories.length - 1}
-                </div>
-                <div className="text-gray-400">Categories</div>
-              </div>
-              
-              <div className="text-center">
-                <div className="text-3xl font-bold text-orange-400 mb-2">
-                  {startupsData.filter(s => s.founders && s.founders.length > 0).reduce((total, s) => total + s.founders.length, 0)}
-                </div>
-                <div className="text-gray-400">Founders</div>
-              </div>
+          {filteredStartups.length === 0 && (
+            <div className="text-center py-16 text-[#8793A8] font-mono text-sm">
+              No startups found matching your filter criteria.
             </div>
-          </motion.div>
-        )}
-      </div>
-    </Layout>
-  );
-};
+          )}
+        </section>
 
-export default Startups;
+        {/* Global Footer */}
+        <GarcyFooter />
+
+        {/* Command Palette */}
+        <GarcyCommandPalette
+          isOpen={searchOpen}
+          onClose={() => setSearchOpen(false)}
+        />
+
+        {/* Case Studies Drawer */}
+        <GarcyCaseStudies
+          isOpen={caseStudiesOpen}
+          onClose={() => setCaseStudiesOpen(false)}
+        />
+      </main>
+    </>
+  );
+}

@@ -1,5 +1,3 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # Dependencies
 /node_modules
 /.pnp
@@ -15,17 +13,35 @@
 /out/
 /build/
 /dist/
+.turbo/
 *.tsbuildinfo
 next-env.d.ts
 
 # Testing & Coverage
 /coverage
 
-# Large Media & Video Binaries
+# Media & Video Binaries (ignore raw/large videos, keep required public assets)
 *.mp4
 *.mov
 *.avi
 /public/bg-video.mp4
+/public/loading-short.mp4
+!/public/loading.mp4
+
+# Archives & Temporary Extractions
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+/AAC_WEBSITE_NEW-main/
+
+# Scratch & Temporary Development Directories
+/scratch/
+images.jpg
+test_*.html
+public/test_*.html
 
 # Environment Variables & Secrets
 .env
@@ -45,10 +61,23 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+*.log
+
+# Python Cache & Virtual Environments
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+venv/
+.venv/
+env/
 
 # System & OS Files
 .DS_Store
 Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
 *.pem
 
 # IDE & Tooling

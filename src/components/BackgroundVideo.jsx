@@ -1,13 +1,11 @@
 import { useEffect, useRef } from "react";
 
-export default function BackgroundVideo({ isDark }) {
+export default function BackgroundVideo() {
   const videoRef = useRef(null);
 
   useEffect(() => {
     if (videoRef.current) {
-      videoRef.current.play().catch(() => {
-        // Autoplay policy fallback
-      });
+      videoRef.current.play().catch(() => {});
     }
   }, []);
 
@@ -20,19 +18,13 @@ export default function BackgroundVideo({ isDark }) {
         loop
         muted
         playsInline
-        className="w-full h-full object-cover scale-105 filter brightness-90 contrast-105"
+        className="w-full h-full object-cover scale-105 filter brightness-75 contrast-110"
       >
         <source src="/bg-video.mp4" type="video/mp4" />
       </video>
 
-      {/* Light Translucent Glass Overlay for High Video Visibility */}
-      <div
-        className={`absolute inset-0 transition-colors duration-500 ${
-          isDark
-            ? "bg-gradient-to-b from-[#08080A]/65 via-[#08080A]/50 to-[#08080A]/70"
-            : "bg-gradient-to-b from-[#0F1E4A]/55 via-[#172E7C]/45 to-[#0F1E4A]/65"
-        }`}
-      />
+      {/* Cinematic Translucent Dark Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#080808]/75 via-[#080808]/60 to-[#080808]/85" />
     </div>
   );
 }

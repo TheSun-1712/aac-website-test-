@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { FaVolumeUp, FaVolumeMute, FaBars, FaTimes, FaRocket, FaSun, FaMoon } from "react-icons/fa";
 
 export default function AACNavbar({ activeTab, setActiveTab, isDark, setIsDark }) {
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,12 +41,12 @@ export default function AACNavbar({ activeTab, setActiveTab, isDark, setIsDark }
   };
 
   const navLinks = [
-    { id: "hero", label: "Home" },
-    { id: "explore", label: "About AAC" },
-    { id: "telemetry", label: "Stats" },
-    { id: "3d-lab", label: "3D Tech Lab" },
-    { id: "on-campus", label: "Research & Projects" },
-    { id: "events", label: "Gprime 2026" },
+    { href: "/", label: "Home", id: "hero" },
+    { href: "/About", label: "About AAC", id: "explore" },
+    { href: "/Events", label: "Events & Expo", id: "events-page" },
+    { href: "/projects", label: "Projects", id: "projects-page" },
+    { href: "/Patents", label: "Patents", id: "patents-page" },
+    { href: "/Research", label: "Research", id: "research-page" },
   ];
 
   return (
@@ -91,12 +93,11 @@ export default function AACNavbar({ activeTab, setActiveTab, isDark, setIsDark }
             : "bg-[#0F1E4A]/80 border-[#E5C158]/30 shadow-lg"
         }`}>
           {navLinks.map((link) => {
-            const isActive = activeTab === link.id;
+            const isActive = router.pathname === link.href || activeTab === link.id;
             return (
-              <a
-                key={link.id}
-                href={`#${link.id}`}
-                onClick={() => setActiveTab && setActiveTab(link.id)}
+              <Link
+                key={link.label}
+                href={link.href}
                 className={`px-3.5 py-1.5 rounded-full text-xs font-sans font-semibold tracking-wide transition-all ${
                   isActive
                     ? isDark
@@ -106,7 +107,7 @@ export default function AACNavbar({ activeTab, setActiveTab, isDark, setIsDark }
                 }`}
               >
                 {link.label}
-              </a>
+              </Link>
             );
           })}
         </nav>
@@ -187,18 +188,15 @@ export default function AACNavbar({ activeTab, setActiveTab, isDark, setIsDark }
           >
             <div className="flex flex-col gap-4 font-sans font-semibold text-sm">
               {navLinks.map((link) => (
-                <a
-                  key={link.id}
-                  href={`#${link.id}`}
-                  onClick={() => {
-                    setActiveTab && setActiveTab(link.id);
-                    setMobileMenuOpen(false);
-                  }}
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
                   className="py-2 border-b border-white/10 flex items-center justify-between"
                 >
                   <span>{link.label}</span>
                   <span className="text-xs">→</span>
-                </a>
+                </Link>
               ))}
               <Link
                 href="/gprime2026-results"

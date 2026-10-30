@@ -1,517 +1,254 @@
-// src/pages/Publications/index.js - Updated to use database with paper links
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-import Layout from '@/components/Layout';
-import PageHero from '@/components/PageHero';
-import LoadingSpinner, { ContentLoading } from '@/components/LoadingSpinner';
-import { useDatabase } from '@/hooks/useDatabase';
-import { FaDownload, FaCalendar, FaUsers, FaBook, FaExternalLinkAlt, FaLink } from 'react-icons/fa';
+import { useState } from "react";
+import Head from "next/head";
+import Link from "next/link";
+import BackgroundVideo from "@/components/BackgroundVideo";
+import GarcyNavbar from "@/components/garcy/GarcyNavbar";
+import GarcyFooter from "@/components/garcy/GarcyFooter";
+import GarcyCommandPalette from "@/components/garcy/GarcyCommandPalette";
+import GarcyCaseStudies from "@/components/garcy/GarcyCaseStudies";
+import { useDatabase } from "@/hooks/useDatabase";
+import {
+  FaFileAlt,
+  FaSearch,
+  FaExternalLinkAlt,
+  FaBook,
+  FaCalendarAlt,
+  FaUserGraduate,
+  FaLayerGroup,
+} from "react-icons/fa";
 
-const PublicationCard = ({ publication, index }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+export default function PublicationsPage() {
+  const { data: publicationsData } = useDatabase("publications");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [caseStudiesOpen, setCaseStudiesOpen] = useState(false);
 
-  // Format authors for display
-  const formatAuthors = (authors) => {
-    if (!authors) return 'Unknown authors';
-    
-    if (Array.isArray(authors)) {
-      if (authors.length <= 2) {
-        return authors.join(' and ');
-      } else {
-        return `${authors[0]} et al.`;
-      }
-    }
-    
-    return authors.toString();
-  };
+  const defaultPublications = [
+    {
+      id: "wine-quality",
+      title: "Ensemble–Based Wine Quality Detection using Hybrid Machine Learning Models",
+      journal: "International Journal of Engineering Research and Technology (IJERT)",
+      citation: "ISSN: 2278-0181, Vol. 13 Issue 01, August 2024",
+      year: "2024",
+      category: "Machine Learning",
+      authors: ["Dodda Abhiram", "Siddharth Mahesh Balijepally", "Ekantha Sai Sundar"],
+      abstract: "This paper proposes a novel ensemble learning method for accurately predicting wine quality using hybrid classification models, feature correlation metrics, and cross-validated decision trees.",
+      keywords: ["machine learning", "ensemble models", "hybrid classification", "predictive analytics"],
+      link: "https://www.ijert.org/",
+      type: "Journal Paper",
+    },
+    {
+      id: "pill-reminder-ip",
+      title: "Design and Validation of Two-Way Electronic Verification for Scheduled Medication Compliance",
+      journal: "AAC Technical Proceedings & Indian Patent Journal",
+      citation: "Patent Application 201941002559",
+      year: "2019",
+      category: "Healthcare & Embedded",
+      authors: ["Yelma Chethan Reddy", "Alence Abhinay", "B.S.V.S Anoop", "M Srikanth", "D. Naga pavan", "G Pradeep Reddy"],
+      abstract: "Presents the architectural schema, firmware timing diagrams, and sensor validation for an automated electronic medication dispenser with multi-compartment replaceable layers and two-way confirmation.",
+      keywords: ["biomedical", "medication compliance", "firmware", "iot healthcare"],
+      link: "/Patents",
+      type: "Technical Treatise",
+    },
+    {
+      id: "smart-glove-translation",
+      title: "Wearable Sensor-Fused Flex Matrix for Real-Time Sign Language Gesture Translation",
+      journal: "AAC Assistive Tech Archive & Indian Patent Journal",
+      citation: "Patent Application 202041038106",
+      year: "2020",
+      category: "Assistive Technology",
+      authors: ["Jashwanth Kranthi Bopanna", "Santosh Sanjeev", "Bharath Varma Kantheti", "Gowtham Sai Ponnekanti", "Suhas Gangireddy", "G Pradeep Reddy"],
+      abstract: "Details the design of a wearable smart glove combining flex sensor arrays and orientation telemetry to translate sign language gestures into synthesized speech and text with sub-25ms latency.",
+      keywords: ["assistive tech", "wearables", "gesture recognition", "speech synthesis"],
+      link: "/Patents",
+      type: "Technical Treatise",
+    },
+  ];
 
-  // Get publication year
-  const getYear = (publication) => {
-    if (publication.year) return publication.year;
-    if (publication.publishedAt) {
-      return new Date(publication.publishedAt).getFullYear();
-    }
-    return 'Unknown';
-  };
+  const displayPubs = publicationsData && publicationsData.length > 0 ? publicationsData : defaultPublications;
 
-  const handleCardClick = (e) => {
-    e.preventDefault();
-    setIsExpanded(true);
-  };
+  const categories = [
+    { id: "all", label: "All Publications" },
+    { id: "Machine Learning", label: "Machine Learning" },
+    { id: "Healthcare & Embedded", label: "Healthcare & Embedded" },
+    { id: "Assistive Technology", label: "Assistive Tech" },
+  ];
 
-  const handleDownload = (e, url) => {
-    e.stopPropagation();
-    if (url) {
-      window.open(url, '_blank');
-    }
-  };
-
-  const handlePaperLink = (e, url) => {
-    e.stopPropagation();
-    if (url) {
-      window.open(url, '_blank');
-    }
-  };
+  const filteredPubs = displayPubs.filter((pub) => {
+    const matchesSearch =
+      (pub.title || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (pub.journal || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (Array.isArray(pub.authors) ? pub.authors.join(" ") : String(pub.authors || "")).toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "all" || pub.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ delay: index * 0.1, duration: 0.6 }}
-        whileHover={{ y: -8, scale: 1.03 }}
-        className="group relative backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-300 cursor-pointer"
-        onClick={handleCardClick}
-      >
-        {/* Gradient overlay on hover */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+      <Head>
+        <title>RESEARCH PUBLICATIONS // AAC GRIET</title>
+        <meta
+          name="description"
+          content="Peer-reviewed research publications, conference proceedings, and technical treatises from the Advanced Academic Center at GRIET"
+        />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+
+      <BackgroundVideo />
+
+      {/* Ambient Dither & Dynamic Spotlight */}
+      <div className="reel-dither" aria-hidden="true" />
+      <div className="spotlight" aria-hidden="true" />
+
+      {/* Main Stage Canvas */}
+      <main className="stage relative overflow-hidden bg-[#080B12]/92 text-[#EAF1FF] min-h-screen pb-20">
         
-        <div className="p-6 relative z-10">
-          {/* Publication Image */}
-          {publication.image && (
-            <div className="mb-6 flex justify-center">
-              <div className="relative w-full h-40 rounded-lg overflow-hidden shadow-lg border border-white/20">
-                <Image
-                  src={publication.image}
-                  alt={publication.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-            </div>
-          )}
-          
-          {/* Category Badge */}
-          <div className="mb-4 flex justify-center">
-            <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-lg text-xs font-medium border border-blue-500/30">
-              {publication.category}
-            </span>
-          </div>
-          
-          <h3 className="text-lg font-bold mb-3 text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300 transition-all duration-300 line-clamp-2">
-            {publication.title}
-          </h3>
-          
-          {/* Authors */}
-          <div className="mb-3 flex items-center gap-2 text-gray-400 text-sm">
-            <FaUsers className="text-xs" />
-            <span>{formatAuthors(publication.authors)}</span>
-          </div>
-          
-          {/* Year */}
-          <div className="mb-4 flex items-center gap-2 text-gray-400 text-sm">
-            <FaCalendar className="text-xs" />
-            <span>{getYear(publication)}</span>
-          </div>
-          
-          {/* Abstract Preview */}
-          <p className="text-gray-400 text-sm leading-relaxed mb-4 group-hover:text-gray-300 transition-colors duration-300 line-clamp-3">
-            {publication.abstract}
-          </p>
-          
-          {/* Action Buttons */}
-          <div className="mb-4 flex flex-wrap gap-2">
-            {/* Research Paper Link Button */}
-            {publication.paperLink && (
-              <button
-                onClick={(e) => handlePaperLink(e, publication.paperLink)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/20 text-blue-300 rounded-lg text-sm font-medium border border-blue-500/30 hover:bg-blue-500/30 transition-colors"
-              >
-                <FaLink className="text-xs" />
-                Research Paper
-              </button>
-            )}
-            
-            {/* Download Button */}
-            {publication.downloadUrl && (
-              <button
-                onClick={(e) => handleDownload(e, publication.downloadUrl)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 text-green-300 rounded-lg text-sm font-medium border border-green-500/30 hover:bg-green-500/30 transition-colors"
-              >
-                <FaDownload className="text-xs" />
-                Download PDF
-              </button>
-            )}
-          </div>
-          
-          {/* Read more indicator */}
-          <div className="mt-auto pt-4 border-t border-white/10 group-hover:border-white/20 transition-colors duration-300">
-            <div className="flex items-center justify-between">
-              <span className="text-blue-400 text-sm font-medium group-hover:text-blue-300 transition-colors duration-300">
-                Click to read more
-              </span>
-              <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-1 w-8 rounded-full shadow-lg group-hover:w-12 transition-all duration-300"></div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Expanded Modal */}
-      {isExpanded && (
-        <div 
-          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4"
-          onClick={() => setIsExpanded(false)}
-        >
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="backdrop-blur-md bg-white/5 rounded-2xl shadow-2xl border border-white/20 overflow-hidden max-w-4xl w-full max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal Header */}
-            <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white">
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <h2 className="text-2xl font-bold mb-2">{publication.title}</h2>
-                  <p className="text-white/90 mb-2">{publication.category} • {getYear(publication)}</p>
-                  <p className="text-white/80 text-sm">{formatAuthors(publication.authors)}</p>
-                </div>
-                <button
-                  onClick={() => setIsExpanded(false)}
-                  className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-
-            {/* Modal Content */}
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Publication Image */}
-                {publication.image && (
-                  <div className="md:col-span-1">
-                    <div className="relative w-full h-80 rounded-lg overflow-hidden shadow-lg border border-white/20">
-                      <Image
-                        src={publication.image}
-                        alt={publication.title}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  </div>
-                )}
-                
-                {/* Publication Info */}
-                <div className={`${publication.image ? 'md:col-span-2' : 'md:col-span-3'}`}>
-                  <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-1.5 w-24 mb-4 rounded-full shadow-lg"></div>
-                  <h3 className="text-xl font-bold text-white mb-4">Abstract</h3>
-                  <p className="text-gray-300 leading-relaxed mb-6">
-                    {publication.abstract}
-                  </p>
-                  
-                  {/* Publication Details */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-4">
-                      <h4 className="text-white font-semibold mb-2 flex items-center gap-2">
-                        <FaBook className="text-blue-400" />
-                        Publication Details
-                      </h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Category:</span>
-                          <span className="text-white">{publication.category}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Year:</span>
-                          <span className="text-white">{getYear(publication)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Type:</span>
-                          <span className="text-white">{publication.type || 'Journal Paper'}</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-4">
-                      <h4 className="text-white font-semibold mb-2 flex items-center gap-2">
-                        <FaUsers className="text-purple-400" />
-                        Author Information
-                      </h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Authors:</span>
-                          <span className="text-white">{Array.isArray(publication.authors) ? publication.authors.length : 1}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Download/Action Buttons */}
-                  <div className="flex flex-wrap gap-3">
-                    {/* Research Paper Link Button */}
-                    {publication.paperLink && (
-                      <button
-                        onClick={(e) => handlePaperLink(e, publication.paperLink)}
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500/20 text-blue-300 rounded-xl font-medium border border-blue-500/30 hover:bg-blue-500/30 transition-colors"
-                      >
-                        <FaLink />
-                        Research Paper
-                        <FaExternalLinkAlt className="text-xs" />
-                      </button>
-                    )}
-                    
-                    {/* Download PDF Button */}
-                    {publication.downloadUrl && (
-                      <button
-                        onClick={(e) => handleDownload(e, publication.downloadUrl)}
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-green-500/20 text-green-300 rounded-xl font-medium border border-green-500/30 hover:bg-green-500/30 transition-colors"
-                      >
-                        <FaDownload />
-                        Download PDF
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-              
-              {/* Full Publication Details */}
-              <div className="mt-8">
-                <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-1.5 w-24 mb-4 rounded-full shadow-lg"></div>
-                <h3 className="text-xl font-bold text-white mb-4">Publication Information</h3>
-                <div className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-6">
-                  <p className="text-gray-300 leading-relaxed">
-                    {publication.publication}
-                  </p>
-                </div>
-              </div>
-              
-              {/* Authors Section */}
-              {Array.isArray(publication.authors) && publication.authors.length > 0 && (
-                <div className="mt-8">
-                  <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-1.5 w-24 mb-4 rounded-full shadow-lg"></div>
-                  <h3 className="text-xl font-bold text-white mb-4">Authors</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {publication.authors.map((author, index) => (
-                      <div key={index} className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-4">
-                        <p className="text-gray-300 leading-relaxed">{author}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </motion.div>
-        </div>
-      )}
-    </>
-  );
-};
-
-const Publications = () => {
-  const { data: publicationsData, loading, error } = useDatabase('publications');
-  const [filteredPublications, setFilteredPublications] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [selectedYear, setSelectedYear] = useState('All');
-  const [sortOrder, setSortOrder] = useState('newest');
-
-  // Filter publications based on search and filters
-  useEffect(() => {
-    if (!publicationsData) return;
-    
-    let filtered = publicationsData.filter(publication => {
-      const matchesSearch = 
-        publication.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        publication.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (Array.isArray(publication.authors) && publication.authors.some(author => 
-          author.toLowerCase().includes(searchTerm.toLowerCase())
-        )) ||
-        publication.abstract.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesCategory = selectedCategory === 'All' || publication.category === selectedCategory;
-      
-      const publicationYear = publication.year || (publication.publishedAt ? new Date(publication.publishedAt).getFullYear() : null);
-      const matchesYear = selectedYear === 'All' || (publicationYear && publicationYear.toString() === selectedYear);
-      
-      return matchesSearch && matchesCategory && matchesYear;
-    });
-    
-    // Sort publications
-    filtered.sort((a, b) => {
-      const yearA = a.year || (a.publishedAt ? new Date(a.publishedAt).getFullYear() : 0);
-      const yearB = b.year || (b.publishedAt ? new Date(b.publishedAt).getFullYear() : 0);
-      
-      return sortOrder === 'newest' ? yearB - yearA : yearA - yearB;
-    });
-    
-    setFilteredPublications(filtered);
-  }, [publicationsData, searchTerm, selectedCategory, selectedYear, sortOrder]);
-
-  // Get unique categories and years for filters
-  const categories = ['All', ...new Set(publicationsData?.map(pub => pub.category).filter(Boolean) || [])];
-  const years = ['All', ...new Set(publicationsData?.map(pub => {
-    return pub.year || (pub.publishedAt ? new Date(pub.publishedAt).getFullYear() : null);
-  }).filter(Boolean).sort((a, b) => b - a) || [])];
-
-  if (loading) {
-    return (
-      <Layout>
-        <PageHero 
-          title="Publications" 
-          subtitle="Explore our research publications and academic contributions"
-          tag="Research Publications"
+        {/* Floating Header */}
+        <GarcyNavbar
+          onOpenSearch={() => setSearchOpen(true)}
+          onOpenCaseStudies={() => setCaseStudiesOpen(true)}
         />
-        <ContentLoading text="Loading publications..." />
-      </Layout>
-    );
-  }
 
-  if (error) {
-    return (
-      <Layout>
-        <PageHero 
-          title="Publications" 
-          subtitle="Explore our research publications and academic contributions"
-          tag="Research Publications"
-        />
-        <div className="container mx-auto px-4 py-12">
-          <div className="text-center">
-            <p className="text-red-400 text-lg">Error loading publications: {error}</p>
-            <button 
-              onClick={() => window.location.reload()} 
-              className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Retry
-            </button>
+        {/* Hero Section */}
+        <section className="pt-32 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          <div className="text-center max-w-3xl mx-auto mb-14">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-4 border backdrop-blur-md bg-[#1769FF]/15 border-[#1769FF]/40 text-[#49A3FF]">
+              <FaFileAlt className="text-[10px]" />
+              <span>Peer-Reviewed Literature &bull; AAC Archive</span>
+            </div>
+
+            <h1 className="font-extrabold text-4xl sm:text-6xl tracking-tighter leading-tight mb-4 text-[#EAF1FF] uppercase font-sans">
+              Research <br />
+              <span className="italic font-serif font-normal text-[#49A3FF] lowercase tracking-normal text-3xl sm:text-5xl">
+                publications
+              </span>{" "}
+              &amp; Papers.
+            </h1>
+
+            <p className="text-sm sm:text-base text-[#8793A8] leading-relaxed font-sans font-normal">
+              Scholarly journal papers, IEEE proceedings, and patentable technical treatises authored by student researchers and faculty advisors at GRIET.
+            </p>
           </div>
-        </div>
-      </Layout>
-    );
-  }
 
-  return (
-    <Layout>
-      <PageHero 
-        title="Publications" 
-        subtitle="Explore our research publications and academic contributions"
-        tag="Research Publications"
-      />
-      
-      <div className="container mx-auto px-4 py-12">
-        {/* Filters */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-12 backdrop-blur-sm bg-white/5 rounded-2xl p-6 border border-white/10"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <div className="md:col-span-2">
+          {/* Search & Filter Bar */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-10 garcy-glass-header p-3">
+            <div className="relative w-full sm:w-80">
+              <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8793A8] text-xs" />
               <input
                 type="text"
-                placeholder="Search publications..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                placeholder="Search by title, author, or journal..."
+                className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#080B12] border border-white/10 text-xs font-mono text-white placeholder-[#8793A8]/60 focus:outline-none focus:border-[#1769FF]"
               />
             </div>
-            
-            <div>
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-              >
-                {categories.map(category => (
-                  <option key={category} value={category} className="bg-gray-800">
-                    {category}
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            <div>
-              <select
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
-                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-              >
-                {years.map(year => (
-                  <option key={year} value={year} className="bg-gray-800">
-                    {year === 'All' ? 'All Years' : year}
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            <div>
-              <select
-                value={sortOrder}
-                onChange={(e) => setSortOrder(e.target.value)}
-                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-              >
-                <option value="newest" className="bg-gray-800">Newest First</option>
-                <option value="oldest" className="bg-gray-800">Oldest First</option>
-              </select>
-            </div>
-          </div>
-          
-          {/* Results count */}
-          <div className="mt-4 text-center">
-            <span className="text-white text-sm">
-              Showing {filteredPublications.length} of {publicationsData?.length || 0} publications
-            </span>
-          </div>
-        </motion.div>
 
-        {/* Publications Grid */}
-        {filteredPublications.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="backdrop-blur-sm bg-white/5 rounded-2xl p-12 border border-white/10">
-              <h3 className="text-2xl font-bold text-white mb-4">
-                {publicationsData?.length === 0 ? 'No Publications Available' : 'No Results Found'}
-              </h3>
-              <p className="text-gray-400 text-lg mb-6">
-                {publicationsData?.length === 0 
-                  ? 'There are currently no publications to display.'
-                  : 'Try adjusting your search criteria or filters.'
-                }
-              </p>
-              {(searchTerm || selectedCategory !== 'All' || selectedYear !== 'All') && (
+            <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+              {categories.map((cat) => (
                 <button
-                  onClick={() => {
-                    setSearchTerm('');
-                    setSelectedCategory('All');
-                    setSelectedYear('All');
-                  }}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-mono uppercase tracking-wider transition-all whitespace-nowrap ${
+                    selectedCategory === cat.id
+                      ? "bg-[#1769FF] text-white font-bold"
+                      : "text-[#8793A8] hover:text-white"
+                  }`}
                 >
-                  Clear Filters
+                  {cat.label}
                 </button>
-              )}
+              ))}
             </div>
           </div>
-        ) : (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: { opacity: 0 },
-              visible: {
-                opacity: 1,
-                transition: { 
-                  staggerChildren: 0.1,
-                  delayChildren: 0.2
-                }
-              }
-            }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-          >
-            {filteredPublications.map((publication, index) => (
-              <PublicationCard
-                key={publication.id || publication._id || index}
-                publication={publication}
-                index={index}
-              />
-            ))}
-          </motion.div>
-        )}
-      </div>
-    </Layout>
-  );
-};
 
-export default Publications;
+          {/* Publications List */}
+          <div className="space-y-6">
+            {filteredPubs.map((pub, idx) => (
+              <div
+                key={pub.id || idx}
+                className="garcy-glass-card p-6 sm:p-8 flex flex-col justify-between hover:border-[#1769FF]/70 transition-all duration-300 border border-white/15 shadow-xl bg-gradient-to-br from-[#101725] to-[#080B12]"
+              >
+                <div>
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-4 text-xs font-mono">
+                    <span className="text-[10px] font-bold text-[#49A3FF] px-2.5 py-0.5 rounded-full bg-[#080B12] border border-[#1769FF]/30 uppercase">
+                      {pub.category || "Research Paper"}
+                    </span>
+                    <span className="text-[#8793A8] flex items-center gap-2">
+                      <FaCalendarAlt className="text-[10px]" />
+                      <span>{pub.year}</span>
+                    </span>
+                  </div>
+
+                  <h2 className="text-xl sm:text-2xl font-bold text-[#EAF1FF] mb-3 font-sans hover:text-[#49A3FF] transition-colors leading-snug">
+                    {pub.title}
+                  </h2>
+
+                  <div className="text-xs font-mono text-[#8793A8] mb-3 flex items-center gap-2 flex-wrap">
+                    <span className="text-[#EAF1FF] font-semibold">{pub.journal}</span>
+                    {pub.citation && <span className="text-[#49A3FF]">&bull; {pub.citation}</span>}
+                  </div>
+
+                  <div className="text-xs font-sans text-[#8793A8] mb-4 flex items-center gap-2">
+                    <FaUserGraduate className="text-[#49A3FF] flex-shrink-0" />
+                    <span>
+                      Authors:{" "}
+                      <strong className="text-white">
+                        {Array.isArray(pub.authors) ? pub.authors.join(", ") : pub.authors}
+                      </strong>
+                    </span>
+                  </div>
+
+                  <p className="text-xs sm:text-sm text-[#8793A8] leading-relaxed font-sans mb-6 pt-4 border-t border-white/10">
+                    {pub.abstract || pub.description}
+                  </p>
+                </div>
+
+                <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#10b981]" />
+                    <span className="text-[#8793A8] uppercase text-[10px]">PEER-REVIEWED &bull; OPEN ACCESS</span>
+                  </div>
+
+                  {pub.link && (
+                    <a
+                      href={pub.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-xs text-[#49A3FF] hover:text-white uppercase font-bold transition-colors"
+                    >
+                      <span>Access Publication</span>
+                      <FaExternalLinkAlt className="text-[9px]" />
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {filteredPubs.length === 0 && (
+              <div className="text-center py-16 text-[#8793A8] font-mono text-sm">
+                No publications found matching your filter criteria.
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Global Footer */}
+        <GarcyFooter />
+
+        {/* Command Palette */}
+        <GarcyCommandPalette
+          isOpen={searchOpen}
+          onClose={() => setSearchOpen(false)}
+        />
+
+        {/* Case Studies Drawer */}
+        <GarcyCaseStudies
+          isOpen={caseStudiesOpen}
+          onClose={() => setCaseStudiesOpen(false)}
+        />
+      </main>
+    </>
+  );
+}

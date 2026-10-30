@@ -6,6 +6,7 @@ import { Inter, Merriweather, Plus_Jakarta_Sans, Sora, Work_Sans } from 'next/fo
 import { AnimatePresence } from 'framer-motion';
 import '../styles/globals.css';
 import '../styles/gprime2026-results.css';
+import '../styles/garcy.css';
 
 // Import styles for Swiper
 import 'swiper/css';
@@ -75,12 +76,16 @@ const theme = extendTheme({
   },
 });
 
-// Loading component
+// High-agency Garcy-calibrated minimal route transition loader
 const LoadingScreen = () => (
-  <div className="fixed inset-0 flex items-center justify-center bg-blue-900 z-50">
-    <div className="flex flex-col items-center">
-      <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"></div>
-      <p className="text-white text-lg">Loading</p>
+  <div className="fixed inset-0 flex items-center justify-center bg-[#080808]/90 backdrop-blur-md z-[999] select-none">
+    <div className="flex flex-col items-center gap-3">
+      <div className="w-10 h-10 rounded-xl bg-black border border-white/20 flex items-center justify-center">
+        <div className="w-3 h-3 rounded-full bg-[#f3ff47] animate-ping" />
+      </div>
+      <p className="text-white text-xs font-mono tracking-widest uppercase text-gray-300">
+        Loading Node &bull; AAC
+      </p>
     </div>
   </div>
 );

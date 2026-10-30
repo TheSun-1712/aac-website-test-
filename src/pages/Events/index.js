@@ -1,449 +1,331 @@
-// src/pages/Events/index.js - Fixed blur issues in EventCard component
-import React, { useState, useEffect } from 'react';
-import Head from 'next/head';
-import Image from 'next/image';
-import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
-import Layout from '@/components/Layout';
-import { useDatabase } from '@/hooks/useDatabase';
+import { useState } from "react";
+import Head from "next/head";
+import Link from "next/link";
+import BackgroundVideo from "@/components/BackgroundVideo";
+import GarcyNavbar from "@/components/garcy/GarcyNavbar";
+import GarcyFooter from "@/components/garcy/GarcyFooter";
+import GarcyCommandPalette from "@/components/garcy/GarcyCommandPalette";
+import GarcyCaseStudies from "@/components/garcy/GarcyCaseStudies";
+import { useDatabase } from "@/hooks/useDatabase";
+import {
+  FaCalendarAlt,
+  FaSearch,
+  FaMapMarkerAlt,
+  FaRocket,
+  FaArrowRight,
+  FaExternalLinkAlt,
+  FaUsers,
+} from "react-icons/fa";
 
-const EventCard = ({ event, index }) => {
-  const [isHovered, setIsHovered] = useState(false);
+export default function EventsPage() {
+  const { data: eventsData } = useDatabase("events");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [caseStudiesOpen, setCaseStudiesOpen] = useState(false);
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1, duration: 0.6 }}
-      whileHover={{ y: -8, scale: 1.03 }}
-      className="group relative bg-[#1a2535] rounded-2xl shadow-xl overflow-hidden h-full flex flex-col border border-gray-700 hover:border-gray-600 transition-all duration-300"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {/* Gradient overlay on hover */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
-      
-      {/* Event Image */}
-      <div className="relative h-48 overflow-hidden rounded-t-2xl">
-        <Image
-          src={event.img || event.mainImageUrl || 'https://via.placeholder.com/400x200/1a2535/ffffff?text=Event'}
-          alt={event.event || event.title}
-          fill
-          className="object-cover transition-transform duration-700 group-hover:scale-110"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-        
-        {/* Date Badge - Fixed blur issue */}
-        <div className="absolute top-4 left-4">
-          <span className="px-3 py-1.5 bg-blue-500/90 text-white rounded-lg text-xs font-medium border border-blue-400/50 shadow-lg">
-            {event.date || 'TBD'}
-          </span>
-        </div>
+  const defaultEvents = [
+    {
+      id: "opulence",
+      title: "Opulence — Flagship Technical Symposium",
+      date: "JUNE 2024",
+      category: "symposium",
+      status: "ANNUAL FLAGSHIP",
+      badgeColor: "#1769FF",
+      description: "AAC's flagship symposium with 400+ participants and distinguished speakers: Pranali Bose (ML Engineer), Raunak Bagga (Koolgen CEO), Srikanth Reddy (Great Honey Co). Included Ideathon (21 teams), G-Prime (42 teams), and LLM workshops.",
+      path: "/Events/Opulence2023",
+      venue: "GRIET Campus, Hyderabad",
+      participants: "400+ Students & 5 Faculty",
+    },
+    {
+      id: "gprime",
+      title: "G-Prime Competitive Coding Contest",
+      date: "ANNUAL EDITION",
+      category: "hackathon",
+      status: "RESULTS LIVE",
+      badgeColor: "#49A3FF",
+      description: "Premier competitive programming contest featuring Rapidfire speed testing, Cascade problem sets, and Data Structures challenges with sub-second judging.",
+      path: "/gprime2026-results",
+      venue: "AAC Labs & Distributed Engine",
+      participants: "42+ Teams",
+    },
+    {
+      id: "expo2023",
+      title: "AAC Expo 2023 — Technology Exhibition",
+      date: "DECEMBER 2023",
+      category: "symposium",
+      status: "COMPLETED",
+      badgeColor: "#1769FF",
+      description: "Annual project expo showcasing revolutionary student prototypes in IoT, deep learning, biomedical sensing, and autonomous hardware.",
+      path: "/Events/Expo2023",
+      venue: "GRIET Campus, Hyderabad",
+      participants: "Institute-Wide Cohort",
+    },
+    {
+      id: "conclave",
+      title: "Data Analytics Conclave",
+      date: "GUEST KEYNOTE",
+      category: "symposium",
+      status: "KEYNOTE SESSIONS",
+      badgeColor: "#49A3FF",
+      description: "Impactful data science platform led by Mr. Satish Yellanki (20+ years IT exposure, Oracle database optimization and business intelligence expert).",
+      path: "/Events/Conclave",
+      venue: "GRIET Campus, Hyderabad",
+      participants: "250+ Engineers",
+    },
+    {
+      id: "awards",
+      title: "AAC Awards Ceremony & Project Road Show",
+      date: "ANNUAL AWARDS",
+      category: "hackathon",
+      status: "PROJECT CERTIFICATION",
+      badgeColor: "#1769FF",
+      description: "First-ever road show of completed student projects inaugurated by Chief Guest A.V.V. Prasad (NRSC), Guest of Honor M.G. Sekharam, and Dean Dr. Ramamurthy Suri.",
+      path: "/Events/Awards",
+      venue: "GRIET Campus Auditorium",
+      participants: "All Project Teams",
+    },
+    {
+      id: "cyber-security",
+      title: "Cyber Security Seminar & Workshop",
+      date: "WORKSHOP",
+      category: "symposium",
+      status: "EDUCATIONAL",
+      badgeColor: "#49A3FF",
+      description: "Cyber security symposium covering enterprise attack vectors, vulnerability scanning, and secure firmware development with guest expert Mr. M. Prasanna.",
+      path: "/Events/CyberSecuritySeminar",
+      venue: "GRIET Campus, Hyderabad",
+      participants: "200+ Students",
+    },
+    {
+      id: "labstart",
+      title: "AAC Research Lab Inauguration",
+      date: "FACILITY LAUNCH",
+      category: "bootcamp",
+      status: "ACTIVE 24/7 LAB",
+      badgeColor: "#1769FF",
+      description: "Official opening of AAC's dedicated laboratory space in Block 3, Room 3614, boosted by Dr. M.G. Sekharam, Dr. J. Praveen, and Dr. S. Ramamurthy.",
+      path: "/Events/Labstart",
+      venue: "Block 3, Room 3614, GRIET",
+      participants: "Faculty & Fellows",
+    },
+    {
+      id: "expo2022",
+      title: "AAC Expo 2022 — Annual Showcase",
+      date: "DECEMBER 2022",
+      category: "symposium",
+      status: "COMPLETED",
+      badgeColor: "#49A3FF",
+      description: "Exposition of undergraduate technical projects, hardware models, and research prototypes developed under faculty guidance.",
+      path: "/Events/Expo2022",
+      venue: "GRIET Campus, Hyderabad",
+      participants: "AAC Members & Mentors",
+    },
+  ];
 
-        {/* Status Badge - Fixed blur issue */}
-        {/* {event.status && (
-          <div className="absolute top-4 right-4">
-            <span className={`px-3 py-1.5 rounded-lg text-xs font-medium border shadow-lg ${
-              event.status === 'completed' ? 'bg-green-500/90 text-white border-green-400/50' :
-              event.status === 'upcoming' ? 'bg-yellow-500/90 text-white border-yellow-400/50' :
-              event.status === 'ongoing' ? 'bg-purple-500/90 text-white border-purple-400/50' :
-              'bg-gray-500/90 text-white border-gray-400/50'
-            }`}>
-              {event.status}
-            </span>
-          </div>
-        )} */}
-      </div>
-      
-      {/* Content */}
-      <div className="p-6 flex-1 flex flex-col relative z-10">
-        <h3 className="text-xl font-bold mb-3 text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300 transition-all duration-300">
-          {event.event || event.title}
-        </h3>
-        
-        <p className="text-gray-400 text-sm leading-relaxed mb-4 flex-1 group-hover:text-gray-300 transition-colors duration-300 line-clamp-3">
-          {event.description || 'No description available for this event.'}
-        </p>
+  const displayEvents = eventsData && eventsData.length > 0 ? eventsData : defaultEvents;
 
-        {/* Location */}
-        {event.location && (
-          <p className="text-gray-500 text-xs mb-4 flex items-center gap-1">
-            <span>📍</span>
-            {event.location}
-          </p>
-        )}
-        
-        {/* Action Button */}
-        <Link
-          href={event.path || `/Events/${event.id || event._id}`}
-          className="group/btn inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 relative overflow-hidden hover:scale-105 mt-auto"
-        >
-          <span className="relative z-10 flex items-center justify-center gap-2">
-            View Event
-            <span className="group-hover/btn:translate-x-1 transition-transform duration-200">→</span>
-          </span>
-          <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
-        </Link>
-      </div>
-    </motion.div>
-  );
-};
+  const categories = [
+    { id: "all", label: "All Events" },
+    { id: "hackathon", label: "Hackathons" },
+    { id: "symposium", label: "Symposiums" },
+    { id: "bootcamp", label: "Bootcamps" },
+  ];
 
-const EventsPage = () => {
-  const { data: eventsData, loading, error } = useDatabase('events');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('All Categories');
-  const [yearFilter, setYearFilter] = useState('All Years');
-  const [statusFilter, setStatusFilter] = useState('All Status');
-
-  // Process events data safely
-  const safeEventsData = eventsData && Array.isArray(eventsData) ? eventsData : [];
-
-  // Extract unique categories, years, and statuses from events data
-  const categories = ['All Categories', ...new Set(safeEventsData.map(event => event.category).filter(Boolean))];
-  const years = ['All Years', ...Array.from(new Set(safeEventsData.map(event => {
-    const year = event.date ? new Date(event.date).getFullYear() : null;
-    return year;
-  }).filter(Boolean))).sort((a, b) => b - a)];
-  const statuses = ['All Status', ...new Set(safeEventsData.map(event => event.status).filter(Boolean))];
-
-  // Filter events
-  const filteredEvents = safeEventsData.filter(event => {
-    const eventTitle = event.event || event.title || '';
-    const eventDescription = event.description || '';
-    
-    const matchesSearch = eventTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         eventDescription.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter === 'All Categories' || event.category === categoryFilter;
-    const matchesStatus = statusFilter === 'All Status' || event.status === statusFilter;
-    const eventYear = event.date ? new Date(event.date).getFullYear() : null;
-    const matchesYear = yearFilter === 'All Years' || eventYear === parseInt(yearFilter);
-    
-    return matchesSearch && matchesCategory && matchesYear && matchesStatus;
+  const filteredEvents = displayEvents.filter((item) => {
+    const title = item.title || item.event || "";
+    const desc = item.description || "";
+    const matchesSearch =
+      title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      desc.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCat =
+      categoryFilter === "all" || item.category === categoryFilter;
+    return matchesSearch && matchesCat;
   });
 
-  // Sort events by date (newest first)
-  const sortedEvents = filteredEvents.sort((a, b) => {
-    const dateA = new Date(a.actualDate || a.date || a.createdAt || 0);
-    const dateB = new Date(b.actualDate || b.date || b.createdAt || 0);
-    return dateB - dateA;
-  });
-
-  // Loading state
-  if (loading) {
-    return (
-      <Layout>
-        <Head>
-          <title>Events | AAC - Advanced Academic Center</title>
-          <meta name="description" content="Explore events organized by Advanced Academic Center at GRIET" />
-        </Head>
-        
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      <div className="text-center">
-        <div className="relative mb-8 flex items-center justify-center">
-          <div className="w-16 h-16 border-4 border-white/10 border-t-blue-500 rounded-full animate-spin"></div>
-          <div className="absolute w-16 h-16 border-4 border-transparent border-t-purple-500 rounded-full animate-spin" style={{animationDelay: '150ms'}}></div>
-        </div>
-        <p className="text-xl text-gray-400">Loading events...</p>
-      </div>
-    </div>
-      </Layout>
-    );
-  }
-
-  // Error state
-  if (error) {
-    return (
-      <Layout>
-        <Head>
-          <title>Events | AAC - Advanced Academic Center</title>
-        </Head>
-        
-        {/* Hero Section */}
-        <div className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 pt-24 pb-20 mb-12 overflow-hidden">
-          {/* Animated background blobs */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute -top-[20%] -left-[20%] w-[60%] h-[60%] bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute top-[10%] -right-[10%] w-[50%] h-[50%] bg-gradient-to-br from-indigo-400/20 to-pink-600/20 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
-            <div className="absolute bottom-[10%] left-[20%] w-[40%] h-[40%] bg-gradient-to-br from-emerald-400/20 to-teal-600/20 rounded-full blur-3xl animate-pulse animation-delay-2000"></div>
-          </div>
-
-          {/* Animated grid pattern */}
-          <div className="absolute inset-0 opacity-5">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-y-12 animate-pulse"></div>
-          </div>
-          
-          <div className="container mx-auto mt-7 px-4 relative z-10 text-center">
-            {/* Enhanced badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-md text-white rounded-full mb-6 border border-white/20 shadow-lg">
-              <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium">Events & Activities</span>
-            </div>
-            
-            {/* Title with gradient effect */}
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-white via-blue-100 to-indigo-200 bg-clip-text text-transparent">
-                Events &
-              </span>{' '}
-              <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
-                Activities
-              </span>
-            </h1>
-            
-            <p className="text-xl md:text-2xl text-blue-100/90 max-w-4xl mx-auto leading-relaxed">
-              Discover workshops, seminars, competitions, and exhibitions organized by AAC
-            </p>
-
-            {/* Decorative dots */}
-            <div className="flex justify-center items-center gap-3 mt-8">
-              <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-              <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse animation-delay-500"></div>
-              <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse animation-delay-1000"></div>
-            </div>
-          </div>
-        </div>
-        
-        <div className="container mx-auto px-4 pb-24">
-          <div className="text-center py-20">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center mx-auto mb-8 shadow-lg">
-              <span className="text-4xl">⚠️</span>
-            </div>
-            <h3 className="text-3xl font-bold text-white mb-4">Unable to Load Events</h3>
-            <p className="text-gray-400 text-lg mb-8">There was an error loading the events: {error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="group/btn px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 relative overflow-hidden hover:scale-105"
-            >
-              <span className="relative z-10 flex items-center justify-center gap-2">
-                Retry
-                <span className="group-hover/btn:translate-x-1 transition-transform duration-200">→</span>
-              </span>
-              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
-            </button>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
-
   return (
-    <Layout>
+    <>
       <Head>
-        <title>Events | AAC - Advanced Academic Center</title>
-        <meta name="description" content="Explore events organized by Advanced Academic Center at GRIET" />
+        <title>EVENTS &amp; CONCLAVES // AAC GRIET</title>
+        <meta
+          name="description"
+          content="Explore hackathons, technical symposiums, and project expos organized by AAC GRIET"
+        />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 pt-24 pb-20 mb-12 overflow-hidden">
-        {/* Animated background blobs */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-[20%] -left-[20%] w-[60%] h-[60%] bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute top-[10%] -right-[10%] w-[50%] h-[50%] bg-gradient-to-br from-indigo-400/20 to-pink-600/20 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
-          <div className="absolute bottom-[10%] left-[20%] w-[40%] h-[40%] bg-gradient-to-br from-emerald-400/20 to-teal-600/20 rounded-full blur-3xl animate-pulse animation-delay-2000"></div>
-        </div>
 
-        {/* Animated grid pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-y-12 animate-pulse"></div>
-        </div>
-        
-        <div className="container mx-auto mt-7 px-4 relative z-10 text-center">
-          {/* Enhanced badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-md text-white rounded-full mb-6 border border-white/20 shadow-lg">
-            <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-            <span className="text-sm font-medium">Events & Activities</span>
+      <BackgroundVideo />
+
+      {/* Ambient Dither & Dynamic Spotlight */}
+      <div className="reel-dither" aria-hidden="true" />
+      <div className="spotlight" aria-hidden="true" />
+
+      {/* Main Stage Canvas */}
+      <main className="stage relative overflow-hidden bg-[#080B12]/92 text-[#EAF1FF] min-h-screen pb-20">
+
+        {/* Floating Header */}
+        <GarcyNavbar
+          onOpenSearch={() => setSearchOpen(true)}
+          onOpenCaseStudies={() => setCaseStudiesOpen(true)}
+        />
+
+        {/* Hero Section */}
+        <section className="pt-32 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          <div className="text-center max-w-3xl mx-auto mb-10">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-4 border backdrop-blur-md bg-[#1769FF]/15 border-[#1769FF]/40 text-[#49A3FF]">
+              <FaCalendarAlt className="text-[10px]" />
+              <span>Events &bull; Conclaves &bull; Hackathons</span>
+            </div>
+
+            <h1 className="font-extrabold text-4xl sm:text-6xl tracking-tighter leading-tight mb-4 text-[#EAF1FF] uppercase font-sans">
+              Events &amp; Technical <br />
+              <span className="italic font-serif font-normal text-[#49A3FF] lowercase tracking-normal text-3xl sm:text-5xl">
+                gathering
+              </span>{" "}
+              Chronicle.
+            </h1>
+
+            <p className="text-sm sm:text-base text-[#8793A8] leading-relaxed font-sans font-normal">
+              Flagship competitive programming championships, annual hardware expos, and technical training bootcamps hosted at AAC GRIET.
+            </p>
           </div>
-          
-          {/* Title with gradient effect */}
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-white via-blue-100 to-indigo-200 bg-clip-text text-transparent">
-              Events &
-            </span>{' '}
-            <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
-              Activities
-            </span>
-          </h1>
-          
-          <p className="text-xl md:text-2xl text-blue-100/90 max-w-4xl mx-auto leading-relaxed">
-            Discover workshops, seminars, competitions, and exhibitions organized by AAC
-          </p>
 
-          {/* Decorative dots */}
-          <div className="flex justify-center items-center gap-3 mt-8">
-            <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-            <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse animation-delay-500"></div>
-            <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse animation-delay-1000"></div>
-          </div>
-        </div>
-      </div>
+          {/* Search & Filter Bar */}
+          <div className="garcy-glass-card p-4 sm:p-5 border border-white/15 mb-12 shadow-2xl">
+            <div className="flex flex-col md:flex-row items-center gap-4">
 
-      <div className="container mx-auto px-4 pb-24">
-        {/* Filter Controls */}
-        <div className="mb-12">
-          <div className="backdrop-blur-sm bg-white/5 rounded-2xl p-8 shadow-xl border border-white/10 hover:border-white/20 transition-all duration-300">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              {/* Search */}
-              <div>
-                <label htmlFor="search" className="block text-sm font-medium text-gray-400 mb-3">
-                  Search Events
-                </label>
+              {/* Search Input */}
+              <div className="flex-1 w-full flex items-center gap-3 px-4 py-2.5 rounded-xl bg-[#080B12]/80 border border-white/10">
+                <FaSearch className="text-[#8793A8] text-xs flex-shrink-0" />
                 <input
                   type="text"
-                  id="search"
-                  placeholder="Search by name or description..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-4 py-3 backdrop-blur-sm bg-white/5 border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-500 transition-all duration-200"
+                  placeholder="Search events by name, venue, or keyword..."
+                  className="w-full bg-transparent border-0 text-white placeholder-[#8793A8]/60 focus:outline-none text-xs font-mono"
                 />
-              </div>
-              
-              {/* Category filter */}
-              <div>
-                <label htmlFor="category" className="block text-sm font-medium text-gray-400 mb-3">
-                  Filter by Category
-                </label>
-                <select
-                  id="category"
-                  value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="w-full px-4 py-3 backdrop-blur-sm bg-white/5 border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white transition-all duration-200"
-                >
-                  {categories.map(category => (
-                    <option key={category} value={category} className="bg-slate-800 text-white">
-                      {category}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              
-              {/* Year filter */}
-              <div>
-                <label htmlFor="year" className="block text-sm font-medium text-gray-400 mb-3">
-                  Filter by Year
-                </label>
-                <select
-                  id="year"
-                  value={yearFilter}
-                  onChange={(e) => setYearFilter(e.target.value)}
-                  className="w-full px-4 py-3 backdrop-blur-sm bg-white/5 border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white transition-all duration-200"
-                >
-                  {years.map(year => (
-                    <option key={year} value={year} className="bg-slate-800 text-white">
-                      {year}
-                    </option>
-                  ))}
-                </select>
+                {searchTerm && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchTerm("")}
+                    className="text-[10px] font-mono text-[#8793A8] hover:text-white uppercase"
+                  >
+                    CLEAR
+                  </button>
+                )}
               </div>
 
-              {/* Status filter */}
-              <div>
-                <label htmlFor="status" className="block text-sm font-medium text-gray-400 mb-3">
-                  Filter by Status
-                </label>
-                <select
-                  id="status"
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full px-4 py-3 backdrop-blur-sm bg-white/5 border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white transition-all duration-200"
-                >
-                  {statuses.map(status => (
-                    <option key={status} value={status} className="bg-slate-800 text-white">
-                      {status}
-                    </option>
-                  ))}
-                </select>
+              {/* Filter Pills */}
+              <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto scrollbar-none">
+                {categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => setCategoryFilter(cat.id)}
+                    className={`px-3.5 py-2 rounded-xl text-xs font-mono uppercase tracking-wider transition-all flex-shrink-0 ${categoryFilter === cat.id
+                        ? "bg-[#1769FF] text-white font-bold shadow-md"
+                        : "bg-[#101725] text-[#8793A8] hover:text-white border border-white/10"
+                      }`}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Results Counter */}
-        <div className="mb-8">
-          <p className="text-lg text-gray-400">
-            Showing <span className="text-white font-medium">{sortedEvents.length}</span> of <span className="text-white font-medium">{safeEventsData.length}</span> events
-          </p>
-        </div>
+          {/* Events Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredEvents.map((item, idx) => (
+              <div
+                key={item.id || idx}
+                className="garcy-glass-card p-6 flex flex-col justify-between hover:border-[#1769FF]/70 transition-all duration-300 group hover:-translate-y-1 border border-white/15 shadow-xl bg-gradient-to-br from-[#101725] to-[#080B12]"
+              >
+                <div>
+                  {/* Top Bar: Date & Status Badge */}
+                  <div className="flex items-center justify-between text-xs font-mono uppercase text-[#8793A8] mb-4">
+                    <span className="flex items-center gap-1.5 text-[#EAF1FF] font-bold">
+                      <FaCalendarAlt className="text-[#49A3FF] text-[10px]" />
+                      <span>{item.date}</span>
+                    </span>
+                    <span
+                      className="px-2.5 py-0.5 rounded-full bg-[#080B12] text-[8.5px] font-bold border"
+                      style={{
+                        color: item.badgeColor || "#49A3FF",
+                        borderColor: `${item.badgeColor || "#49A3FF"}55`,
+                      }}
+                    >
+                      {item.status || "EVENT"}
+                    </span>
+                  </div>
 
-        {/* Events Grid or Empty State */}
-        {sortedEvents.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mx-auto mb-8 shadow-lg">
-              <span className="text-4xl">📅</span>
-            </div>
-            <h3 className="text-3xl font-bold text-white mb-4">
-              {safeEventsData.length === 0 ? 'No Events Yet' : 'No Events Found'}
-            </h3>
-            <p className="text-gray-400 text-lg">
-              {safeEventsData.length === 0 
-                ? 'Events will be displayed here once they are added.' 
-                : 'Try adjusting your search criteria to find more events.'}
-            </p>
-          </div>
-        ) : (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: { opacity: 0 },
-              visible: {
-                opacity: 1,
-                transition: { 
-                  staggerChildren: 0.1,
-                  delayChildren: 0.3
-                }
-              }
-            }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-          >
-            {sortedEvents.map((event, index) => (
-              <EventCard key={event.id || event._id || index} event={event} index={index} />
+                  {/* Title */}
+                  <h3 className="text-lg font-bold text-[#EAF1FF] mb-2.5 font-sans group-hover:text-[#49A3FF] transition-colors leading-snug">
+                    {item.title}
+                  </h3>
+
+                  {/* Metadata: Venue & Participants */}
+                  <div className="flex flex-wrap items-center gap-3 text-[10px] font-mono text-[#8793A8] mb-4">
+                    {item.venue && (
+                      <span className="flex items-center gap-1">
+                        <FaMapMarkerAlt className="text-[#49A3FF]" />
+                        <span className="truncate max-w-[140px]">{item.venue}</span>
+                      </span>
+                    )}
+                    {item.participants && (
+                      <span className="flex items-center gap-1">
+                        <FaUsers className="text-[#49A3FF]" />
+                        <span>{item.participants}</span>
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-xs text-[#8793A8] leading-relaxed font-sans font-normal mb-6">
+                    {item.description}
+                  </p>
+                </div>
+
+                {/* Bottom Action Link */}
+                <div className="pt-4 border-t border-white/10 flex items-center justify-between">
+                  <Link
+                    href={item.path || "/Events"}
+                    className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-[#49A3FF] hover:text-white transition-colors"
+                  >
+                    <span>Inspect Event</span>
+                    <FaArrowRight className="text-[9px]" />
+                  </Link>
+
+                  <span className="text-[9px] font-mono text-[#8793A8] uppercase">
+                    AAC // 0{idx + 1}
+                  </span>
+                </div>
+              </div>
             ))}
-          </motion.div>
-        )}
+          </div>
 
-        {/* Statistics Section */}
-        {safeEventsData.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="mt-16 backdrop-blur-sm bg-white/5 rounded-2xl p-8 border border-white/10"
-          >
-            <h3 className="text-2xl font-bold text-white mb-6 text-center">Event Statistics</h3>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-400 mb-2">
-                  {safeEventsData.length}
-                </div>
-                <div className="text-gray-400">Total Events</div>
-              </div>
-              
-              <div className="text-center">
-                <div className="text-3xl font-bold text-green-400 mb-2">
-                  {safeEventsData.filter(e => e.status === 'completed').length}
-                </div>
-                <div className="text-gray-400">Completed</div>
-              </div>
-              
-              <div className="text-center">
-                <div className="text-3xl font-bold text-yellow-400 mb-2">
-                  {safeEventsData.filter(e => e.status === 'upcoming').length}
-                </div>
-                <div className="text-gray-400">Upcoming</div>
-              </div>
-              
-              <div className="text-center">
-                <div className="text-3xl font-bold text-purple-400 mb-2">
-                  {safeEventsData.filter(e => e.status === 'ongoing').length}
-                </div>
-                <div className="text-gray-400">Ongoing</div>
-              </div>
+          {filteredEvents.length === 0 && (
+            <div className="text-center py-20 text-[#8793A8] font-mono text-xs">
+              No matching events found for query &ldquo;{searchTerm}&rdquo;
             </div>
-          </motion.div>
-        )}
-      </div>
-    </Layout>
-  );
-};
+          )}
+        </section>
 
-export default EventsPage;
+        {/* Footer */}
+        <GarcyFooter />
+
+        {/* Command Palette (⌘K) */}
+        <GarcyCommandPalette
+          isOpen={searchOpen}
+          onClose={() => setSearchOpen(false)}
+        />
+
+        {/* Case Study Drawer */}
+        <GarcyCaseStudies
+          isOpen={caseStudiesOpen}
+          onClose={() => setCaseStudiesOpen(false)}
+        />
+      </main>
+    </>
+  );
+}

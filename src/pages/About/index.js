@@ -1,598 +1,441 @@
-// src/pages/About/index.js - UPDATED VERSION
-import Layout from "@/components/Layout";
-import PageHero from "@/components/PageHero";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import Head from "next/head";
+import Link from "next/link";
+import BackgroundVideo from "@/components/BackgroundVideo";
+import GarcyNavbar from "@/components/garcy/GarcyNavbar";
+import GarcyFooter from "@/components/garcy/GarcyFooter";
+import GarcyCommandPalette from "@/components/garcy/GarcyCommandPalette";
+import GarcyCaseStudies from "@/components/garcy/GarcyCaseStudies";
 import {
   FaBrain,
   FaCode,
+  FaMobile,
+  FaWifi,
   FaEye,
   FaGraduationCap,
-  FaHandshake,
-  FaLightbulb,
-  FaMobile,
-  FaUsers,
-  FaWifi,
+  FaCheckCircle,
+  FaShieldAlt,
+  FaRocket,
+  FaMicrochip,
+  FaMapMarkerAlt,
+  FaAtom,
+  FaExternalLinkAlt,
 } from "react-icons/fa";
 
-const AboutAAC = () => {
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
-      },
-    },
-  };
+export default function AboutPage() {
+  const [activeStep, setActiveStep] = useState(0);
+  const [activeDomain, setActiveDomain] = useState(0);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [caseStudiesOpen, setCaseStudiesOpen] = useState(false);
 
-  const itemVariants = {
-    hidden: { y: 30, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { duration: 0.6 } },
-  };
-
-  const cardVariants = {
-    hidden: { scale: 0.8, opacity: 0 },
-    visible: {
-      scale: 1,
-      opacity: 1,
-      transition: { duration: 0.6 },
-    },
-  };
-
-  // Domain data - UPDATED: Removed Robotics, marked CV and IoT for full width
   const domains = [
     {
-      icon: <FaCode className="text-2xl" />,
+      code: "01",
+      icon: FaCode,
       title: "Web Development",
       shortName: "WEB",
+      tagline: "High-Performance Cloud & Distributed Web Systems",
       description:
-        "Full-stack development using modern frameworks like React, Next.js, Node.js, and cloud technologies.",
-      color: "from-blue-500 to-blue-600",
-      projects: [
-        "E-commerce platforms",
-        "Portfolio websites",
-        "Web applications",
-      ],
+        "Full-stack software engineering using modern component paradigms, distributed cloud infrastructure, microservices, and edge computing.",
+      technologies: ["React", "Next.js", "TypeScript", "Node.js", "PostgreSQL", "Docker", "TailwindCSS"],
+      projects: ["Enterprise Student Portal", "Distributed Research Archive", "Real-time Telemetry Dashboard"],
     },
     {
-      icon: <FaMobile className="text-2xl" />,
+      code: "02",
+      icon: FaMobile,
       title: "App Development",
       shortName: "APP",
+      tagline: "Native & Cross-Platform Mobile Architectures",
       description:
-        "Mobile application development for Android and iOS using React Native, Flutter, and native technologies.",
-      color: "from-green-500 to-green-600",
-      projects: ["Mobile apps", "Cross-platform solutions", "UI/UX design"],
+        "Engineered mobile experiences with offline-first synchronization, low memory footprint, and reactive state architectures across iOS & Android.",
+      technologies: ["Flutter", "React Native", "Swift", "Kotlin", "Firebase", "SQLite", "REST / GraphQL"],
+      projects: ["AAC Mobile Companion", "Campus Navigation & Events", "Offline Assessment Client"],
     },
     {
-      icon: <FaBrain className="text-2xl" />,
+      code: "03",
+      icon: FaBrain,
       title: "Deep Learning",
       shortName: "DL",
+      tagline: "Neural Architectures, Transformers & Cognitive AI",
       description:
-        "Artificial Intelligence and Machine Learning solutions using Python, TensorFlow, and advanced algorithms.",
-      color: "from-purple-500 to-purple-600",
-      projects: ["Predictive models", "Data analysis", "AI automation"],
+        "Applied artificial intelligence and deep neural network research spanning computer vision, natural language modeling, and autonomous decision systems.",
+      technologies: ["PyTorch", "TensorFlow", "Transformers", "CUDA", "OpenCV", "Scikit-Learn", "Python"],
+      projects: ["Vision Object Classifier", "NLP Academic Synthesizer", "Edge Defect Detection Model"],
     },
     {
-      icon: <FaWifi className="text-2xl" />,
+      code: "04",
+      icon: FaWifi,
       title: "Internet of Things",
       shortName: "IOT",
+      tagline: "Embedded Telemetry & Smart Sensor Networks",
       description:
-        "Smart device connectivity and automation using Arduino, Raspberry Pi, and sensor integration.",
-      color: "from-orange-500 to-orange-600",
-      projects: [
-        "Smart home systems",
-        "Industrial automation",
-        "Sensor networks",
-      ],
-      fullWidth: true,
+        "Low-latency hardware integration, microcontroller programming, sensor networks, edge machine learning, and automation protocols.",
+      technologies: ["ESP32", "Arduino", "Raspberry Pi", "MQTT", "C / C++", "Zigbee", "LoRaWAN"],
+      projects: ["Smart Campus Energy Grid", "Autonomous Weather Node", "Lab Environmental Telemetry"],
     },
     {
-      icon: <FaEye className="text-2xl" />,
+      code: "05",
+      icon: FaEye,
       title: "Machine Learning Operations",
       shortName: "ML-OPS",
+      tagline: "Production Machine Learning Pipelines & Deployments",
       description:
-        "Image processing and computer vision applications using OpenCV, deep learning, and neural networks.",
-      color: "from-indigo-500 to-indigo-600",
-      projects: ["Object detection", "Image recognition", "Video analysis"],
-      fullWidth: true,
+        "Automated continuous training pipelines, model monitoring, containerization, scalable inference engines, and reproducibility frameworks.",
+      technologies: ["Kubeflow", "MLflow", "Docker", "Kubernetes", "FastAPI", "Prometheus", "GitOps"],
+      projects: ["Automated Model Registry", "Live Inference Microservice", "Drift Detection Pipeline"],
     },
   ];
 
-  // Selection process steps - UPDATED
   const selectionSteps = [
     {
       step: "01",
-      title: "Registration",
+      phase: "STAGE 01",
+      title: "Registration & Profile Submission",
+      subtitle: "Open Application Window",
       description:
-        "Students simply need to fill out the registration form with their basic details and preferred domain. No academic evaluation at this stage.",
-      icon: <FaGraduationCap />,
+        "Candidates register basic academic credentials, highlight technical interests, and nominate their target domain of specialization.",
+      criteria: "Open to all enrolled engineering students at GRIET with foundational interest in software, electronics, or AI.",
+      deliverable: "Online registration form & brief statement of engineering purpose.",
+      status: "ROUND 01",
+      tag: "NO PRIOR EXPERIENCE REQUIRED",
     },
     {
       step: "02",
+      phase: "STAGE 02",
       title: "Online Assessment Test",
+      subtitle: "Algorithmic & Domain Diagnostics",
       description:
-        "Candidates take a comprehensive online test to evaluate their technical knowledge and problem-solving abilities. Only those who clear this round proceed to the next stage.",
-      icon: <FaBrain />,
+        "A structured technical assessment evaluating algorithmic logic, quantitative problem-solving, and foundational domain concepts.",
+      criteria: "Score-based qualification evaluating analytical problem solving, logical flow, and aptitude.",
+      deliverable: "Proctored 60-minute technical evaluation.",
+      status: "ROUND 02",
+      tag: "MERIT EVALUATION",
     },
     {
       step: "03",
+      phase: "STAGE 03",
       title: "Research Paper Writing",
+      subtitle: "Scientific Inquiry & Technical Synthesis",
       description:
-        "Selected candidates demonstrate their research capabilities by writing a technical paper on assigned topics relevant to their chosen domain.",
-      icon: <FaLightbulb />,
+        "Candidates author an in-depth technical brief or literature review on emerging trends in their selected domain, demonstrating scholarly curiosity.",
+      criteria: "Clarity of technical thought, literature citation, analytical depth, and originality.",
+      deliverable: "Formal IEEE-style 2-page technical summary on assigned topics.",
+      status: "ROUND 03",
+      tag: "RESEARCH RIGOR",
     },
     {
       step: "04",
-      title: "Interview",
+      phase: "STAGE 04",
+      title: "Technical Defense & Oral Interview",
+      subtitle: "Panel Oral Defense",
       description:
-        "Personal interview round to assess passion, technical depth, and alignment with AAC's research vision. Questions are asked about the submitted research paper and overall technical understanding.",
-      icon: <FaUsers />,
+        "Face-to-face panel defense evaluating technical depth, the submitted research paper, problem approach, teamwork, and cultural alignment with AAC.",
+      criteria: "Oral communication of engineering principles, passion for research, and problem adaptability.",
+      deliverable: "20-minute technical presentation & interview session.",
+      status: "ROUND 04",
+      tag: "PANEL REVIEW",
     },
     {
       step: "05",
-      title: "Final Selection",
+      phase: "STAGE 05",
+      title: "Final Induction & Lab Onboarding",
+      subtitle: "Official Cohort Onboarding",
       description:
-        "Students who successfully pass the interview round receive their final selection and officially join AAC to begin their journey in advanced academic research.",
-      icon: <FaHandshake />,
+        "Successful candidates officially join the AAC family, gain access to specialized research laboratories, and are paired with senior cohort mentors.",
+      criteria: "Top percentile cumulative performance across all previous evaluation stages.",
+      deliverable: "AAC Research Fellow Access & Project Cohort Allocation.",
+      status: "FINAL INDUCTION",
+      tag: "ACTIVE FELLOWSHIP",
     },
   ];
 
+  const currentStep = selectionSteps[activeStep];
+  const currentDomain = domains[activeDomain];
+  const DomainIcon = currentDomain.icon;
+
   return (
-    <Layout>
-      {/* Hero Section */}
-      <PageHero
-        title="About AAC"
-        subtitle="Discover the Advanced Academic Center - where innovation meets excellence in technological education and research."
-        tag="Learn About Us"
-        highlightTitle={true}
-      />
+    <>
+      <Head>
+        <title>ABOUT AAC GRIET // ADVANCED ACADEMIC CENTER</title>
+        <meta
+          name="description"
+          content="Advanced Academic Center (AAC) of GRIET, Hyderabad is an inter-disciplinary research center and elite technology incubator established in 2004."
+        />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
 
-      {/* Main Content */}
-      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 -mt-12">
-        <div className="container mx-auto px-4 relative z-10 pt-20 pb-20">
-          {/* What is AAC Section */}
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="mb-24"
-          >
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-              {/* Content */}
-              <div>
-                <motion.div
-                  variants={itemVariants}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-md text-white rounded-full mb-6 border border-white/20 shadow-lg"
-                >
-                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium">What is AAC?</span>
-                </motion.div>
+      <BackgroundVideo />
 
-                <motion.h2
-                  variants={itemVariants}
-                  className="text-4xl md:text-5xl font-bold mb-6"
-                >
-                  <span className="bg-gradient-to-r from-white via-blue-100 to-indigo-200 bg-clip-text text-transparent">
-                    Advanced Academic
-                  </span>{" "}
-                  <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
-                    Center
-                  </span>
-                </motion.h2>
+      {/* Ambient Dither & Dynamic Spotlight */}
+      <div className="reel-dither" aria-hidden="true" />
+      <div className="spotlight" aria-hidden="true" />
 
-                <motion.div
-                  variants={itemVariants}
-                  className="space-y-6 text-gray-300 leading-relaxed"
-                >
-                  <p className="text-lg">
-                    The Advanced Academic Center (AAC) is GRIET's premier{" "}
-                    <span className="text-blue-400 font-semibold">
-                      technology club and research hub
-                    </span>
-                    , where passionate students dive deep into cutting-edge
-                    technologies and innovative project development.
-                  </p>
+      {/* Main Stage Canvas */}
+      <main className="stage relative overflow-hidden bg-[#080B12]/92 text-[#EAF1FF] min-h-screen pb-20">
+        
+        {/* Floating Header */}
+        <GarcyNavbar
+          onOpenSearch={() => setSearchOpen(true)}
+          onOpenCaseStudies={() => setCaseStudiesOpen(true)}
+        />
 
-                  <p>
-                    Founded with the vision of bridging the gap between academic
-                    learning and industry requirements, AAC serves as a catalyst
-                    for{" "}
-                    <span className="text-purple-400 font-semibold">
-                      technological innovation
-                    </span>{" "}
-                    and
-                    <span className="text-green-400 font-semibold">
-                      {" "}
-                      research excellence
-                    </span>
-                    .
-                  </p>
-
-                  <p>
-                    We foster a collaborative environment where students work on
-                    real-world projects, conduct research, participate in
-                    hackathons, and develop solutions that make a meaningful
-                    impact on society.
-                  </p>
-                </motion.div>
-
-                <motion.div
-                  variants={itemVariants}
-                  className="flex flex-wrap gap-4 mt-8"
-                >
-                  <div className="flex items-center gap-2 px-4 py-2 bg-blue-500/20 text-blue-300 rounded-full border border-blue-500/30">
-                    <FaLightbulb />
-                    <span className="text-sm font-medium">Innovation Hub</span>
-                  </div>
-                  <div className="flex items-center gap-2 px-4 py-2 bg-green-500/20 text-green-300 rounded-full border border-green-500/30">
-                    <FaHandshake />
-                    <span className="text-sm font-medium">Research Center</span>
-                  </div>
-                  <div className="flex items-center gap-2 px-4 py-2 bg-purple-500/20 text-purple-300 rounded-full border border-purple-500/30">
-                    <FaUsers />
-                    <span className="text-sm font-medium">Tech Community</span>
-                  </div>
-                </motion.div>
+        {/* Hero Section */}
+        <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-b border-white/10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            
+            {/* Left Column: Mission Narrative */}
+            <div className="lg:col-span-7">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-4 border backdrop-blur-md bg-[#1769FF]/15 border-[#1769FF]/40 text-[#49A3FF]">
+                <span className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
+                <span>EST. 2004 // 20+ YEARS HERITAGE</span>
               </div>
 
-              {/* Visual Element - UPDATED STATS */}
-              <motion.div variants={itemVariants} className="relative">
-                <div className="backdrop-blur-sm bg-white/5 rounded-2xl p-8 shadow-xl border border-white/10 hover:border-white/20 transition-all duration-300">
-                  <div className="grid grid-cols-2 gap-4 text-center">
-                    <div className="bg-blue-500/10 rounded-xl p-4 border border-blue-500/20">
-                      <div className="text-3xl font-bold text-blue-400 mb-2">
-                        500+
-                      </div>
-                      <div className="text-gray-300 text-sm">
-                        Projects Completed
-                      </div>
-                    </div>
-                    <div className="bg-purple-500/10 rounded-xl p-4 border border-purple-500/20">
-                      <div className="text-3xl font-bold text-purple-400 mb-2">
-                        50+
-                      </div>
-                      <div className="text-gray-300 text-sm">
-                        Active Members
-                      </div>
-                    </div>
-                    <div className="bg-green-500/10 rounded-xl p-4 border border-green-500/20">
-                      <div className="text-3xl font-bold text-green-400 mb-2">
-                        10+
-                      </div>
-                      <div className="text-gray-300 text-sm">Publications</div>
-                    </div>
-                    <div className="bg-orange-500/10 rounded-xl p-4 border border-orange-500/20">
-                      <div className="text-3xl font-bold text-orange-400 mb-2">
-                        20+
-                      </div>
-                      <div className="text-gray-300 text-sm">Years Legacy</div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          </motion.div>
-
-          {/* Domains Section - UPDATED GRID */}
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="mb-24"
-          >
-            <div className="text-center mb-16">
-              <motion.div
-                variants={itemVariants}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-md text-white rounded-full mb-6 border border-white/20 shadow-lg"
-              >
-                <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
-                <span className="text-sm font-medium">Our Expertise</span>
-              </motion.div>
-
-              <motion.h2
-                variants={itemVariants}
-                className="text-4xl md:text-5xl font-bold mb-6"
-              >
-                <span className="bg-gradient-to-r from-white via-purple-100 to-pink-200 bg-clip-text text-transparent">
-                  Technology
-                </span>{" "}
-                <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 bg-clip-text text-transparent">
-                  Domains
+              <h1 className="font-extrabold text-4xl sm:text-6xl lg:text-7xl tracking-tighter leading-none mb-6 text-[#EAF1FF] uppercase font-sans">
+                About <br />
+                <span className="italic font-serif font-normal text-[#49A3FF] lowercase tracking-normal text-3xl sm:text-5xl">
+                  the center.
                 </span>
-              </motion.h2>
+              </h1>
 
-              <motion.p
-                variants={itemVariants}
-                className="text-xl text-purple-100/90 max-w-4xl mx-auto leading-relaxed"
-              >
-                Explore the diverse technological domains where our members
-                excel and innovate
-              </motion.p>
+              <p className="text-base sm:text-lg text-[#8793A8] leading-relaxed font-sans mb-6 font-normal">
+                The <strong className="text-white font-bold">Advanced Academic Center (AAC)</strong> of GRIET, Hyderabad is an inter-disciplinary research center and technology incubator. Conceived in 2004 by Dr. S.N.N. Pandit, AAC empowers ambitious student researchers to engineer production systems, file patents, publish peer-reviewed papers, and launch commercial ventures.
+              </p>
+
+              <div className="flex flex-wrap gap-2 text-xs font-mono text-[#8793A8]">
+                <span className="px-3 py-1.5 rounded-lg bg-[#101725] border border-white/10 text-[#49A3FF] font-bold">
+                  COORD: 17.52° N, 78.36° E
+                </span>
+                <span className="px-3 py-1.5 rounded-lg bg-[#101725] border border-white/10 text-white">
+                  ROOM 3614, BLOCK 3, GRIET
+                </span>
+                <span className="px-3 py-1.5 rounded-lg bg-[#101725] border border-white/10 text-[#10b981] font-bold">
+                  24/7 R&amp;D ACCESS
+                </span>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
-              {domains.map((domain, index) => (
-                <motion.div
-                  key={index}
-                  variants={cardVariants}
-                  whileHover={{ y: -10, scale: 1.05 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                  className={`group relative backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-300 ${
-                    domain.fullWidth ? "lg:col-span-3" : "lg:col-span-2"
+            {/* Right Column: Key Metric Tiles */}
+            <div className="lg:col-span-5 grid grid-cols-2 gap-4">
+              <div className="garcy-glass-card p-6 border border-white/15 bg-gradient-to-br from-[#101725] to-[#080B12]">
+                <span className="font-mono text-[10px] text-[#8793A8] uppercase">FOUNDING</span>
+                <div className="text-3xl sm:text-4xl font-extrabold text-[#49A3FF] my-1 font-sans">
+                  2004
+                </div>
+                <span className="font-mono text-[10px] text-[#8793A8]">20+ YRS HERITAGE</span>
+              </div>
+
+              <div className="garcy-glass-card p-6 border border-white/15 bg-gradient-to-br from-[#101725] to-[#080B12]">
+                <span className="font-mono text-[10px] text-[#8793A8] uppercase">PROJECTS</span>
+                <div className="text-3xl sm:text-4xl font-extrabold text-[#EAF1FF] my-1 font-sans">
+                  50+
+                </div>
+                <span className="font-mono text-[10px] text-[#10b981]">PROTOTYPES</span>
+              </div>
+
+              <div className="garcy-glass-card p-6 border border-white/15 bg-gradient-to-br from-[#101725] to-[#080B12]">
+                <span className="font-mono text-[10px] text-[#8793A8] uppercase">PATENTS</span>
+                <div className="text-3xl sm:text-4xl font-extrabold text-[#49A3FF] my-1 font-sans">
+                  2
+                </div>
+                <span className="font-mono text-[10px] text-[#8793A8]">PUBLISHED IP</span>
+              </div>
+
+              <div className="garcy-glass-card p-6 border border-white/15 bg-gradient-to-br from-[#101725] to-[#080B12]">
+                <span className="font-mono text-[10px] text-[#8793A8] uppercase">COHORT</span>
+                <div className="text-3xl sm:text-4xl font-extrabold text-[#EAF1FF] my-1 font-sans">
+                  400+
+                </div>
+                <span className="font-mono text-[10px] text-[#10b981]">RESEARCH FELLOWS</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 5 Specialized Research Domains */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-b border-white/10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-3 border backdrop-blur-md bg-[#1769FF]/15 border-[#1769FF]/40 text-[#49A3FF]">
+                <span>01 // Academic Specialization Matrix</span>
+              </div>
+              <h2 className="font-extrabold text-3xl sm:text-5xl tracking-tighter text-[#EAF1FF] uppercase font-sans">
+                5 Specialized Domains.
+              </h2>
+            </div>
+            <p className="mt-4 md:mt-0 text-xs sm:text-sm text-[#8793A8] max-w-sm font-sans font-normal leading-relaxed">
+              Interdisciplinary training curricula preparing students across computational, embedded, and mobile disciplines.
+            </p>
+          </div>
+
+          {/* Domain Tabs */}
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 mb-8">
+            {domains.map((dom, idx) => {
+              const isSelected = activeDomain === idx;
+              return (
+                <button
+                  key={dom.code}
+                  type="button"
+                  onClick={() => setActiveDomain(idx)}
+                  className={`p-4 rounded-xl border text-left transition-all ${
+                    isSelected
+                      ? "bg-[#101725] border-[#1769FF] shadow-[0_4px_20px_rgba(23,105,255,0.35)]"
+                      : "bg-[#101725]/50 border-white/10 hover:border-white/20"
                   }`}
                 >
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${domain.color}/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-                  ></div>
-
-                  <div className="p-6 relative z-10">
-                    <div
-                      className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${domain.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}
-                    >
-                      {domain.icon}
-                    </div>
-
-                    <div className="flex items-center gap-3 mb-4">
-                      <h3 className="text-xl font-bold text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300 transition-all duration-300">
-                        {domain.title}
-                      </h3>
-                      <span
-                        className={`px-2 py-1 bg-gradient-to-r ${domain.color}/20 text-xs font-medium rounded border border-white/20`}
-                      >
-                        {domain.shortName}
-                      </span>
-                    </div>
-
-                    <p className="text-gray-400 mb-6 group-hover:text-gray-300 transition-colors duration-300">
-                      {domain.description}
-                    </p>
-
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium text-gray-300 mb-3">
-                        Key Focus Areas:
-                      </h4>
-                      {domain.projects.map((project, idx) => (
-                        <div key={idx} className="flex items-center gap-2">
-                          <div
-                            className={`w-2 h-2 rounded-full bg-gradient-to-r ${domain.color}`}
-                          ></div>
-                          <span className="text-sm text-gray-400">
-                            {project}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
+                  <div className="text-[10px] font-mono text-[#49A3FF] font-bold mb-1">
+                    DOMAIN {dom.code}
                   </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Selection Process Section - UPDATED */}
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="mb-24"
-          >
-            <div className="text-center mb-16">
-              <motion.div
-                variants={itemVariants}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-md text-white rounded-full mb-6 border border-white/20 shadow-lg"
-              >
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-sm font-medium">Join Us</span>
-              </motion.div>
-
-              <motion.h2
-                variants={itemVariants}
-                className="text-4xl md:text-5xl font-bold mb-6"
-              >
-                <span className="bg-gradient-to-r from-white via-green-100 to-emerald-200 bg-clip-text text-transparent">
-                  Selection
-                </span>{" "}
-                <span className="bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent">
-                  Process
-                </span>
-              </motion.h2>
-
-              <motion.p
-                variants={itemVariants}
-                className="text-xl text-green-100/90 max-w-4xl mx-auto leading-relaxed"
-              >
-                Our rigorous selection process ensures we identify the most
-                passionate and talented students
-              </motion.p>
-            </div>
-
-            <div className="max-w-4xl mx-auto">
-              {selectionSteps.map((step, index) => (
-                <motion.div
-                  key={index}
-                  variants={itemVariants}
-                  className="relative mb-12 last:mb-0"
-                >
-                  <div className="flex items-start gap-6">
-                    <div className="flex-shrink-0">
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">
-                        {step.step}
-                      </div>
-                    </div>
-
-                    <div className="backdrop-blur-sm bg-white/5 rounded-2xl p-6 shadow-xl border border-white/10 hover:border-white/20 transition-all duration-300 flex-1">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="text-blue-400 text-xl">{step.icon}</div>
-                        <h3 className="text-xl font-bold text-white">
-                          {step.title}
-                        </h3>
-                      </div>
-                      <p className="text-gray-300 leading-relaxed">
-                        {step.description}
-                      </p>
-                    </div>
+                  <div className="text-xs font-bold text-white font-sans truncate">
+                    {dom.title}
                   </div>
+                </button>
+              );
+            })}
+          </div>
 
-                  {index < selectionSteps.length - 1 && (
-                    <div className="absolute left-8 top-16 w-0.5 h-12 bg-gradient-to-b from-blue-500 to-purple-600"></div>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* How Classes Work Section - UPDATED */}
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="mb-24"
-          >
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-              {/* Visual Element */}
-              <motion.div
-                variants={itemVariants}
-                className="order-2 lg:order-1"
-              >
-                <div className="backdrop-blur-sm bg-white/5 rounded-2xl p-8 shadow-xl border border-white/10 hover:border-white/20 transition-all duration-300">
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-4 p-4 bg-blue-500/10 rounded-xl border border-blue-500/20">
-                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white">
-                        🏢
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-white">
-                          Dedicated Classrooms
-                        </h4>
-                        <p className="text-gray-400 text-sm">
-                          Modern labs equipped with latest technology
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-4 p-4 bg-purple-500/10 rounded-xl border border-purple-500/20">
-                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white">
-                        📝
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-white">
-                          Interactive Learning
-                        </h4>
-                        <p className="text-gray-400 text-sm">
-                          Hands-on sessions with whiteboards and projectors
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-4 p-4 bg-green-500/10 rounded-xl border border-green-500/20">
-                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white">
-                        👨‍💻
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-white">
-                          Practical Sessions
-                        </h4>
-                        <p className="text-gray-400 text-sm">
-                          Live coding and project development
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+          {/* Active Domain Detailed Card */}
+          <div className="garcy-glass-card p-6 sm:p-8 border border-[#1769FF]/50 bg-gradient-to-br from-[#101725] to-[#080B12]">
+            <div className="flex items-start gap-5 mb-6">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#1769FF] to-[#080B12] flex items-center justify-center text-xl text-[#49A3FF] border border-[#1769FF]/60 flex-shrink-0">
+                <DomainIcon />
+              </div>
+              <div>
+                <div className="text-[10px] font-mono text-[#49A3FF] uppercase font-bold tracking-wider mb-1">
+                  DOMAIN {currentDomain.code} &bull; {currentDomain.tagline}
                 </div>
-              </motion.div>
-
-              {/* Content */}
-              <div className="order-1 lg:order-2">
-                <motion.div
-                  variants={itemVariants}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-md text-white rounded-full mb-6 border border-white/20 shadow-lg"
-                >
-                  <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium">
-                    Learning Environment
-                  </span>
-                </motion.div>
-
-                <motion.h2
-                  variants={itemVariants}
-                  className="text-4xl md:text-5xl font-bold mb-6"
-                >
-                  <span className="bg-gradient-to-r from-white via-orange-100 to-yellow-200 bg-clip-text text-transparent">
-                    How Classes
-                  </span>{" "}
-                  <span className="bg-gradient-to-r from-orange-400 via-yellow-400 to-red-400 bg-clip-text text-transparent">
-                    Work
-                  </span>
-                </motion.h2>
-
-                <motion.div
-                  variants={itemVariants}
-                  className="space-y-6 text-gray-300 leading-relaxed"
-                >
-                  <p className="text-lg">
-                    Our classes are conducted in{" "}
-                    <span className="text-blue-400 font-semibold">
-                      dedicated AAC rooms
-                    </span>{" "}
-                    equipped with state-of-the-art technology, creating an
-                    immersive learning environment.
-                  </p>
-
-                  <p>
-                    Each session combines{" "}
-                    <span className="text-purple-400 font-semibold">
-                      theoretical concepts
-                    </span>{" "}
-                    with
-                    <span className="text-green-400 font-semibold">
-                      {" "}
-                      hands-on practice
-                    </span>
-                    . Students work directly on computers, following along with
-                    instructors who demonstrate concepts on smart boards and
-                    projectors.
-                  </p>
-
-                  <p>
-                    Our unique approach includes{" "}
-                    <span className="text-orange-400 font-semibold">
-                      peer learning
-                    </span>
-                    , where senior students mentor juniors, creating a
-                    collaborative atmosphere that accelerates learning and
-                    builds strong technical communities.
-                  </p>
-
-                  <p>
-                    Classes are structured around{" "}
-                    <span className="text-red-400 font-semibold">
-                      project-based learning
-                    </span>
-                    , ensuring students don't just learn concepts but apply them
-                    to build real-world solutions.
-                  </p>
-                </motion.div>
-
-                <motion.div variants={itemVariants} className="mt-8">
-                  <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500/20 to-yellow-500/20 text-orange-300 rounded-full border border-orange-500/30 w-fit">
-                    <FaUsers />
-                    <span className="text-sm font-medium">
-                      30-40 students per domain
-                    </span>
-                  </div>
-                </motion.div>
+                <h3 className="text-2xl font-extrabold text-white font-sans mb-2">
+                  {currentDomain.title}
+                </h3>
+                <p className="text-xs sm:text-sm text-[#8793A8] leading-relaxed font-sans max-w-3xl">
+                  {currentDomain.description}
+                </p>
               </div>
             </div>
-          </motion.div>
-        </div>
-      </div>
-    </Layout>
-  );
-};
 
-export default AboutAAC;
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-white/10">
+              <div>
+                <div className="text-[10px] font-mono text-[#49A3FF] uppercase font-bold tracking-wider mb-3">
+                  Core Technologies:
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {currentDomain.technologies.map((t) => (
+                    <span
+                      key={t}
+                      className="px-3 py-1 rounded-lg bg-[#080B12] border border-white/10 text-xs font-mono text-[#EAF1FF]"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div className="text-[10px] font-mono text-[#49A3FF] uppercase font-bold tracking-wider mb-3">
+                  Flagship Lab Deliverables:
+                </div>
+                <div className="space-y-1.5 text-xs text-[#8793A8] font-sans">
+                  {currentDomain.projects.map((proj) => (
+                    <div key={proj} className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#1769FF]" />
+                      <span>{proj}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 5-Stage Selection & Induction Protocol */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-b border-white/10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-3 border backdrop-blur-md bg-[#1769FF]/15 border-[#1769FF]/40 text-[#49A3FF]">
+                <span>02 // Recruitment &amp; Onboarding</span>
+              </div>
+              <h2 className="font-extrabold text-3xl sm:text-5xl tracking-tighter text-[#EAF1FF] uppercase font-sans">
+                5-Stage Induction.
+              </h2>
+            </div>
+            <p className="mt-4 md:mt-0 text-xs sm:text-sm text-[#8793A8] max-w-sm font-sans font-normal leading-relaxed">
+              Every student cohort undergoes a rigorous merit-driven selection process evaluating aptitude, literature synthesis, and oral defense.
+            </p>
+          </div>
+
+          {/* Steps Timeline Selector */}
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 mb-8">
+            {selectionSteps.map((s, idx) => {
+              const isSelected = activeStep === idx;
+              return (
+                <button
+                  key={s.step}
+                  type="button"
+                  onClick={() => setActiveStep(idx)}
+                  className={`p-4 rounded-xl border text-left transition-all ${
+                    isSelected
+                      ? "bg-[#101725] border-[#1769FF] shadow-[0_4px_20px_rgba(23,105,255,0.35)]"
+                      : "bg-[#101725]/50 border-white/10 hover:border-white/20"
+                  }`}
+                >
+                  <div className="text-[10px] font-mono text-[#49A3FF] font-bold mb-1">
+                    {s.phase}
+                  </div>
+                  <div className="text-xs font-bold text-white font-sans truncate">
+                    {s.title}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Active Step Card */}
+          <div className="garcy-glass-card p-6 sm:p-8 border border-[#1769FF]/50 bg-gradient-to-br from-[#101725] to-[#080B12]">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+              <div>
+                <span className="text-[10px] font-mono text-[#49A3FF] font-bold uppercase tracking-wider">
+                  {currentStep.phase} &bull; {currentStep.subtitle}
+                </span>
+                <h3 className="text-2xl font-extrabold text-white font-sans mt-1">
+                  {currentStep.title}
+                </h3>
+              </div>
+              <span className="px-3 py-1 rounded-full bg-[#080B12] border border-[#1769FF]/30 text-[10px] font-mono text-[#49A3FF] font-bold">
+                {currentStep.tag}
+              </span>
+            </div>
+
+            <p className="text-xs sm:text-sm text-[#8793A8] leading-relaxed font-sans mb-6">
+              {currentStep.description}
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-white/10 text-xs font-mono text-[#8793A8]">
+              <div>
+                <span className="text-white font-bold uppercase block mb-1">Eligibility:</span>
+                <span>{currentStep.criteria}</span>
+              </div>
+              <div>
+                <span className="text-[#49A3FF] font-bold uppercase block mb-1">Deliverable:</span>
+                <span>{currentStep.deliverable}</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Global Footer */}
+        <GarcyFooter />
+
+        {/* Command Palette */}
+        <GarcyCommandPalette
+          isOpen={searchOpen}
+          onClose={() => setSearchOpen(false)}
+        />
+
+        {/* Case Studies Drawer */}
+        <GarcyCaseStudies
+          isOpen={caseStudiesOpen}
+          onClose={() => setCaseStudiesOpen(false)}
+        />
+      </main>
+    </>
+  );
+}
