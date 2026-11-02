@@ -7,20 +7,29 @@
 
 :root {
   color-scheme: dark;
-  --void-black: #080B12;
-  --deep-navy: #101725;
-  --electric-blue: #1769FF;
-  --ice-blue: #49A3FF;
-  --cloud-white: #EAF1FF;
-  --steel-grey: #8793A8;
+  --void-black: #08090C;
+  --deep-navy: #111318;
+  --electric-blue: #E5A93C;
+  --ice-blue: #F6C463;
+  --cloud-white: #FAF6ED;
+  --steel-grey: #9E988A;
 
-  --garcy-bg: #080B12;
-  --garcy-surface: rgba(16, 23, 37, 0.75);
-  --garcy-surface-elevated: rgba(22, 32, 52, 0.88);
-  --garcy-glass: rgba(23, 105, 255, 0.08);
-  --garcy-border: rgba(73, 163, 255, 0.22);
-  --garcy-border-subtle: rgba(255, 255, 255, 0.09);
-  --garcy-accent: #1769FF;
+  --bg: #08090C;
+  --surface: #111318;
+  --border: #2A261F;
+  --accent: #E5A93C;
+  --accent-hover: #F6C463;
+  --hud-text: #9E988A;
+
+  --garcy-bg: #08090C;
+  --garcy-surface: #111318;
+  --garcy-surface-elevated: #161920;
+  --garcy-glass: rgba(229, 169, 60, 0.08);
+  --garcy-border: #2A261F;
+  --garcy-border-subtle: #2A261F;
+  --garcy-accent: #E5A93C;
+  --garcy-accent-hover: #F6C463;
+  --garcy-hud: #9E988A;
   
   --garcy-sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
   --garcy-body: 'Inter', system-ui, sans-serif;
@@ -59,7 +68,7 @@ h1, h2, h3, h4, .font-heading {
   border-radius: 20px;
   background: var(--void-black);
   isolation: isolate;
-  border: 1px solid rgba(73, 163, 255, 0.14);
+  border: 1px solid rgba(229, 169, 60, 0.14);
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 24px 64px rgba(0, 0, 0, 0.85);
 }
 
@@ -86,7 +95,7 @@ h1, h2, h3, h4, .font-heading {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(circle 460px at var(--light-x, 50%) var(--light-y, 45%), rgba(23, 105, 255, 0.08) 0%, transparent 65%);
+  background: radial-gradient(circle 460px at var(--light-x, 50%) var(--light-y, 45%), rgba(229, 169, 60, 0.08) 0%, transparent 65%);
   z-index: 5;
   transition: opacity 400ms ease;
 }
@@ -103,7 +112,7 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: #06080e;
+  background: #08090C;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -205,8 +214,8 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
   letter-spacing: 0.06em;
   color: #fff;
   background: var(--electric-blue);
-  box-shadow: 0 8px 32px rgba(23, 105, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  border: 1px solid rgba(73, 163, 255, 0.6);
+  box-shadow: 0 8px 32px rgba(229, 169, 60, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(229, 169, 60, 0.6);
   cursor: pointer;
   transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -215,7 +224,7 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
   background: var(--ice-blue);
   color: #000;
   transform: translateY(-2px);
-  box-shadow: 0 14px 40px rgba(73, 163, 255, 0.55);
+  box-shadow: 0 14px 40px rgba(229, 169, 60, 0.55);
 }
 
 /* ==========================================================================
@@ -227,10 +236,10 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
   gap: 8px;
   padding: 4px;
   border-radius: 12px;
-  background: rgba(16, 23, 37, 0.7);
+  background: rgba(17, 19, 24, 0.7);
   backdrop-filter: blur(30px) saturate(135%);
   -webkit-backdrop-filter: blur(30px) saturate(135%);
-  box-shadow: inset 0 0 0 0.6px rgba(73, 163, 255, 0.22), 0 6px 20px rgba(0, 0, 0, 0.45);
+  box-shadow: inset 0 0 0 0.6px rgba(229, 169, 60, 0.22), 0 6px 20px rgba(0, 0, 0, 0.45);
   pointer-events: auto;
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
@@ -249,7 +258,7 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
   transition: transform 200ms ease, background 200ms ease;
   cursor: pointer;
   border: 0;
-  box-shadow: 0 4px 16px rgba(23, 105, 255, 0.35);
+  box-shadow: 0 4px 16px rgba(229, 169, 60, 0.35);
 }
 
 .profile-button:hover {
@@ -276,8 +285,8 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
 
 .search-shortcut:hover {
   color: var(--cloud-white);
-  border-color: rgba(73, 163, 255, 0.4);
-  background: #111726;
+  border-color: rgba(229, 169, 60, 0.4);
+  background: #111318;
 }
 
 /* ==========================================================================
@@ -299,11 +308,11 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
   border-radius: 17.2px;
   backdrop-filter: blur(24px) saturate(135%);
   -webkit-backdrop-filter: blur(24px) saturate(135%);
-  background: rgba(16, 23, 37, 0.78);
-  box-shadow: inset 0 0 0 0.75px rgba(73, 163, 255, 0.22),
+  background: rgba(17, 19, 24, 0.78);
+  box-shadow: inset 0 0 0 0.75px rgba(229, 169, 60, 0.22),
               inset 0 1px 0 rgba(255, 255, 255, 0.12),
               0 10px 30px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(73, 163, 255, 0.16);
+  border: 1px solid rgba(229, 169, 60, 0.16);
   transform-origin: center center;
   will-change: transform;
   transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -313,7 +322,7 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
 
 .notification:hover {
   border-color: var(--ice-blue);
-  background: rgba(22, 33, 54, 0.92);
+  background: rgba(24, 26, 32, 0.92);
 }
 
 .portrait {
@@ -329,7 +338,7 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(73, 163, 255, 0.25);
+  border: 1px solid rgba(229, 169, 60, 0.25);
 }
 
 .notification-copy {
@@ -429,7 +438,7 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
   background: rgba(8, 11, 18, 0.75);
   padding: 6px 16px;
   border-radius: 20px;
-  border: 1px solid rgba(73, 163, 255, 0.18);
+  border: 1px solid rgba(229, 169, 60, 0.18);
   backdrop-filter: blur(12px);
 }
 
@@ -482,7 +491,7 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
   color: var(--cloud-white);
   border-radius: 20px;
   overflow: hidden;
-  border: 1px solid rgba(73, 163, 255, 0.25);
+  border: 1px solid rgba(229, 169, 60, 0.25);
 }
 
 .case-hero {
@@ -572,7 +581,7 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
   color: #fff;
   font: 700 28px/1 var(--garcy-sans);
   letter-spacing: -0.04em;
-  border: 1px solid rgba(73, 163, 255, 0.15);
+  border: 1px solid rgba(229, 169, 60, 0.15);
 }
 
 .case-row {
@@ -596,7 +605,7 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
   justify-content: space-between;
   border-radius: 12px;
   color: #fff;
-  border: 1px solid rgba(73, 163, 255, 0.12);
+  border: 1px solid rgba(229, 169, 60, 0.12);
 }
 
 .case-panel h2 {
@@ -614,10 +623,10 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
 }
 
 .case-paragraph {
-  color: #8793a8;
+  color: #9E988A;
   padding: 80px 48px;
-  background: #0b0f19;
-  border-top: 1px solid rgba(73, 163, 255, 0.12);
+  background: #111318;
+  border-top: 1px solid rgba(229, 169, 60, 0.12);
 }
 
 .case-paragraph p {
@@ -632,8 +641,8 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
 .garcy-glass-header {
   backdrop-filter: blur(30px) saturate(135%);
   -webkit-backdrop-filter: blur(30px) saturate(135%);
-  background: rgba(16, 23, 37, 0.75);
-  box-shadow: inset 0 0 0 0.6px rgba(73, 163, 255, 0.25), 0 8px 32px rgba(0, 0, 0, 0.5);
+  background: rgba(17, 19, 24, 0.75);
+  box-shadow: inset 0 0 0 0.6px rgba(229, 169, 60, 0.25), 0 8px 32px rgba(0, 0, 0, 0.5);
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
@@ -641,12 +650,12 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
 .garcy-glass-card {
   backdrop-filter: blur(24px) saturate(135%);
   -webkit-backdrop-filter: blur(24px) saturate(135%);
-  background: rgba(16, 23, 37, 0.72);
-  box-shadow: inset 0 0 0 0.75px rgba(73, 163, 255, 0.18),
+  background: rgba(17, 19, 24, 0.72);
+  box-shadow: inset 0 0 0 0.75px rgba(229, 169, 60, 0.18),
               inset 0 1px 0 rgba(255, 255, 255, 0.1),
               0 12px 32px rgba(0, 0, 0, 0.5);
   border-radius: 17px;
-  border: 1px solid rgba(73, 163, 255, 0.14);
+  border: 1px solid rgba(229, 169, 60, 0.14);
 }
 
 /* ==========================================================================
@@ -702,16 +711,16 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
   overflow: hidden;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  background: #101726;
-  border: 1px solid rgba(73, 163, 255, 0.22);
+  background: #111318;
+  border: 1px solid rgba(229, 169, 60, 0.22);
   box-shadow: 0 20px 45px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.12);
   will-change: transform;
   transition: border-color 250ms ease, box-shadow 250ms ease;
 }
 
 .dome-tile:hover {
-  border-color: rgba(73, 163, 255, 0.7);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9), 0 0 25px rgba(23, 105, 255, 0.35);
+  border-color: rgba(229, 169, 60, 0.7);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9), 0 0 25px rgba(229, 169, 60, 0.35);
 }
 
 .dome-tile > img {
@@ -790,27 +799,27 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
   color: #fff;
   backdrop-filter: blur(20px) saturate(135%);
   -webkit-backdrop-filter: blur(20px) saturate(135%);
-  box-shadow: inset 0 0 0 1px rgba(73, 163, 255, 0.25), 0 8px 24px rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 0 0 1px rgba(229, 169, 60, 0.25), 0 8px 24px rgba(0, 0, 0, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.08);
   cursor: pointer;
   transition: all 200ms ease;
 }
 
 .projects-back {
-  background: rgba(16, 23, 37, 0.75);
+  background: rgba(17, 19, 24, 0.75);
 }
 
 .projects-next {
-  background: rgba(23, 105, 255, 0.35);
+  background: rgba(229, 169, 60, 0.35);
 }
 
 .projects-back:hover {
-  background: rgba(22, 33, 54, 0.95);
-  box-shadow: inset 0 0 0 1px rgba(73, 163, 255, 0.5), 0 10px 30px rgba(0, 0, 0, 0.8);
+  background: rgba(24, 26, 32, 0.95);
+  box-shadow: inset 0 0 0 1px rgba(229, 169, 60, 0.5), 0 10px 30px rgba(0, 0, 0, 0.8);
 }
 
 .projects-next:hover {
-  background: rgba(23, 105, 255, 0.6);
-  box-shadow: inset 0 0 0 1px rgba(73, 163, 255, 0.8), 0 10px 30px rgba(23, 105, 255, 0.4);
+  background: rgba(229, 169, 60, 0.6);
+  box-shadow: inset 0 0 0 1px rgba(229, 169, 60, 0.8), 0 10px 30px rgba(229, 169, 60, 0.4);
 }
 

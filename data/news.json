@@ -1,0 +1,32 @@
+[
+  {
+    "id": "national-hackathon-win",
+    "title": "AAC Students Win National Hackathon with Innovative IoT Health System",
+    "slug": "aac-students-win-national-hackathon",
+    "content": "The Advanced Academic Center team has achieved remarkable success at the National Hackathon. Our students presented an innovative healthcare monitoring system that uses IoT sensors and machine learning algorithms to predict health issues before they become critical.",
+    "publishedAt": "2024-03-15T00:00:00.000Z",
+    "categories": "ACHIEVEMENT",
+    "mainImageUrl": "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_400,w_500/v1664100162/AAC-web/news_events/Juniorshackathon2_opwpyj.jpg",
+    "status": "published"
+  },
+  {
+    "id": "microsoft-partnership",
+    "title": "New AI Research Collaboration with Industry Leaders",
+    "slug": "new-research-partnership-industry",
+    "content": "AAC announces an expanded research initiative focusing on applied artificial intelligence in engineering education and low-latency computer vision pipelines.",
+    "publishedAt": "2024-02-20T00:00:00.000Z",
+    "categories": "RESEARCH",
+    "mainImageUrl": "https://res.cloudinary.com/aacgriet/image/upload/v1730537987/AAC-web/news_events/expo2023/wxvfrd1n979puot2zgny.jpg",
+    "status": "published"
+  },
+  {
+    "id": "nrsc-mou-announcement",
+    "title": "Official R&D Strategic Alliance with NRSC (ISRO)",
+    "slug": "nrsc-mou-announcement",
+    "content": "GRIET Advanced Academic Center solidifies long-term scientific partnership with the National Remote Sensing Centre for student research into satellite data and geospatial analytics.",
+    "publishedAt": "2024-01-10T00:00:00.000Z",
+    "categories": "PARTNERSHIP",
+    "mainImageUrl": "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_400,w_500/v1664100167/AAC-web/news_events/nrsc5_e8it62.jpg",
+    "status": "published"
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "level-up",
+    "title": "Level Up: In The World of Game Development",
+    "cover": "https://res.cloudinary.com/aacgriet/image/upload/v1730655073/AAC-web/books/wthiaomb2vuhr9sqfkr8.png",
+    "authors": [
+      "Rithvik Mandya",
+      "Arekela Anjali"
+    ],
+    "description": "A comprehensive guide for aspiring game developers, especially those interested in using the Unity Engine, covering conceptualization, game mechanics, and 3D graphics.",
+    "category": "Game Development",
+    "year": 2023,
+    "color": "indigo",
+    "status": "published"
+  },
+  {
+    "id": "python-nutshell",
+    "title": "Fundamentals of Python in a Nutshell",
+    "cover": "https://res.cloudinary.com/aacgriet/image/upload/v1730629103/AAC-web/books/chadjmxbuhgfqx3ox91r.png",
+    "authors": [
+      "Harshavardhini Kyatam",
+      "Jatin Menghwani",
+      "Kalyan Varma",
+      "Saichandana Linga"
+    ],
+    "description": "Introductory guide to Python programming, data structures, and practical application modules curated by AAC student leads.",
+    "category": "Programming",
+    "year": 2022,
+    "color": "blue",
+    "status": "published"
+  }
+]

@@ -1,0 +1,72 @@
+[
+  {
+    "id": "cc-2025-1",
+    "name": "Jayanth Potluri",
+    "designation": "President",
+    "year": 2025,
+    "department": "CSE",
+    "image": "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_400,w_400/v1664100140/AAC-web/corecommitee/suhasg_r73mrq.jpg",
+    "linkedin": "https://www.linkedin.com/in/jayanth-potluri-6a93b21ba/",
+    "status": "active"
+  },
+  {
+    "id": "cc-2025-2",
+    "name": "Harsha Vardhini",
+    "designation": "Vice President",
+    "year": 2025,
+    "department": "CSE",
+    "image": "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_400,w_400/v1664100133/AAC-web/corecommitee/harshini_av6yso.jpg",
+    "linkedin": "https://www.linkedin.com/",
+    "status": "active"
+  },
+  {
+    "id": "cc-2025-3",
+    "name": "Steven Gopaldas",
+    "designation": "Head Training & Development",
+    "year": 2025,
+    "department": "IT",
+    "image": "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_400,w_400/v1664100139/AAC-web/corecommitee/rishwanth_nsbket.jpg",
+    "linkedin": "https://www.linkedin.com/in/stevengopaldas/",
+    "status": "active"
+  },
+  {
+    "id": "cc-2025-4",
+    "name": "Jatin Menghwani",
+    "designation": "Head Public & Corporate Relations",
+    "year": 2025,
+    "department": "IT",
+    "image": "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_400,w_400/v1664100140/AAC-web/corecommitee/suhasb_vtu0tm.jpg",
+    "linkedin": "https://www.linkedin.com/in/jatin-menghwani-85b43b15b/",
+    "status": "active"
+  },
+  {
+    "id": "cc-2024-1",
+    "name": "Stitha Pragna",
+    "designation": "Head Database & Event Management",
+    "year": 2024,
+    "department": "ECE",
+    "image": "https://res.cloudinary.com/aacgriet/image/upload/c_scale,w_400/v1664100136/AAC-web/corecommitee/reethika_q2x5li.jpg",
+    "linkedin": "",
+    "status": "alumni"
+  },
+  {
+    "id": "cc-2024-2",
+    "name": "Y Bhuvan",
+    "designation": "Head Accounting & Assets",
+    "year": 2024,
+    "department": "EEE",
+    "image": "https://res.cloudinary.com/aacgriet/image/upload/c_scale,w_400/v1664100141/AAC-web/corecommitee/umakanthsahu_ehpnkf.jpg",
+    "linkedin": "https://www.linkedin.com/in/y-bhuvan-chand-yarlagadda/",
+    "status": "alumni"
+  },
+  {
+    "id": "cc-2023-1",
+    "name": "Deepak Venkatesan",
+    "designation": "Assistant Coordinator Training",
+    "year": 2023,
+    "department": "CSE",
+    "image": "https://res.cloudinary.com/aacgriet/image/upload/c_scale,w_400/v1664100136/AAC-web/corecommitee/richavasavi_i0znbb.jpg",
+    "linkedin": "",
+    "status": "alumni"
+  }
+]

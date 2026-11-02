@@ -1,947 +1,1154 @@
-// src/pages/admin/index.js - Updated with Premium UI Design System and Achievements
-import React, { useState, useEffect, useRef } from 'react';
-import { useDatabase } from '@/hooks/useDatabase';
-import AdminAuth from '@/components/AdminAuth';
-import { motion, AnimatePresence } from 'framer-motion';
-
-// Custom CSS for breathing animations
-const customStyles = `
-  @keyframes breathe {
-    0%, 100% { opacity: 0.3; transform: scale(1); }
-    50% { opacity: 0.6; transform: scale(1.05); }
-  }
-  
-  @keyframes breathe-slow {
-    0%, 100% { opacity: 0.2; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(1.1); }
-  }
-  
-  @keyframes float {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-10px) rotate(180deg); }
-  }
-  
-  @keyframes grid-move {
-    0% { transform: translateX(-100%) skewY(-12deg); }
-    100% { transform: translateX(100%) skewY(-12deg); }
-  }
-  
-  .animate-breathe {
-    animation: breathe 3s ease-in-out infinite;
-  }
-  
-  .animate-breathe-slow {
-    animation: breathe-slow 4s ease-in-out infinite;
-  }
-  
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
-  
-  .animate-grid {
-    animation: grid-move 8s linear infinite;
-  }
-  
-  .animation-delay-1000 {
-    animation-delay: 1s;
-  }
-  
-  .animation-delay-2000 {
-    animation-delay: 2s;
-  }
-  
-  .animation-delay-500 {
-    animation-delay: 0.5s;
-  }
-`;
-
-// Inject styles
-if (typeof document !== 'undefined') {
-  const styleSheet = document.createElement('style');
-  styleSheet.textContent = customStyles;
-  document.head.appendChild(styleSheet);
-}
-import { 
-  FaPlus, 
-  FaEdit, 
-  FaTrash, 
-  FaEye, 
-  FaBook, 
-  FaNewspaper, 
-  FaCalendarAlt, 
+import React, { useState, useMemo } from "react";
+import Head from "next/head";
+import Link from "next/link";
+import { useDatabase } from "@/hooks/useDatabase";
+import AdminAuth from "@/components/AdminAuth";
+import {
+  FaCalendarAlt,
   FaProjectDiagram,
+  FaUsers,
+  FaNewspaper,
   FaFileAlt,
   FaCertificate,
+  FaBook,
   FaRocket,
   FaGraduationCap,
-  FaUsers,
-  FaDownload,
-  FaUpload,
-  FaTrashAlt,
-  FaFileImport,
-  FaFileExport,
-  FaDatabase,
-  FaExclamationTriangle,
-  FaTachometerAlt,
-  FaTrophy
-} from 'react-icons/fa';
+  FaTrophy,
+  FaPlus,
+  FaEdit,
+  FaTrash,
+  FaSearch,
+  FaExternalLinkAlt,
+  FaTimes,
+  FaCheck,
+  FaArrowLeft,
+  FaSignOutAlt,
+  FaImage,
+} from "react-icons/fa";
 
-// Form components
-import NewsForm from '@/components/Forms/NewsForm';
-import EventsForm from '@/components/Forms/EventsForm';
-import ProjectsForm from '@/components/Forms/ProjectsForm';
-import PublicationsForm from '@/components/Forms/PublicationsForm';
-import PatentsForm from '@/components/Forms/PatentsForm';
-import BooksForm from '@/components/Forms/BooksForm';
-import StartupsForm from '@/components/Forms/StartupsForm';
-import AlumniForm from '@/components/Forms/AlumniForm';
-import AchievementsForm from '@/components/Forms/AchievementsForm';
+// The 10 sections configured with metadata and fields
+const SECTIONS = [
+  {
+    id: "events",
+    label: "Events & Symposia",
+    singular: "Event",
+    icon: <FaCalendarAlt />,
+    categoryKey: "category",
+    dateKey: "date",
+    color: "#3B82F6",
+  },
+  {
+    id: "projects",
+    label: "R&D Projects",
+    singular: "Project",
+    icon: <FaProjectDiagram />,
+    categoryKey: "categories",
+    dateKey: "publishedAt",
+    color: "#10B981",
+  },
+  {
+    id: "corecommittee",
+    label: "Core Committee",
+    singular: "Committee Member",
+    icon: <FaUsers />,
+    categoryKey: "department",
+    dateKey: "year",
+    color: "#8B5CF6",
+  },
+  {
+    id: "news",
+    label: "News & Dispatches",
+    singular: "News Article",
+    icon: <FaNewspaper />,
+    categoryKey: "categories",
+    dateKey: "publishedAt",
+    color: "#EC4899",
+  },
+  {
+    id: "publications",
+    label: "Publications & Papers",
+    singular: "Publication",
+    icon: <FaFileAlt />,
+    categoryKey: "category",
+    dateKey: "year",
+    color: "#6366F1",
+  },
+  {
+    id: "patents",
+    label: "Patents & IP",
+    singular: "Patent",
+    icon: <FaCertificate />,
+    categoryKey: "category",
+    dateKey: "date",
+    color: "#F59E0B",
+  },
+  {
+    id: "books",
+    label: "Books & Blogs",
+    singular: "Book",
+    icon: <FaBook />,
+    categoryKey: "category",
+    dateKey: "year",
+    color: "#06B6D4",
+  },
+  {
+    id: "startups",
+    label: "Incubated Startups",
+    singular: "Startup",
+    icon: <FaRocket />,
+    categoryKey: "category",
+    dateKey: "establishedDate",
+    color: "#F97316",
+  },
+  {
+    id: "alumni",
+    label: "Alumni Network",
+    singular: "Alumnus",
+    icon: <FaGraduationCap />,
+    categoryKey: "department",
+    dateKey: "graduationYear",
+    color: "#14B8A6",
+  },
+  {
+    id: "achievements",
+    label: "Achievements & Honors",
+    singular: "Achievement",
+    icon: <FaTrophy />,
+    categoryKey: "category",
+    dateKey: "date",
+    color: "#EAB308",
+  },
+];
 
-const AdminDashboard = () => {
-  const [activeSection, setActiveSection] = useState('dashboard');
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [formType, setFormType] = useState('add');
-  const [showAchievementsForm, setShowAchievementsForm] = useState(false);
-  const [editingAchievementId, setEditingAchievementId] = useState(null);
-  
-  // Delete All Modal State
-  const [deleteAllModal, setDeleteAllModal] = useState({
-    isOpen: false,
-    section: '',
-    isDeleting: false
-  });
-  
-  // Import/Export Modal State
-  const [importExportModal, setImportExportModal] = useState({
-    isOpen: false,
-    section: '',
-    type: '', // 'import' or 'export'
-    isProcessing: false
-  });
-  
-  const fileInputRef = useRef(null);
+export default function AdminDashboard() {
+  const [activeTab, setActiveTab] = useState("events");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [editingItem, setEditingItem] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, item: null });
+  const [isSaving, setIsSaving] = useState(false);
 
-  const { 
-    data: achievementsData, 
-    isLoading: achievementsLoading, 
-    addItem: addAchievement, 
-    updateItem: updateAchievement, 
-    deleteItem: deleteAchievement 
-  } = useDatabase('achievements');
+  // Database hooks for all 10 collections
+  const eventsDB = useDatabase("events");
+  const projectsDB = useDatabase("projects");
+  const coreCommitteeDB = useDatabase("corecommittee");
+  const newsDB = useDatabase("news");
+  const publicationsDB = useDatabase("publications");
+  const patentsDB = useDatabase("patents");
+  const booksDB = useDatabase("books");
+  const startupsDB = useDatabase("startups");
+  const alumniDB = useDatabase("alumni");
+  const achievementsDB = useDatabase("achievements");
 
-  // Database hooks for all collections
-  const newsDB = useDatabase('news');
-  const eventsDB = useDatabase('events');
-  const projectsDB = useDatabase('projects');
-  const publicationsDB = useDatabase('publications');
-  const patentsDB = useDatabase('patents');
-  const booksDB = useDatabase('books');
-  const startupsDB = useDatabase('startups');
-  const alumniDB = useDatabase('alumni');
-
-  const handleEditAchievement = (achievementId) => {
-    setEditingAchievementId(achievementId);
-    setShowAchievementsForm(true);
+  const dbMap = {
+    events: eventsDB,
+    projects: projectsDB,
+    corecommittee: coreCommitteeDB,
+    news: newsDB,
+    publications: publicationsDB,
+    patents: patentsDB,
+    books: booksDB,
+    startups: startupsDB,
+    alumni: alumniDB,
+    achievements: achievementsDB,
   };
 
-  const handleAchievementSuccess = () => {
-    setShowAchievementsForm(false);
-    setEditingAchievementId(null);
-  };
-  
-  // Get database hook based on section
-  const getDBHook = (section) => {
-    const dbMap = {
-      news: newsDB,
-      events: eventsDB,
-      projects: projectsDB,
-      publications: publicationsDB,
-      patents: patentsDB,
-      books: booksDB,
-      startups: startupsDB,
-      alumni: alumniDB,
-      achievements: { data: achievementsData, deleteItem: deleteAchievement }
-    };
-    return dbMap[section];
-  };
+  const currentDB = dbMap[activeTab];
+  const activeSectionConfig = SECTIONS.find((s) => s.id === activeTab);
 
-  // Statistics data
-  const getStats = () => {
-    return [
-      { 
-        title: 'News Articles', 
-        count: newsDB.data.length, 
-        icon: <FaNewspaper />, 
-        color: 'from-blue-500 to-blue-600',
-        section: 'news'
-      },
-      { 
-        title: 'Events', 
-        count: eventsDB.data.length, 
-        icon: <FaCalendarAlt />, 
-        color: 'from-purple-500 to-purple-600',
-        section: 'events'
-      },
-      { 
-        title: 'Projects', 
-        count: projectsDB.data.length, 
-        icon: <FaProjectDiagram />, 
-        color: 'from-emerald-500 to-emerald-600',
-        section: 'projects'
-      },
-      { 
-        title: 'Publications', 
-        count: publicationsDB.data.length, 
-        icon: <FaFileAlt />, 
-        color: 'from-indigo-500 to-indigo-600',
-        section: 'publications'
-      },
-      { 
-        title: 'Patents', 
-        count: patentsDB.data.length, 
-        icon: <FaCertificate />, 
-        color: 'from-amber-500 to-amber-600',
-        section: 'patents'
-      },
-      { 
-        title: 'Books & Blogs', 
-        count: booksDB.data.length, 
-        icon: <FaBook />, 
-        color: 'from-pink-500 to-pink-600',
-        section: 'books'
-      },
-      { 
-        title: 'Startups', 
-        count: startupsDB.data.length, 
-        icon: <FaRocket />, 
-        color: 'from-orange-500 to-orange-600',
-        section: 'startups'
-      },
-      { 
-        title: 'Alumni', 
-        count: alumniDB.data.length, 
-        icon: <FaGraduationCap />, 
-        color: 'from-teal-500 to-teal-600',
-        section: 'alumni'
-      },
-      { 
-        title: 'Achievements', 
-        count: achievementsData?.length || 0, 
-        icon: <FaTrophy />, 
-        color: 'from-yellow-500 to-yellow-600',
-        section: 'achievements'
-      }
-    ];
-  };
-
-  // Navigation items
-  const navigationItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: <FaTachometerAlt /> },
-    { id: 'news', label: 'News', icon: <FaNewspaper /> },
-    { id: 'events', label: 'Events', icon: <FaCalendarAlt /> },
-    { id: 'projects', label: 'Projects', icon: <FaProjectDiagram /> },
-    { id: 'publications', label: 'Publications', icon: <FaFileAlt /> },
-    { id: 'patents', label: 'Patents', icon: <FaCertificate /> },
-    { id: 'books', label: 'Books & Blogs', icon: <FaBook /> },
-    { id: 'startups', label: 'Startups', icon: <FaRocket /> },
-    { id: 'alumni', label: 'Alumni', icon: <FaGraduationCap /> },
-    { id: 'achievements', label: 'Achievements', icon: <FaTrophy /> }
-  ];
-
-  // Handle form submission success
-  const handleFormSuccess = () => {
-    setIsFormOpen(false);
-    setSelectedItem(null);
-    setFormType('add');
-  };
-
-  // Handle form cancel
-  const handleFormCancel = () => {
-    setIsFormOpen(false);
-    setSelectedItem(null);
-    setFormType('add');
-  };
-
-  // Handle add new item
-  const handleAddNew = () => {
-    setSelectedItem(null);
-    setFormType('add');
-    setIsFormOpen(true);
-  };
-
-  // Handle edit item
-  const handleEditItem = (item) => {
-    setSelectedItem(item);
-    setFormType('edit');
-    setIsFormOpen(true);
-  };
-
-  // Handle delete item
-  const handleDeleteItem = async (itemId) => {
-    const dbHook = getDBHook(activeSection);
-    if (dbHook) {
-      await dbHook.deleteItem(itemId);
-    }
-  };
-
-  // Handle Delete All
-  const handleDeleteAll = (section) => {
-    setDeleteAllModal({
-      isOpen: true,
-      section,
-      isDeleting: false
+  // Filter current items by search query
+  const filteredItems = useMemo(() => {
+    const items = currentDB?.data || [];
+    if (!searchTerm.trim()) return items;
+    const q = searchTerm.toLowerCase();
+    return items.filter((item) => {
+      const title = (item.title || item.name || item.event || item.shortTitle || "").toLowerCase();
+      const desc = (item.description || item.content || item.abstract || item.bio || item.mission || "").toLowerCase();
+      const cat = (item.categories || item.category || item.department || item.designation || "").toLowerCase();
+      return title.includes(q) || desc.includes(q) || cat.includes(q);
     });
+  }, [currentDB?.data, searchTerm]);
+
+  // Open modal for new item
+  const handleOpenAdd = () => {
+    setEditingItem(null);
+    setIsModalOpen(true);
   };
 
-  const confirmDeleteAll = async () => {
-    setDeleteAllModal(prev => ({ ...prev, isDeleting: true }));
-    
+  // Open modal for editing
+  const handleOpenEdit = (item) => {
+    setEditingItem(item);
+    setIsModalOpen(true);
+  };
+
+  // Delete flow
+  const handleConfirmDelete = async () => {
+    if (!deleteModal.item) return;
+    const id = deleteModal.item.id || deleteModal.item._id;
     try {
-      const dbHook = getDBHook(deleteAllModal.section);
-      if (dbHook) {
-        // Delete all items one by one
-        const promises = dbHook.data.map(item => 
-          dbHook.deleteItem(item.id || item._id)
-        );
-        await Promise.all(promises);
-      }
-      
-      setTimeout(() => {
-        setDeleteAllModal({ isOpen: false, section: '', isDeleting: false });
-      }, 1500);
-    } catch (error) {
-      console.error('Error deleting all items:', error);
-      setDeleteAllModal(prev => ({ ...prev, isDeleting: false }));
+      await currentDB.deleteItem(id);
+      setDeleteModal({ isOpen: false, item: null });
+    } catch (err) {
+      alert("Failed to delete item: " + err.message);
     }
-  };
-
-  // Handle Export
-  const handleExport = (section) => {
-    setImportExportModal({
-      isOpen: true,
-      section,
-      type: 'export',
-      isProcessing: false
-    });
-  };
-
-  const confirmExport = () => {
-    setImportExportModal(prev => ({ ...prev, isProcessing: true }));
-    
-    try {
-      const dbHook = getDBHook(importExportModal.section);
-      if (dbHook) {
-        const dataToExport = {
-          collection: importExportModal.section,
-          exportDate: new Date().toISOString(),
-          totalItems: dbHook.data.length,
-          data: dbHook.data
-        };
-        
-        const blob = new Blob([JSON.stringify(dataToExport, null, 2)], {
-          type: 'application/json'
-        });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `aac-${importExportModal.section}-${new Date().toISOString().split('T')[0]}.json`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-      }
-      
-      setTimeout(() => {
-        setImportExportModal({ isOpen: false, section: '', type: '', isProcessing: false });
-      }, 1500);
-    } catch (error) {
-      console.error('Error exporting data:', error);
-      setImportExportModal(prev => ({ ...prev, isProcessing: false }));
-    }
-  };
-
-  // Handle Import
-  const handleImport = (section) => {
-    setImportExportModal({
-      isOpen: true,
-      section,
-      type: 'import',
-      isProcessing: false
-    });
-  };
-
-  const confirmImport = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
-  const handleFileSelect = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    setImportExportModal(prev => ({ ...prev, isProcessing: true }));
-
-    try {
-      const text = await file.text();
-      const importData = JSON.parse(text);
-      
-      const dbHook = getDBHook(importExportModal.section);
-      if (dbHook && importData.data && Array.isArray(importData.data)) {
-        // Import all items
-        const promises = importData.data.map(item => dbHook.addItem(item));
-        await Promise.all(promises);
-      }
-
-      setTimeout(() => {
-        setImportExportModal({ isOpen: false, section: '', type: '', isProcessing: false });
-      }, 1500);
-    } catch (error) {
-      console.error('Error importing data:', error);
-      setImportExportModal(prev => ({ ...prev, isProcessing: false }));
-    }
-
-    // Reset file input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
-  // Get form component based on section
-  const getFormComponent = () => {
-    const formProps = {
-      [activeSection === 'news' ? 'newsId' : 
-       activeSection === 'events' ? 'eventId' :
-       activeSection === 'projects' ? 'projectId' :
-       activeSection === 'publications' ? 'publicationId' :
-       activeSection === 'patents' ? 'patentId' :
-       activeSection === 'books' ? 'bookId' :
-       activeSection === 'startups' ? 'startupId' :
-       activeSection === 'achievements' ? 'achievementId' :
-       'alumnusId']: formType === 'edit' ? (selectedItem?.id || selectedItem?._id) : null,
-      onSuccess: handleFormSuccess,
-      onCancel: handleFormCancel
-    };
-
-    switch (activeSection) {
-      case 'news': return <NewsForm {...formProps} />;
-      case 'events': return <EventsForm {...formProps} />;
-      case 'projects': return <ProjectsForm {...formProps} />;
-      case 'publications': return <PublicationsForm {...formProps} />;
-      case 'patents': return <PatentsForm {...formProps} />;
-      case 'books': return <BooksForm {...formProps} />;
-      case 'startups': return <StartupsForm {...formProps} />;
-      case 'alumni': return <AlumniForm {...formProps} />;
-      case 'achievements': return <AchievementsForm {...formProps} />;
-      default: return null;
-    }
-  };
-
-  // Animation variants
-  const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { 
-        staggerChildren: 0.1,
-        delayChildren: 0.3
-      }
-    }
-  };
-
-  const childVariants = {
-    hidden: { y: 30, opacity: 0 },
-    visible: { 
-      y: 0, 
-      opacity: 1,
-      transition: { duration: 0.6 }
-    }
-  };
-
-  // Render dashboard overview
-  const renderDashboard = () => (
-    <div className="space-y-12">
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 pt-12 pb-16 mb-12 overflow-hidden rounded-3xl">
-        {/* Animated background blobs */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-[20%] -left-[20%] w-[60%] h-[60%] bg-gradient-to-br from-blue-400/30 to-purple-600/30 rounded-full blur-3xl animate-breathe"></div>
-          <div className="absolute top-[10%] -right-[10%] w-[50%] h-[50%] bg-gradient-to-br from-indigo-400/25 to-pink-600/25 rounded-full blur-3xl animate-breathe-slow animation-delay-1000"></div>
-          <div className="absolute bottom-[10%] left-[20%] w-[40%] h-[40%] bg-gradient-to-br from-emerald-400/20 to-teal-600/20 rounded-full blur-3xl animate-breathe animation-delay-2000"></div>
-        </div>
-
-        {/* Animated grid pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-grid"></div>
-        </div>
-        
-        <div className="container mx-auto px-4 relative z-10 text-center">
-          {/* Enhanced badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-md text-white rounded-full mb-6 border border-white/20 shadow-lg">
-            <div className="w-2 h-2 bg-blue-400 rounded-full animate-breathe"></div>
-            <span className="text-sm font-medium">Content Management System</span>
-          </div>
-          
-          {/* Title with gradient effect */}
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-white via-blue-100 to-indigo-200 bg-clip-text text-transparent">
-              Admin
-            </span>{' '}
-            <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
-              Dashboard
-            </span>
-          </h1>
-          
-          <p className="text-xl text-blue-100/90 max-w-3xl mx-auto leading-relaxed">
-            Manage all your content with powerful tools and intuitive interface
-          </p>
-
-          {/* Decorative dots */}
-          <div className="flex justify-center items-center gap-3 mt-8">
-            <div className="w-3 h-3 bg-blue-500 rounded-full animate-breathe animate-float"></div>
-            <div className="w-2 h-2 bg-purple-500 rounded-full animate-breathe animation-delay-500"></div>
-            <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-breathe animation-delay-1000"></div>
-          </div>
-        </div>
-      </div>
-
-      <motion.div
-        variants={staggerContainer}
-        initial="hidden"
-        animate="visible"
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-      >
-        {getStats().map((stat, index) => (
-          <motion.div
-            key={stat.title}
-            variants={childVariants}
-            whileHover={{ y: -8, scale: 1.03 }}
-            transition={{ type: "spring", stiffness: 400, damping: 20 }}
-            className="group relative backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl overflow-hidden h-full flex flex-col border border-white/10 hover:border-white/20 transition-all duration-300 cursor-pointer p-6"
-            onClick={() => setActiveSection(stat.section)}
-          >
-            {/* Gradient overlay on hover */}
-            <div className={`absolute inset-0 bg-gradient-to-br ${stat.color}/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl`}></div>
-            
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-4">
-                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${stat.color} flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300 shadow-lg animate-float`}>
-                  {stat.icon}
-                </div>
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300 transition-all duration-300">{stat.count}</div>
-                  <div className="text-gray-400 text-sm group-hover:text-gray-300 transition-colors duration-300">Total</div>
-                </div>
-              </div>
-              <h3 className="text-lg font-semibold text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300 transition-all duration-300">{stat.title}</h3>
-              <div className={`mt-3 h-1 bg-gradient-to-r ${stat.color} rounded-full shadow-lg animate-breathe-slow`}></div>
-            </div>
-          </motion.div>
-        ))}
-      </motion.div>
-    </div>
-  );
-
-  // Render data table
-  const renderDataTable = () => {
-    const dbHook = getDBHook(activeSection);
-    if (!dbHook) return null;
-
-    const data = dbHook.data;
-    const currentStat = getStats().find(s => s.section === activeSection);
-
-    return (
-      <div className="space-y-8">
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-          <div>
-            <div className={`bg-gradient-to-r ${currentStat?.color || 'from-blue-500 to-purple-500'} h-1.5 w-24 mb-4 rounded-full shadow-lg animate-breathe-slow`}></div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-2">
-              <span className="bg-gradient-to-r from-white via-blue-100 to-indigo-200 bg-clip-text text-transparent capitalize">
-                {activeSection}
-              </span>
-            </h1>
-            <p className="text-gray-400 text-lg">Manage your {activeSection} data with powerful tools</p>
-          </div>
-          
-          <div className="flex flex-wrap gap-3">
-            <button
-              onClick={handleAddNew}
-              className="group/btn px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 relative overflow-hidden hover:scale-105"
-            >
-              <span className="relative z-10 flex items-center justify-center gap-2">
-                <FaPlus />
-                Add New
-                <span className="group-hover/btn:translate-x-1 transition-transform duration-200">→</span>
-              </span>
-              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
-            </button>
-            
-            <button
-              onClick={() => handleExport(activeSection)}
-              className="px-6 py-3 bg-white/5 text-white rounded-xl font-medium hover:bg-white/10 transition-all duration-200 border border-white/20 hover:border-white/30 hover:scale-105 flex items-center gap-2"
-            >
-              <FaFileExport />
-              Export
-            </button>
-            
-            <button
-              onClick={() => handleImport(activeSection)}
-              className="px-6 py-3 bg-white/5 text-white rounded-xl font-medium hover:bg-white/10 transition-all duration-200 border border-white/20 hover:border-white/30 hover:scale-105 flex items-center gap-2"
-            >
-              <FaFileImport />
-              Import
-            </button>
-            
-            <button
-              onClick={() => handleDeleteAll(activeSection)}
-              className="px-6 py-3 bg-white/5 text-red-300 rounded-xl font-medium hover:bg-red-500/10 transition-all duration-200 border border-red-500/30 hover:border-red-500/50 hover:scale-105 flex items-center gap-2"
-            >
-              <FaTrashAlt />
-              Delete All
-            </button>
-          </div>
-        </div>
-
-        {/* Results Counter */}
-        <div className="mb-8">
-          <p className="text-lg text-gray-400">
-            Showing <span className="text-white font-medium">{data.length}</span> total {activeSection}
-          </p>
-        </div>
-
-        {data.length === 0 ? (
-          <div className="text-center py-20">
-            <div className={`w-24 h-24 rounded-full bg-gradient-to-br ${currentStat?.color || 'from-blue-500 to-purple-600'} flex items-center justify-center mx-auto mb-8 shadow-lg animate-float`}>
-              <span className="text-4xl animate-breathe">{currentStat?.icon}</span>
-            </div>
-            <h3 className="text-3xl font-bold text-white mb-4">No {activeSection} found</h3>
-            <p className="text-gray-400 text-lg mb-6">Get started by adding your first {activeSection.slice(0, -1)}.</p>
-            <button
-              onClick={handleAddNew}
-              className="group/btn px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 relative overflow-hidden hover:scale-105"
-            >
-              <span className="relative z-10 flex items-center justify-center gap-2">
-                <FaPlus />
-                Add First {activeSection.slice(0, -1)}
-                <span className="group-hover/btn:translate-x-1 transition-transform duration-200">→</span>
-              </span>
-              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
-            </button>
-          </div>
-        ) : (
-          <div className="backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl border border-white/10 hover:border-white/20 transition-all duration-300 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-white/5 border-b border-white/10">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                      Title/Name
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                      Category/Type
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                      Date
-                    </th>
-                    <th className="px-6 py-4 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/10">
-                  {data.map((item, index) => (
-                    <motion.tr
-                      key={item.id || item._id || index}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.05, duration: 0.3 }}
-                      className="hover:bg-white/5 transition-all duration-300"
-                    >
-                      <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-white">
-                          {item.title || item.name || item.shortTitle || 'Untitled'}
-                        </div>
-                        <div className="text-sm text-gray-400 truncate max-w-xs">
-                          {item.slug?.current || item.description || item.abstract || 'No description'}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="px-3 py-1.5 bg-blue-500/20 text-blue-300 rounded-lg text-xs font-medium border border-blue-500/30">
-                          {item.categories || item.category || item.status || 'Uncategorized'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-400">
-                        {item.publishedAt ? new Date(item.publishedAt).toLocaleDateString() :
-                         item.date ? new Date(item.date).toLocaleDateString() :
-                         item.establishedDate ? new Date(item.establishedDate).toLocaleDateString() :
-                         'No date'}
-                      </td>
-                      <td className="px-6 py-4 text-right text-sm font-medium">
-                        <div className="flex justify-end gap-3">
-                          <button
-                            onClick={() => handleEditItem(item)}
-                            className="text-indigo-400 hover:text-indigo-300 transition-colors hover:scale-110 duration-200"
-                            title="Edit"
-                          >
-                            <FaEdit />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteItem(item.id || item._id)}
-                            className="text-red-400 hover:text-red-300 transition-colors hover:scale-110 duration-200"
-                            title="Delete"
-                          >
-                            <FaTrash />
-                          </button>
-                        </div>
-                      </td>
-                    </motion.tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-      </div>
-    );
   };
 
   return (
     <AdminAuth>
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-        {/* Main Content */}
-        <div className="flex">
-          {/* Sidebar */}
-          <div className="w-64 backdrop-blur-sm bg-white/5 min-h-screen border-r border-white/10 fixed left-0 top-0 pt-24 z-40">
-            <div className="p-6">
-              <div className="mb-8">
-                <h2 className="text-xl font-bold text-white mb-2">Admin Panel</h2>
-                <div className="bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500 h-1 w-16 rounded-full shadow-lg animate-breathe-slow"></div>
-              </div>
-              <nav className="space-y-2">
-                {navigationItems.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => setActiveSection(item.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 text-left group ${
-                      activeSection === item.id
-                        ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white border border-blue-500/30 shadow-lg'
-                        : 'text-gray-300 hover:bg-white/10 hover:text-white hover:scale-105'
-                    }`}
-                  >
-                    <span className="group-hover:scale-110 transition-transform duration-200">{item.icon}</span>
-                    {item.label}
-                  </button>
-                ))}
-              </nav>
+      <Head>
+        <title>ADMIN CONSOLE // ADVANCED ACADEMIC CENTER</title>
+      </Head>
+
+      <div className="min-h-screen bg-[#08090C] text-[#FAF6ED] flex flex-col font-sans">
+        {/* Top Header Bar */}
+        <header className="h-16 bg-[#111318] border-b border-[#2A261F] px-6 flex items-center justify-between sticky top-0 z-30">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-[#E5A93C]/10 border border-[#2A261F] flex items-center justify-center text-[#E5A93C] font-mono font-bold text-sm">
+              AAC
+            </div>
+            <div>
+              <h1 className="text-sm font-bold tracking-wide text-white uppercase flex items-center gap-2">
+                <span>Console</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/10 text-white/60">
+                  v2.0
+                </span>
+              </h1>
+              <p className="text-[10px] font-mono text-[#9E988A]">GRIET // AAC</p>
             </div>
           </div>
 
-          {/* Main Content Area */}
-          <div className="flex-1 ml-64 pt-24 p-8">
-            <AnimatePresence mode="wait">
-              {isFormOpen ? (
-                <motion.div
-                  key="form"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.3 }}
+          <div className="flex items-center gap-4">
+            <Link
+              href="/"
+              target="_blank"
+              className="text-xs font-mono uppercase tracking-wider text-[#9E988A] hover:text-[#E5A93C] flex items-center gap-1.5 transition-colors"
+            >
+              <span>Visit Website</span>
+              <FaExternalLinkAlt className="text-[10px]" />
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => {
+                localStorage.removeItem("aac_admin_token");
+                window.location.reload();
+              }}
+              className="text-xs font-mono uppercase tracking-wider text-red-400 hover:text-red-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 transition-all cursor-pointer"
+            >
+              <FaSignOutAlt />
+              <span>Log Out</span>
+            </button>
+          </div>
+        </header>
+
+        {/* Dashboard Shell: Sidebar + Main Content */}
+        <div className="flex-1 flex flex-col md:flex-row">
+          {/* Left Navigation Sidebar */}
+          <aside className="w-full md:w-64 bg-[#111318] border-r border-[#2A261F] p-4 shrink-0 flex flex-col gap-1">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[#9E988A] px-3 py-2 font-semibold">
+              Content Collections
+            </span>
+            <nav className="flex flex-col gap-1 overflow-y-auto max-h-[calc(100vh-140px)]">
+              {SECTIONS.map((sec) => {
+                const count = dbMap[sec.id]?.data?.length || 0;
+                const isActive = activeTab === sec.id;
+                return (
+                  <button
+                    key={sec.id}
+                    type="button"
+                    onClick={() => {
+                      setActiveTab(sec.id);
+                      setSearchTerm("");
+                    }}
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all text-left cursor-pointer ${
+                      isActive
+                        ? "bg-[#E5A93C] text-[#08090C] shadow-md shadow-[#E5A93C]/20 font-bold"
+                        : "text-[#9E988A] hover:bg-white/5 hover:text-white"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-sm opacity-90">{sec.icon}</span>
+                      <span>{sec.label}</span>
+                    </div>
+                    <span
+                      className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${
+                        isActive
+                          ? "bg-[#08090C]/20 text-[#08090C]"
+                          : "bg-white/5 text-[#9E988A]"
+                      }`}
+                    >
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </nav>
+          </aside>
+
+          {/* Main Content Workspace */}
+          <main className="flex-1 p-6 md:p-8 bg-[#08090C] overflow-x-hidden">
+            {/* Action Bar */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-[#2A261F]">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight">
+                    {activeSectionConfig?.label}
+                  </h2>
+                  <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-[#E5A93C]/10 text-[#E5A93C] border border-[#2A261F] font-semibold">
+                    {currentDB?.data?.length || 0} Total
+                  </span>
+                </div>
+                <p className="text-xs text-[#9E988A]">
+                  Manage, add, update, and remove items in this section.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={handleOpenAdd}
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#E5A93C] hover:bg-[#F6C463] text-[#08090C] text-xs font-bold tracking-wide transition-all shadow-lg shadow-[#E5A93C]/20 cursor-pointer"
                 >
-                  {getFormComponent()}
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="table"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
+                  <FaPlus className="text-[10px]" />
+                  <span>Add New {activeSectionConfig?.singular}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Search Filter Bar */}
+            <div className="relative mb-6">
+              <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9E988A] text-xs" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder={`Search ${activeSectionConfig?.label.toLowerCase()} by title, description, or category...`}
+                className="w-full bg-[#111318] border border-[#2A261F] rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-[#9E988A]/60 focus:outline-none focus:border-[#E5A93C] transition-colors"
+              />
+              {searchTerm && (
+                <button
+                  type="button"
+                  onClick={() => setSearchTerm("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9E988A] hover:text-white text-xs p-1"
                 >
-                  {activeSection === 'dashboard' ? renderDashboard() : renderDataTable()}
-                </motion.div>
+                  <FaTimes />
+                </button>
               )}
-            </AnimatePresence>
+            </div>
+
+            {/* Data Table / List */}
+            {currentDB?.loading ? (
+              <div className="py-20 flex flex-col items-center justify-center text-white/40 gap-3">
+                <div className="w-6 h-6 border-2 border-[#E5A93C] border-t-transparent rounded-full animate-spin" />
+                <span className="text-xs font-mono uppercase tracking-wider">
+                  Loading data...
+                </span>
+              </div>
+            ) : filteredItems.length === 0 ? (
+              <div className="py-20 text-center border border-dashed border-white/10 rounded-2xl p-8 bg-[#090D18]/50">
+                <div className="w-12 h-12 rounded-full bg-white/5 mx-auto flex items-center justify-center text-white/30 text-xl mb-3">
+                  {activeSectionConfig?.icon}
+                </div>
+                <h3 className="text-sm font-semibold text-white mb-1">
+                  No {activeSectionConfig?.label.toLowerCase()} found
+                </h3>
+                <p className="text-xs text-white/45 max-w-sm mx-auto mb-4">
+                  {searchTerm
+                    ? "No items match your search term. Try clearing the filter."
+                    : "No items exist in this collection yet. Add your first item."}
+                </p>
+                {!searchTerm && (
+                  <button
+                    type="button"
+                    onClick={handleOpenAdd}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-xs font-medium transition-colors"
+                  >
+                    <FaPlus className="text-[10px]" />
+                    <span>Create First Item</span>
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="border border-white/10 rounded-2xl overflow-hidden bg-[#111318]">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="border-b border-white/10 bg-white/5 text-white/50 font-mono text-[10px] uppercase tracking-wider">
+                        <th className="py-3 px-4 w-14">Media</th>
+                        <th className="py-3 px-4">Title / Name</th>
+                        <th className="py-3 px-4">Category / Role</th>
+                        <th className="py-3 px-4">Date / Status</th>
+                        <th className="py-3 px-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5">
+                      {filteredItems.map((item, idx) => {
+                        const title =
+                          item.title ||
+                          item.name ||
+                          item.event ||
+                          item.shortTitle ||
+                          "Untitled";
+                        const sub =
+                          item.description ||
+                          item.abstract ||
+                          item.content ||
+                          item.bio ||
+                          item.mission ||
+                          "";
+                        const cat =
+                          item.categories ||
+                          item.category ||
+                          item.department ||
+                          item.designation ||
+                          "—";
+                        const image =
+                          item.mainImageUrl ||
+                          item.img ||
+                          item.image ||
+                          item.cover ||
+                          item.logo ||
+                          item.mainImage;
+                        const dateVal =
+                          item.date ||
+                          item.publishedAt ||
+                          item.year ||
+                          item.graduationYear ||
+                          item.establishedDate ||
+                          item.status ||
+                          "—";
+
+                        return (
+                          <tr
+                            key={item.id || item._id || idx}
+                            className="hover:bg-white/[0.03] transition-colors group"
+                          >
+                            {/* Thumbnail */}
+                            <td className="py-3 px-4">
+                              <div className="w-10 h-10 rounded-lg overflow-hidden bg-black/40 border border-white/10 flex items-center justify-center shrink-0">
+                                {image ? (
+                                  <img
+                                    src={image}
+                                    alt={title}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      e.target.style.display = "none";
+                                    }}
+                                  />
+                                ) : (
+                                  <FaImage className="text-white/20 text-xs" />
+                                )}
+                              </div>
+                            </td>
+
+                            {/* Title & Description */}
+                            <td className="py-3 px-4 max-w-xs">
+                              <div className="font-semibold text-white truncate group-hover:text-[#E5A93C] transition-colors">
+                                {title}
+                              </div>
+                              {sub && (
+                                <div className="text-[11px] text-white/45 truncate mt-0.5">
+                                  {sub}
+                                </div>
+                              )}
+                            </td>
+
+                            {/* Category / Badge */}
+                            <td className="py-3 px-4 whitespace-nowrap">
+                              <span className="font-mono text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-white/80">
+                                {String(cat)}
+                              </span>
+                            </td>
+
+                            {/* Date or Metadata */}
+                            <td className="py-3 px-4 text-white/60 font-mono text-[11px] whitespace-nowrap">
+                              {typeof dateVal === "string" && dateVal.includes("T")
+                                ? new Date(dateVal).toLocaleDateString()
+                                : String(dateVal)}
+                            </td>
+
+                            {/* Action Buttons */}
+                            <td className="py-3 px-4 text-right whitespace-nowrap">
+                              <div className="flex items-center justify-end gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => handleOpenEdit(item)}
+                                  className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-colors cursor-pointer"
+                                  title="Edit Item"
+                                >
+                                  <FaEdit className="text-xs" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setDeleteModal({ isOpen: true, item })
+                                  }
+                                  className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 transition-colors cursor-pointer"
+                                  title="Delete Item"
+                                >
+                                  <FaTrash className="text-xs" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </main>
+        </div>
+      </div>
+
+      {/* ====================================================================
+          ADD / EDIT ITEM MODAL
+          ==================================================================== */}
+      {isModalOpen && (
+        <ItemFormModal
+          section={activeTab}
+          sectionConfig={activeSectionConfig}
+          item={editingItem}
+          onClose={() => {
+            setIsModalOpen(false);
+            setEditingItem(null);
+          }}
+          onSave={async (formData) => {
+            setIsSaving(true);
+            try {
+              if (editingItem) {
+                const id = editingItem.id || editingItem._id;
+                await currentDB.updateItem(id, formData);
+              } else {
+                await currentDB.addItem(formData);
+              }
+              setIsModalOpen(false);
+              setEditingItem(null);
+            } catch (err) {
+              alert("Error saving: " + err.message);
+            } finally {
+              setIsSaving(false);
+            }
+          }}
+          isSaving={isSaving}
+        />
+      )}
+
+      {/* ====================================================================
+          CONFIRM DELETE MODAL
+          ==================================================================== */}
+      {deleteModal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="w-full max-w-md bg-[#111318] border border-red-500/30 rounded-2xl p-6 shadow-2xl">
+            <h3 className="text-base font-bold text-white mb-2 flex items-center gap-2 text-red-400">
+              <FaTrash />
+              <span>Confirm Permanent Deletion</span>
+            </h3>
+            <p className="text-xs text-white/70 leading-relaxed mb-6">
+              Are you sure you want to delete{" "}
+              <strong className="text-white">
+                &ldquo;
+                {deleteModal.item?.title ||
+                  deleteModal.item?.name ||
+                  deleteModal.item?.event ||
+                  "this item"}
+                &rdquo;
+              </strong>
+              ? This action will permanently remove it from the website.
+            </p>
+            <div className="flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setDeleteModal({ isOpen: false, item: null })}
+                className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-xs text-white transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-xs font-semibold text-white transition-colors cursor-pointer"
+              >
+                Delete Permanently
+              </button>
+            </div>
           </div>
         </div>
+      )}
+    </AdminAuth>
+  );
+}
 
-        {/* Delete All Confirmation Modal */}
-        <AnimatePresence>
-          {deleteAllModal.isOpen && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4"
-            >
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0, y: 50 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.9, opacity: 0, y: 50 }}
-                transition={{ duration: 0.4 }}
-                className="backdrop-blur-md bg-white/5 rounded-2xl shadow-2xl border border-white/20 overflow-hidden max-w-md w-full"
-              >
-                <div className="bg-gradient-to-r from-red-500 to-red-600 p-6 text-white">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                      <FaExclamationTriangle className="text-xl" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-bold">Delete All {deleteAllModal.section}</h2>
-                      <p className="text-red-100">This action cannot be undone</p>
-                    </div>
-                  </div>
-                </div>
+// ============================================================================
+// MODAL FORM COMPONENT: DYNAMIC FIELDS BASED ON SECTION
+// ============================================================================
+function ItemFormModal({ section, sectionConfig, item, onClose, onSave, isSaving }) {
+  const isEdit = Boolean(item);
 
-                <div className="p-6">
-                  <p className="text-gray-300 mb-6">
-                    Are you sure you want to delete all {deleteAllModal.section} data? This will permanently remove all items from the database.
-                  </p>
-                  
-                  <div className="flex justify-end gap-3">
-                    <button
-                      onClick={() => setDeleteAllModal({ isOpen: false, section: '', isDeleting: false })}
-                      disabled={deleteAllModal.isDeleting}
-                      className="px-6 py-3 bg-white/5 text-white rounded-xl font-medium hover:bg-white/10 transition-all duration-200 border border-white/20 hover:border-white/30 disabled:opacity-50"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={confirmDeleteAll}
-                      disabled={deleteAllModal.isDeleting}
-                      className="group/btn px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 relative overflow-hidden disabled:opacity-50 hover:scale-105"
-                    >
-                      <span className="relative z-10 flex items-center justify-center gap-2">
-                        {deleteAllModal.isDeleting ? (
-                          <>
-                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                            Deleting...
-                          </>
-                        ) : (
-                          <>
-                            <FaTrashAlt />
-                            Delete All
-                          </>
-                        )}
-                      </span>
-                      <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+  // Initialize form fields based on collection
+  const [formData, setFormData] = useState(() => {
+    if (item) {
+      return { ...item };
+    }
+    // Default templates per collection
+    switch (section) {
+      case "events":
+        return {
+          title: "",
+          date: "",
+          category: "Symposium",
+          status: "Upcoming",
+          location: "GRIET Campus, Hyderabad",
+          organizer: "Advanced Academic Center",
+          description: "",
+          detailedDescription: "",
+          mainImageUrl: "",
+          ctaText: "Register Now",
+          ctaLink: "",
+          path: "",
+        };
+      case "projects":
+        return {
+          title: "",
+          categories: "Autonomous Systems",
+          author: "AAC Student Team",
+          description: "",
+          content: "",
+          names: "",
+          mainImageUrl: "",
+          githubRepo: "",
+          status: "active",
+        };
+      case "corecommittee":
+        return {
+          name: "",
+          designation: "Coordinator",
+          year: new Date().getFullYear(),
+          department: "CSE",
+          image: "",
+          linkedin: "",
+          status: "active",
+        };
+      case "news":
+        return {
+          title: "",
+          categories: "ACHIEVEMENT",
+          publishedAt: new Date().toISOString().split("T")[0],
+          content: "",
+          mainImageUrl: "",
+          status: "published",
+        };
+      case "publications":
+        return {
+          title: "",
+          authors: "",
+          publication: "",
+          year: new Date().getFullYear(),
+          category: "Machine Learning",
+          abstract: "",
+          paperLink: "",
+          type: "Journal Paper",
+        };
+      case "patents":
+        return {
+          title: "",
+          shortTitle: "",
+          applicationNumber: "",
+          patentOffice: "India",
+          date: new Date().toISOString().split("T")[0],
+          category: "Healthcare",
+          status: "PUBLISHED ONLINE",
+          inventors: "",
+          description: "",
+        };
+      case "books":
+        return {
+          title: "",
+          authors: "",
+          category: "Programming",
+          year: new Date().getFullYear(),
+          cover: "",
+          description: "",
+          status: "published",
+        };
+      case "startups":
+        return {
+          name: "",
+          founders: "",
+          category: "Interactive Tech",
+          status: "Active Enterprise",
+          mission: "",
+          description: "",
+          establishedDate: new Date().toISOString().split("T")[0],
+          website: "",
+        };
+      case "alumni":
+        return {
+          name: "",
+          designation: "",
+          company: "",
+          graduationYear: new Date().getFullYear() - 1,
+          department: "CSE",
+          email: "",
+          linkedin: "",
+          currentLocation: "",
+          bio: "",
+          image: "",
+        };
+      case "achievements":
+        return {
+          title: "",
+          category: "National Honor",
+          date: new Date().toISOString().split("T")[0],
+          names: "",
+          description: "",
+          mainImage: "",
+          status: "published",
+        };
+      default:
+        return {};
+    }
+  });
 
-        {/* Import/Export Modal */}
-        <AnimatePresence>
-          {importExportModal.isOpen && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4"
-            >
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0, y: 50 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.9, opacity: 0, y: 50 }}
-                transition={{ duration: 0.4 }}
-                className="backdrop-blur-md bg-white/5 rounded-2xl shadow-2xl border border-white/20 overflow-hidden max-w-md w-full"
-              >
-                <div className={`bg-gradient-to-r ${
-                  importExportModal.type === 'export' ? 'from-emerald-500 to-emerald-600' : 'from-purple-500 to-purple-600'
-                } p-6 text-white`}>
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                      {importExportModal.type === 'export' ? <FaFileExport className="text-xl" /> : <FaFileImport className="text-xl" />}
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-bold">
-                        {importExportModal.type === 'export' ? 'Export' : 'Import'} {importExportModal.section}
-                      </h2>
-                      <p className={importExportModal.type === 'export' ? 'text-emerald-100' : 'text-purple-100'}>
-                        {importExportModal.type === 'export' ? 'Download data as JSON' : 'Upload JSON file'}
-                      </p>
-                    </div>
-                  </div>
-                </div>
+  const handleChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
-                <div className="p-6">
-                  <p className="text-gray-300 mb-6">
-                    {importExportModal.type === 'export' 
-                      ? `Export all ${importExportModal.section} data to a JSON file for backup or migration.`
-                      : `Import ${importExportModal.section} data from a JSON file. This will add new items to the existing data.`
-                    }
-                  </p>
-                  
-                  <div className="flex justify-end gap-3">
-                    <button
-                      onClick={() => setImportExportModal({ isOpen: false, section: '', type: '', isProcessing: false })}
-                      disabled={importExportModal.isProcessing}
-                      className="px-6 py-3 bg-white/5 text-white rounded-xl font-medium hover:bg-white/10 transition-all duration-200 border border-white/20 hover:border-white/30 disabled:opacity-50"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={importExportModal.type === 'export' ? confirmExport : confirmImport}
-                      disabled={importExportModal.isProcessing}
-                      className={`group/btn px-6 py-3 bg-gradient-to-r ${
-                        importExportModal.type === 'export' 
-                          ? 'from-emerald-500 to-emerald-600' 
-                          : 'from-purple-500 to-purple-600'
-                      } text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 relative overflow-hidden disabled:opacity-50 hover:scale-105`}
-                    >
-                      <span className="relative z-10 flex items-center justify-center gap-2">
-                        {importExportModal.isProcessing ? (
-                          <>
-                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                            {importExportModal.type === 'export' ? 'Exporting...' : 'Importing...'}
-                          </>
-                        ) : (
-                          <>
-                            {importExportModal.type === 'export' ? <FaDownload /> : <FaUpload />}
-                            {importExportModal.type === 'export' ? 'Export' : 'Import'}
-                          </>
-                        )}
-                      </span>
-                      <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-        {/* Achievements Modal */}
-        {showAchievementsForm && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-              <AchievementsForm
-                achievementId={editingAchievementId}
-                onSuccess={handleAchievementSuccess}
-                onCancel={() => {
-                  setShowAchievementsForm(false);
-                  setEditingAchievementId(null);
+    // Format array fields if string
+    const payload = { ...formData };
+    if (typeof payload.authors === "string") {
+      payload.authors = payload.authors
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+    }
+    if (typeof payload.inventors === "string") {
+      payload.inventors = payload.inventors
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+    }
+    if (typeof payload.founders === "string") {
+      payload.founders = payload.founders
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+    }
+    if (typeof payload.names === "string") {
+      payload.names = payload.names
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+    }
+
+    onSave(payload);
+  };
+
+  // Preview image URL
+  const previewImg =
+    formData.mainImageUrl ||
+    formData.image ||
+    formData.cover ||
+    formData.img ||
+    formData.mainImage;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+      <div className="w-full max-w-2xl bg-[#111318] border border-white/15 rounded-2xl shadow-2xl my-8 overflow-hidden flex flex-col max-h-[90vh]">
+        {/* Modal Header */}
+        <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
+          <div>
+            <h3 className="text-base font-bold text-white">
+              {isEdit ? "Edit" : "Add New"} {sectionConfig?.singular}
+            </h3>
+            <p className="text-[11px] text-white/50">
+              Fill in the required information. Updates are saved immediately.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-2 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+          >
+            <FaTimes />
+          </button>
+        </div>
+
+        {/* Modal Form Body */}
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto flex-1">
+          {/* Universal Title / Name Field */}
+          {section !== "alumni" && section !== "startups" && section !== "corecommittee" && (
+            <div>
+              <label className="block text-xs font-semibold text-white/80 mb-1.5">
+                Title / Name *
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.title || formData.event || ""}
+                onChange={(e) => {
+                  handleChange("title", e.target.value);
+                  handleChange("event", e.target.value);
                 }}
+                placeholder="e.g. Autonomous Multi-Rotor UAV"
+                className="w-full bg-[#08090C] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-white/35 focus:outline-none focus:border-[#E5A93C]"
+              />
+            </div>
+          )}
+
+          {/* Dedicated Name for Committee, Alumni, Startups */}
+          {(section === "corecommittee" || section === "alumni" || section === "startups") && (
+            <div>
+              <label className="block text-xs font-semibold text-white/80 mb-1.5">
+                {section === "startups" ? "Startup Name *" : "Full Name *"}
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.name || ""}
+                onChange={(e) => handleChange("name", e.target.value)}
+                placeholder={section === "startups" ? "e.g. Koolgen Interactives" : "e.g. Jayanth Potluri"}
+                className="w-full bg-[#08090C] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-white/35 focus:outline-none focus:border-[#E5A93C]"
+              />
+            </div>
+          )}
+
+          {/* Two-Column Grid: Categories & Date/Year */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Category or Designation */}
+            <div>
+              <label className="block text-xs font-semibold text-white/80 mb-1.5">
+                {section === "corecommittee"
+                  ? "Designation / Role *"
+                  : section === "alumni"
+                  ? "Current Designation *"
+                  : "Category / Domain *"}
+              </label>
+              <input
+                type="text"
+                required
+                value={
+                  formData.categories ||
+                  formData.category ||
+                  formData.designation ||
+                  ""
+                }
+                onChange={(e) => {
+                  handleChange("categories", e.target.value);
+                  handleChange("category", e.target.value);
+                  handleChange("designation", e.target.value);
+                }}
+                placeholder="e.g. Robotics, President, or Healthcare"
+                className="w-full bg-[#08090C] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-white/35 focus:outline-none focus:border-[#E5A93C]"
+              />
+            </div>
+
+            {/* Date or Year */}
+            <div>
+              <label className="block text-xs font-semibold text-white/80 mb-1.5">
+                {section === "corecommittee"
+                  ? "Committee Year *"
+                  : section === "alumni"
+                  ? "Graduation Year *"
+                  : section === "books" || section === "publications"
+                  ? "Publication Year *"
+                  : "Date / Period *"}
+              </label>
+              <input
+                type="text"
+                required
+                value={
+                  formData.year ||
+                  formData.graduationYear ||
+                  formData.date ||
+                  formData.publishedAt ||
+                  formData.establishedDate ||
+                  ""
+                }
+                onChange={(e) => {
+                  handleChange("year", e.target.value);
+                  handleChange("graduationYear", e.target.value);
+                  handleChange("date", e.target.value);
+                  handleChange("publishedAt", e.target.value);
+                  handleChange("establishedDate", e.target.value);
+                }}
+                placeholder="e.g. 2025 or OCTOBER 2024"
+                className="w-full bg-[#08090C] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-white/35 focus:outline-none focus:border-[#E5A93C]"
               />
             </div>
           </div>
-        )}
 
-        {/* Hidden file input for import */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".json"
-          onChange={handleFileSelect}
-          className="hidden"
-        />
+          {/* Section Specific Fields */}
+          {section === "corecommittee" && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-white/80 mb-1.5">
+                  Department
+                </label>
+                <input
+                  type="text"
+                  value={formData.department || ""}
+                  onChange={(e) => handleChange("department", e.target.value)}
+                  placeholder="e.g. CSE, IT, ECE"
+                  className="w-full bg-[#08090C] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-white/35 focus:outline-none focus:border-[#E5A93C]"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-white/80 mb-1.5">
+                  LinkedIn URL
+                </label>
+                <input
+                  type="url"
+                  value={formData.linkedin || ""}
+                  onChange={(e) => handleChange("linkedin", e.target.value)}
+                  placeholder="https://linkedin.com/in/username"
+                  className="w-full bg-[#08090C] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-white/35 focus:outline-none focus:border-[#E5A93C]"
+                />
+              </div>
+            </div>
+          )}
+
+          {section === "alumni" && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-white/80 mb-1.5">
+                  Company / Organization
+                </label>
+                <input
+                  type="text"
+                  value={formData.company || ""}
+                  onChange={(e) => handleChange("company", e.target.value)}
+                  placeholder="e.g. Google Cloud, Microsoft"
+                  className="w-full bg-[#08090C] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-white/35 focus:outline-none focus:border-[#E5A93C]"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-white/80 mb-1.5">
+                  Current Location
+                </label>
+                <input
+                  type="text"
+                  value={formData.currentLocation || ""}
+                  onChange={(e) => handleChange("currentLocation", e.target.value)}
+                  placeholder="e.g. Bengaluru, India"
+                  className="w-full bg-[#08090C] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-white/35 focus:outline-none focus:border-[#E5A93C]"
+                />
+              </div>
+            </div>
+          )}
+
+          {section === "patents" && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-white/80 mb-1.5">
+                  Application Number *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.applicationNumber || ""}
+                  onChange={(e) => handleChange("applicationNumber", e.target.value)}
+                  placeholder="e.g. 201941002559"
+                  className="w-full bg-[#08090C] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-white/35 focus:outline-none focus:border-[#E5A93C]"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-white/80 mb-1.5">
+                  Short Display Title
+                </label>
+                <input
+                  type="text"
+                  value={formData.shortTitle || ""}
+                  onChange={(e) => handleChange("shortTitle", e.target.value)}
+                  placeholder="e.g. Automated Pill Reminder Device"
+                  className="w-full bg-[#08090C] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-white/35 focus:outline-none focus:border-[#E5A93C]"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* List Fields (Authors / Inventors / Contributors) */}
+          {(section === "publications" ||
+            section === "patents" ||
+            section === "books" ||
+            section === "projects" ||
+            section === "startups") && (
+            <div>
+              <label className="block text-xs font-semibold text-white/80 mb-1">
+                {section === "patents"
+                  ? "Inventors (comma-separated)"
+                  : section === "startups"
+                  ? "Founders (comma-separated)"
+                  : section === "projects"
+                  ? "Team Contributors (comma-separated)"
+                  : "Authors (comma-separated)"}
+              </label>
+              <input
+                type="text"
+                value={
+                  Array.isArray(formData.authors)
+                    ? formData.authors.join(", ")
+                    : Array.isArray(formData.inventors)
+                    ? formData.inventors.join(", ")
+                    : Array.isArray(formData.founders)
+                    ? formData.founders.join(", ")
+                    : Array.isArray(formData.names)
+                    ? formData.names.join(", ")
+                    : formData.authors ||
+                      formData.inventors ||
+                      formData.founders ||
+                      formData.names ||
+                      ""
+                }
+                onChange={(e) => {
+                  handleChange("authors", e.target.value);
+                  handleChange("inventors", e.target.value);
+                  handleChange("founders", e.target.value);
+                  handleChange("names", e.target.value);
+                }}
+                placeholder="e.g. Jayanth Potluri, Steven Gopaldas"
+                className="w-full bg-[#08090C] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-white/35 focus:outline-none focus:border-[#E5A93C]"
+              />
+            </div>
+          )}
+
+          {/* Image URL & Instant Preview */}
+          <div>
+            <label className="block text-xs font-semibold text-white/80 mb-1.5">
+              Image / Media URL
+            </label>
+            <div className="flex gap-3">
+              <input
+                type="text"
+                value={
+                  formData.mainImageUrl ||
+                  formData.image ||
+                  formData.cover ||
+                  formData.img ||
+                  formData.mainImage ||
+                  ""
+                }
+                onChange={(e) => {
+                  handleChange("mainImageUrl", e.target.value);
+                  handleChange("image", e.target.value);
+                  handleChange("cover", e.target.value);
+                  handleChange("img", e.target.value);
+                  handleChange("mainImage", e.target.value);
+                }}
+                placeholder="https://... or /images/..."
+                className="flex-1 bg-[#08090C] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-white/35 focus:outline-none focus:border-[#E5A93C]"
+              />
+              {previewImg && (
+                <div className="w-10 h-10 rounded-lg overflow-hidden border border-white/15 bg-black/50 shrink-0">
+                  <img
+                    src={previewImg}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.style.display = "none";
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Links (GitHub, Website, Paper Link) */}
+          {(formData.githubRepo !== undefined ||
+            formData.website !== undefined ||
+            formData.paperLink !== undefined ||
+            section === "projects" ||
+            section === "publications" ||
+            section === "startups") && (
+            <div>
+              <label className="block text-xs font-semibold text-white/80 mb-1.5">
+                {section === "projects"
+                  ? "GitHub Repository URL"
+                  : section === "publications"
+                  ? "Paper / DOI Link"
+                  : "External Website URL"}
+              </label>
+              <input
+                type="url"
+                value={
+                  formData.githubRepo ||
+                  formData.website ||
+                  formData.paperLink ||
+                  ""
+                }
+                onChange={(e) => {
+                  handleChange("githubRepo", e.target.value);
+                  handleChange("website", e.target.value);
+                  handleChange("paperLink", e.target.value);
+                }}
+                placeholder="https://..."
+                className="w-full bg-[#08090C] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-white/35 focus:outline-none focus:border-[#E5A93C]"
+              />
+            </div>
+          )}
+
+          {/* Description / Content Body */}
+          <div>
+            <label className="block text-xs font-semibold text-white/80 mb-1.5">
+              Description / Content Body *
+            </label>
+            <textarea
+              required
+              rows={4}
+              value={
+                formData.description ||
+                formData.content ||
+                formData.abstract ||
+                formData.bio ||
+                formData.mission ||
+                ""
+              }
+              onChange={(e) => {
+                handleChange("description", e.target.value);
+                handleChange("content", e.target.value);
+                handleChange("abstract", e.target.value);
+                handleChange("bio", e.target.value);
+                handleChange("mission", e.target.value);
+              }}
+              placeholder="Provide complete details, summary, or background for this entry..."
+              className="w-full bg-[#08090C] border border-white/15 rounded-xl p-3 text-xs text-white placeholder-white/35 focus:outline-none focus:border-[#E5A93C] leading-relaxed resize-y"
+            />
+          </div>
+
+          {/* Form Actions Footer */}
+          <div className="pt-4 border-t border-white/10 flex items-center justify-end gap-3 sticky bottom-0 bg-[#111318] py-2">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={isSaving}
+              className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs text-white font-medium transition-colors cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isSaving}
+              className="px-6 py-2.5 rounded-xl bg-[#E5A93C] hover:bg-[#1255D1] text-xs font-bold text-white transition-all shadow-md shadow-[#E5A93C]/20 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+            >
+              {isSaving ? (
+                <>
+                  <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <>
+                  <FaCheck />
+                  <span>Save {sectionConfig?.singular}</span>
+                </>
+              )}
+            </button>
+          </div>
+        </form>
       </div>
-    </AdminAuth>
+    </div>
   );
-};
-
-export default AdminDashboard;
+}

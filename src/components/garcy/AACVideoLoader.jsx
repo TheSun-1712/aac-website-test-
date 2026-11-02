@@ -34,16 +34,16 @@ export default function AACVideoLoader({ onEnded, className = "" }) {
       });
     }
 
-    // Initialize WebGL context
+    // Initialize WebGL context with premultipliedAlpha for clean compositing
     const gl =
       canvas.getContext("webgl", {
         alpha: true,
-        premultipliedAlpha: false,
+        premultipliedAlpha: true,
         antialias: true,
       }) ||
       canvas.getContext("experimental-webgl", {
         alpha: true,
-        premultipliedAlpha: false,
+        premultipliedAlpha: true,
         antialias: true,
       });
 
@@ -61,10 +61,10 @@ export default function AACVideoLoader({ onEnded, className = "" }) {
               g = d[i + 1],
               b = d[i + 2];
             const minC = Math.min(r, g, b);
-            if (minC >= 246) {
+            if (minC >= 234) {
               d[i + 3] = 0;
-            } else if (minC >= 200) {
-              const a = (246 - minC) / 46;
+            } else if (minC >= 214) {
+              const a = (234 - minC) / 20;
               d[i + 3] = Math.round(a * 255);
             }
           }
@@ -100,20 +100,15 @@ export default function AACVideoLoader({ onEnded, className = "" }) {
         vec4 color = texture2D(u_image, v_texCoord);
         float minC = min(color.r, min(color.g, color.b));
         
-        // Key out pure/near white background with smooth anti-aliased falloff
-        float alpha = clamp((0.965 - minC) / (0.965 - 0.78), 0.0, 1.0);
+        // Clean background keying: pixels near white (minC >= 0.92) are 100% transparent.
+        // Smooth anti-aliased edge falloff from 0.84 to 0.92:
+        float alpha = clamp((0.92 - minC) / (0.92 - 0.84), 0.0, 1.0);
         
-        // Un-premultiply white background to eliminate white fringing
-        vec3 fg = (color.rgb - vec3(1.0) * (1.0 - alpha)) / max(alpha, 0.001);
-        fg = clamp(fg, 0.0, 1.0);
+        // Un-premultiply white background to eliminate white fringing on edges
+        vec3 fg = clamp((color.rgb - vec3(1.0) * (1.0 - alpha)) / max(alpha, 0.001), 0.0, 1.0);
 
-        // Dark-mode contrast lift: make dark lines and magnet body clearly discernible
-        float lum = dot(fg, vec3(0.299, 0.587, 0.114));
-        float darkLift = clamp((0.32 - lum) / 0.32, 0.0, 1.0) * 0.22;
-        fg += vec3(0.20, 0.38, 0.68) * darkLift;
-        fg = clamp(fg, 0.0, 1.0);
-
-        gl_FragColor = vec4(fg, alpha);
+        // Premultiplied alpha output ensures background pixels are strictly transparent (0,0,0,0)
+        gl_FragColor = vec4(fg * alpha, alpha);
       }
     `;
 
@@ -229,7 +224,7 @@ export default function AACVideoLoader({ onEnded, className = "" }) {
         ref={canvasRef}
         width={1280}
         height={720}
-        className="w-full max-w-[620px] sm:max-w-[700px] h-auto object-contain filter drop-shadow-[0_0_28px_rgba(23,105,255,0.7)] transition-opacity duration-500 pointer-events-none"
+        className="w-full max-w-[620px] sm:max-w-[700px] h-auto object-contain filter drop-shadow-[0_0_24px_rgba(229,169,60,0.35)] transition-opacity duration-500 pointer-events-none"
         style={{ opacity: isVideoReady ? 1 : 0.05 }}
       />
     </div>

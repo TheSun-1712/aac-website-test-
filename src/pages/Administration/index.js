@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import BackgroundVideo from "@/components/BackgroundVideo";
@@ -6,6 +6,7 @@ import GarcyNavbar from "@/components/garcy/GarcyNavbar";
 import GarcyFooter from "@/components/garcy/GarcyFooter";
 import GarcyCommandPalette from "@/components/garcy/GarcyCommandPalette";
 import GarcyCaseStudies from "@/components/garcy/GarcyCaseStudies";
+import { useDatabase } from "@/hooks/useDatabase";
 import {
   coreCommitteeData,
   getAvailableYears,
@@ -24,8 +25,16 @@ import {
 } from "react-icons/fa";
 
 export default function AdministrationPage() {
+  const { data: dbCommittee } = useDatabase("corecommittee");
   const [activeCategory, setActiveCategory] = useState("instigators");
-  const availableYears = getAvailableYears();
+
+  const availableYears = useMemo(() => {
+    const staticYears = getAvailableYears();
+    const dbYears = (dbCommittee || []).map((m) => String(m.year)).filter(Boolean);
+    const set = new Set([...dbYears, ...staticYears]);
+    return Array.from(set).sort((a, b) => b.localeCompare(a));
+  }, [dbCommittee]);
+
   const [selectedYear, setSelectedYear] = useState(availableYears[0] || "2025");
   const [selectedPerson, setSelectedPerson] = useState(null);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -182,8 +191,21 @@ export default function AdministrationPage() {
     return `https://drive.google.com/uc?export=view&id=${image}`;
   };
 
-  // Group current committee members strictly by tier
-  const currentMembers = coreCommitteeData[selectedYear] || [];
+  // Group current committee members strictly by tier, merging DB entries with fallback
+  const currentMembers = useMemo(() => {
+    const staticMembers = coreCommitteeData[selectedYear] || [];
+    const dynamicMembers = (dbCommittee || []).filter(
+      (m) => String(m.year) === String(selectedYear)
+    );
+    if (dynamicMembers.length > 0) {
+      const names = new Set(dynamicMembers.map((m) => (m.name || "").toLowerCase()));
+      return [
+        ...dynamicMembers,
+        ...staticMembers.filter((m) => !names.has((m.name || "").toLowerCase())),
+      ];
+    }
+    return staticMembers;
+  }, [selectedYear, dbCommittee]);
   const presVp = currentMembers.filter((m) =>
     (m.designation || "").toLowerCase().includes("president")
   );
@@ -247,7 +269,7 @@ export default function AdministrationPage() {
       <div className="spotlight" aria-hidden="true" />
 
       {/* Main Stage Canvas */}
-      <main className="stage relative overflow-hidden bg-[#080B12]/92 text-[#EAF1FF] min-h-screen pb-24">
+      <main className="stage relative overflow-hidden bg-[#08090C]/92 text-[#EAF1FF] min-h-screen pb-24">
         
         {/* Floating Header */}
         <GarcyNavbar
@@ -258,20 +280,20 @@ export default function AdministrationPage() {
         {/* Hero Banner Section */}
         <section className="pt-32 pb-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-4 border backdrop-blur-md bg-[#1769FF]/15 border-[#1769FF]/40 text-[#49A3FF]">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-4 border backdrop-blur-md bg-[#E5A93C]/15 border-[#E5A93C]/40 text-[#E5A93C]">
               <FaGraduationCap className="text-[10px]" />
               <span>Leadership Architecture &bull; Mentorship Matrix</span>
             </div>
 
             <h1 className="font-extrabold text-4xl sm:text-6xl tracking-tighter leading-tight mb-4 text-[#EAF1FF] uppercase font-sans">
               Administration &amp; <br />
-              <span className="italic font-serif font-normal text-[#49A3FF] lowercase tracking-normal text-3xl sm:text-5xl">
+              <span className="italic font-serif font-normal text-[#E5A93C] lowercase tracking-normal text-3xl sm:text-5xl">
                 mentorship
               </span>{" "}
               Council.
             </h1>
 
-            <p className="text-sm sm:text-base text-[#8793A8] leading-relaxed font-sans font-normal">
+            <p className="text-sm sm:text-base text-[#9E988A] leading-relaxed font-sans font-normal">
               Meet the visionary instigators, distinguished academic heads, ISRO scientists, and student core committee who steer the research endeavors of AAC GRIET.
             </p>
           </div>
@@ -288,27 +310,27 @@ export default function AdministrationPage() {
                   onClick={() => setActiveCategory(tab.key)}
                   className={`p-4 rounded-xl text-left transition-all relative border garcy-glass-header ${
                     active
-                      ? "!bg-[#1769FF]/20 !border-[#1769FF] shadow-[0_0_20px_rgba(23,105,255,0.35)]"
+                      ? "!bg-[#E5A93C]/20 !border-[#E5A93C] shadow-[0_0_20px_rgba(229, 169, 60,0.35)]"
                       : "border-white/10 hover:border-white/20 hover:bg-white/5"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1.5 font-mono text-[10px]">
-                    <span className={active ? "text-[#49A3FF] font-bold" : "text-[#8793A8]"}>
+                    <span className={active ? "text-[#E5A93C] font-bold" : "text-[#9E988A]"}>
                       {tab.code} // SECTOR
                     </span>
                     <span
                       className={`px-2 py-0.5 rounded-full font-mono text-[9px] font-bold ${
                         active
-                          ? "bg-[#1769FF] text-white"
-                          : "bg-white/10 text-[#8793A8]"
+                          ? "bg-[#E5A93C] text-white"
+                          : "bg-white/10 text-[#9E988A]"
                       }`}
                     >
                       {tab.count}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Icon className={active ? "text-[#49A3FF] text-xs" : "text-[#8793A8] text-xs"} />
-                    <span className={`font-sans font-extrabold text-sm sm:text-base uppercase tracking-tight ${active ? "text-white" : "text-[#8793A8]"}`}>
+                    <Icon className={active ? "text-[#E5A93C] text-xs" : "text-[#9E988A] text-xs"} />
+                    <span className={`font-sans font-extrabold text-sm sm:text-base uppercase tracking-tight ${active ? "text-white" : "text-[#9E988A]"}`}>
                       {tab.label}
                     </span>
                   </div>
@@ -326,7 +348,7 @@ export default function AdministrationPage() {
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-white uppercase font-sans">
                   The Instigators
                 </h2>
-                <p className="font-sans text-xs sm:text-sm text-[#8793A8] max-w-3xl mt-1">
+                <p className="font-sans text-xs sm:text-sm text-[#9E988A] max-w-3xl mt-1">
                   The visionary minds who conceived and established the Advanced Academic Center in 2004, laying the foundation for academic excellence and student research innovation.
                 </p>
               </div>
@@ -335,10 +357,10 @@ export default function AdministrationPage() {
                 {instigatorData.map((person) => (
                   <div
                     key={person.id}
-                    className="garcy-glass-card p-6 sm:p-8 rounded-2xl border border-white/15 bg-gradient-to-br from-[#101725] to-[#080B12] hover:border-[#1769FF]/60 transition-all flex flex-col justify-between"
+                    className="garcy-glass-card p-6 sm:p-8 rounded-2xl border border-white/15 bg-gradient-to-br from-[#111318] to-[#08090C] hover:border-[#E5A93C]/60 transition-all flex flex-col justify-between"
                   >
                     <div className="flex flex-col sm:flex-row gap-5 items-start">
-                      <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-xl overflow-hidden border border-white/20 bg-[#101725] flex-shrink-0">
+                      <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-xl overflow-hidden border border-white/20 bg-[#111318] flex-shrink-0">
                         <img
                           src={person.image}
                           alt={person.name}
@@ -351,25 +373,25 @@ export default function AdministrationPage() {
                             {person.name}
                           </h3>
                         </div>
-                        <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#1769FF]/20 border border-[#1769FF]/40 text-[#49A3FF] text-[9.5px] font-mono font-bold uppercase">
+                        <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#E5A93C]/20 border border-[#E5A93C]/40 text-[#E5A93C] text-[9.5px] font-mono font-bold uppercase">
                           {person.occupation}
                         </span>
-                        <p className="text-xs text-[#8793A8] leading-relaxed font-sans line-clamp-4">
+                        <p className="text-xs text-[#9E988A] leading-relaxed font-sans line-clamp-4">
                           {person.about}
                         </p>
                       </div>
                     </div>
 
-                    <div className="pt-4 mt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-[#8793A8]">
+                    <div className="pt-4 mt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-[#9E988A]">
                       <button
                         type="button"
                         onClick={() => setSelectedPerson(person)}
-                        className="text-[#49A3FF] hover:text-white flex items-center gap-1.5 font-bold uppercase"
+                        className="text-[#E5A93C] hover:text-white flex items-center gap-1.5 font-bold uppercase"
                       >
                         <span>Full Biography</span>
                         <FaExternalLinkAlt className="text-[9px]" />
                       </button>
-                      <span className="text-[9.5px] text-[#8793A8]">EST. 2004 FOUNDER</span>
+                      <span className="text-[9.5px] text-[#9E988A]">EST. 2004 FOUNDER</span>
                     </div>
                   </div>
                 ))}
@@ -386,7 +408,7 @@ export default function AdministrationPage() {
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-white uppercase font-sans">
                   Head Advisors &amp; Directorate
                 </h2>
-                <p className="font-sans text-xs sm:text-sm text-[#8793A8] max-w-3xl mt-1">
+                <p className="font-sans text-xs sm:text-sm text-[#9E988A] max-w-3xl mt-1">
                   The guiding forces who steer the institutional vision of GRIET, providing high-level administrative governance, research grants, and student mentorship.
                 </p>
               </div>
@@ -395,10 +417,10 @@ export default function AdministrationPage() {
                 {headAdvisorData.map((person) => (
                   <div
                     key={person.id}
-                    className="garcy-glass-card p-6 sm:p-7 rounded-2xl border border-white/15 bg-gradient-to-br from-[#101725] to-[#080B12] hover:border-[#1769FF]/60 transition-all flex flex-col justify-between"
+                    className="garcy-glass-card p-6 sm:p-7 rounded-2xl border border-white/15 bg-gradient-to-br from-[#111318] to-[#08090C] hover:border-[#E5A93C]/60 transition-all flex flex-col justify-between"
                   >
                     <div>
-                      <div className="relative w-full h-44 rounded-xl overflow-hidden border border-white/15 bg-[#101725] mb-4">
+                      <div className="relative w-full h-44 rounded-xl overflow-hidden border border-white/15 bg-[#111318] mb-4">
                         <img
                           src={person.image}
                           alt={person.name}
@@ -411,21 +433,21 @@ export default function AdministrationPage() {
                       <h3 className="text-xl font-bold text-white font-sans mb-2">
                         {person.name}
                       </h3>
-                      <p className="text-xs text-[#8793A8] leading-relaxed font-sans line-clamp-3">
+                      <p className="text-xs text-[#9E988A] leading-relaxed font-sans line-clamp-3">
                         {person.about}
                       </p>
                     </div>
 
-                    <div className="pt-4 mt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-[#8793A8]">
+                    <div className="pt-4 mt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-[#9E988A]">
                       <button
                         type="button"
                         onClick={() => setSelectedPerson(person)}
-                        className="text-[#49A3FF] hover:text-white flex items-center gap-1.5 font-bold uppercase"
+                        className="text-[#E5A93C] hover:text-white flex items-center gap-1.5 font-bold uppercase"
                       >
                         <span>Inspect Profile</span>
                         <FaExternalLinkAlt className="text-[9px]" />
                       </button>
-                      <span className="text-[9.5px] text-[#8793A8]">GRIET COUNCIL</span>
+                      <span className="text-[9.5px] text-[#9E988A]">GRIET COUNCIL</span>
                     </div>
                   </div>
                 ))}
@@ -442,7 +464,7 @@ export default function AdministrationPage() {
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-white uppercase font-sans">
                   Advisory Council &bull; Industry &amp; ISRO Scientists
                 </h2>
-                <p className="font-sans text-xs sm:text-sm text-[#8793A8] max-w-3xl mt-1">
+                <p className="font-sans text-xs sm:text-sm text-[#9E988A] max-w-3xl mt-1">
                   Distinguished senior scientists from ISRO NRSC, high-performance computing engineers at HPE, technology startup CEOs, and tenured GRIET professors.
                 </p>
               </div>
@@ -451,37 +473,37 @@ export default function AdministrationPage() {
                 {advisorData.map((person) => (
                   <div
                     key={person.id}
-                    className="garcy-glass-card p-6 sm:p-7 rounded-2xl border border-white/15 bg-gradient-to-br from-[#101725] to-[#080B12] hover:border-[#1769FF]/60 transition-all flex flex-col justify-between"
+                    className="garcy-glass-card p-6 sm:p-7 rounded-2xl border border-white/15 bg-gradient-to-br from-[#111318] to-[#08090C] hover:border-[#E5A93C]/60 transition-all flex flex-col justify-between"
                   >
                     <div>
-                      <div className="relative w-full h-44 rounded-xl overflow-hidden border border-white/15 bg-[#101725] mb-4">
+                      <div className="relative w-full h-44 rounded-xl overflow-hidden border border-white/15 bg-[#111318] mb-4">
                         <img
                           src={person.image}
                           alt={person.name}
                           className="w-full h-full object-cover object-top"
                         />
                       </div>
-                      <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#1769FF]/20 border border-[#1769FF]/40 text-[#49A3FF] text-[9.5px] font-mono font-bold uppercase mb-2">
+                      <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#E5A93C]/20 border border-[#E5A93C]/40 text-[#E5A93C] text-[9.5px] font-mono font-bold uppercase mb-2">
                         {person.occupation}
                       </span>
                       <h3 className="text-lg font-bold text-white font-sans mb-2">
                         {person.name}
                       </h3>
-                      <p className="text-xs text-[#8793A8] leading-relaxed font-sans line-clamp-3">
+                      <p className="text-xs text-[#9E988A] leading-relaxed font-sans line-clamp-3">
                         {person.about}
                       </p>
                     </div>
 
-                    <div className="pt-4 mt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-[#8793A8]">
+                    <div className="pt-4 mt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-[#9E988A]">
                       <button
                         type="button"
                         onClick={() => setSelectedPerson(person)}
-                        className="text-[#49A3FF] hover:text-white flex items-center gap-1.5 font-bold uppercase"
+                        className="text-[#E5A93C] hover:text-white flex items-center gap-1.5 font-bold uppercase"
                       >
                         <span>Full Dossier</span>
                         <FaExternalLinkAlt className="text-[9px]" />
                       </button>
-                      <span className="text-[9.5px] text-[#8793A8]">ADVISORY CELL</span>
+                      <span className="text-[9.5px] text-[#9E988A]">ADVISORY CELL</span>
                     </div>
                   </div>
                 ))}
@@ -500,13 +522,13 @@ export default function AdministrationPage() {
                   <h2 className="text-2xl sm:text-3xl font-extrabold text-white uppercase font-sans">
                     Elected Core Committee
                   </h2>
-                  <p className="font-sans text-xs sm:text-sm text-[#8793A8] max-w-2xl mt-1">
+                  <p className="font-sans text-xs sm:text-sm text-[#9E988A] max-w-2xl mt-1">
                     The student leaders driving peer-to-peer technical development, project mentoring, hackathons, and lab operations.
                   </p>
                 </div>
 
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-mono text-xs text-[#8793A8] uppercase tracking-wider font-semibold mr-1">
+                  <span className="font-mono text-xs text-[#9E988A] uppercase tracking-wider font-semibold mr-1">
                     ACADEMIC COHORT:
                   </span>
                   {availableYears.map((year) => (
@@ -516,8 +538,8 @@ export default function AdministrationPage() {
                       onClick={() => setSelectedYear(year)}
                       className={`px-3.5 py-1.5 rounded-lg font-mono text-xs font-bold uppercase tracking-wider transition-all ${
                         selectedYear === year
-                          ? "bg-[#1769FF] text-white shadow-[0_0_15px_rgba(23,105,255,0.5)] border border-[#49A3FF]"
-                          : "bg-white/5 text-[#8793A8] border border-white/10 hover:border-white/20 hover:text-white"
+                          ? "bg-[#E5A93C] text-white shadow-[0_0_15px_rgba(229, 169, 60,0.5)] border border-[#E5A93C]"
+                          : "bg-white/5 text-[#9E988A] border border-white/10 hover:border-white/20 hover:text-white"
                       }`}
                     >
                       {year}
@@ -530,8 +552,8 @@ export default function AdministrationPage() {
               {presVp.length > 0 && (
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#1769FF]" />
-                    <h3 className="font-mono text-xs uppercase tracking-widest text-[#49A3FF] font-bold">
+                    <span className="w-2 h-2 rounded-full bg-[#E5A93C]" />
+                    <h3 className="font-mono text-xs uppercase tracking-widest text-[#E5A93C] font-bold">
                       EXECUTIVE PRESIDENCY // COHORT {selectedYear}
                     </h3>
                   </div>
@@ -540,9 +562,9 @@ export default function AdministrationPage() {
                     {presVp.map((member) => (
                       <div
                         key={`${selectedYear}-${member.name}`}
-                        className="garcy-glass-card w-[240px] sm:w-[260px] p-4 rounded-xl border border-white/15 bg-gradient-to-br from-[#101725] to-[#080B12] hover:border-[#1769FF]/80 transition-all flex flex-col justify-between group shadow-xl"
+                        className="garcy-glass-card w-[240px] sm:w-[260px] p-4 rounded-xl border border-white/15 bg-gradient-to-br from-[#111318] to-[#08090C] hover:border-[#E5A93C]/80 transition-all flex flex-col justify-between group shadow-xl"
                       >
-                        <div className="relative w-full h-[230px] rounded-lg overflow-hidden border border-white/15 bg-[#080B12] mb-3 flex-shrink-0">
+                        <div className="relative w-full h-[230px] rounded-lg overflow-hidden border border-white/15 bg-[#08090C] mb-3 flex-shrink-0">
                           <img
                             src={getCommitteeImageUrl(member.image)}
                             alt={member.name}
@@ -565,10 +587,10 @@ export default function AdministrationPage() {
                         </div>
 
                         <div className="text-center pt-1">
-                          <h4 className="font-bold text-sm text-white uppercase tracking-tight group-hover:text-[#49A3FF] transition-colors mb-1">
+                          <h4 className="font-bold text-sm text-white uppercase tracking-tight group-hover:text-[#E5A93C] transition-colors mb-1">
                             {member.name}
                           </h4>
-                          <p className="font-mono text-[10.5px] font-bold text-[#49A3FF] uppercase tracking-wider">
+                          <p className="font-mono text-[10.5px] font-bold text-[#E5A93C] uppercase tracking-wider">
                             {member.designation}
                           </p>
                         </div>
@@ -592,9 +614,9 @@ export default function AdministrationPage() {
                     {heads.map((member) => (
                       <div
                         key={`${selectedYear}-${member.name}`}
-                        className="garcy-glass-card w-[220px] sm:w-[240px] p-3.5 rounded-xl border border-white/15 bg-gradient-to-br from-[#101725] to-[#080B12] hover:border-[#1769FF]/80 transition-all flex flex-col justify-between group shadow-lg"
+                        className="garcy-glass-card w-[220px] sm:w-[240px] p-3.5 rounded-xl border border-white/15 bg-gradient-to-br from-[#111318] to-[#08090C] hover:border-[#E5A93C]/80 transition-all flex flex-col justify-between group shadow-lg"
                       >
-                        <div className="relative w-full h-[200px] rounded-lg overflow-hidden border border-white/15 bg-[#080B12] mb-3 flex-shrink-0">
+                        <div className="relative w-full h-[200px] rounded-lg overflow-hidden border border-white/15 bg-[#08090C] mb-3 flex-shrink-0">
                           <img
                             src={getCommitteeImageUrl(member.image)}
                             alt={member.name}
@@ -617,7 +639,7 @@ export default function AdministrationPage() {
                         </div>
 
                         <div className="text-center pt-1">
-                          <h4 className="font-bold text-xs sm:text-sm text-white uppercase tracking-tight group-hover:text-[#49A3FF] transition-colors mb-1">
+                          <h4 className="font-bold text-xs sm:text-sm text-white uppercase tracking-tight group-hover:text-[#E5A93C] transition-colors mb-1">
                             {member.name}
                           </h4>
                           <p className="font-mono text-[10px] font-bold text-[#10b981] uppercase tracking-wider">
@@ -634,8 +656,8 @@ export default function AdministrationPage() {
               {others.length > 0 && (
                 <div className="space-y-3 pt-4">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#8793A8]" />
-                    <h3 className="font-mono text-xs uppercase tracking-widest text-[#8793A8] font-bold">
+                    <span className="w-2 h-2 rounded-full bg-[#9E988A]" />
+                    <h3 className="font-mono text-xs uppercase tracking-widest text-[#9E988A] font-bold">
                       COORDINATORS &amp; CORE FELLOWS // COHORT {selectedYear}
                     </h3>
                   </div>
@@ -644,9 +666,9 @@ export default function AdministrationPage() {
                     {others.map((member) => (
                       <div
                         key={`${selectedYear}-${member.name}`}
-                        className="garcy-glass-card w-[200px] sm:w-[220px] p-3 rounded-xl border border-white/10 bg-gradient-to-br from-[#101725] to-[#080B12] hover:border-[#1769FF]/60 transition-all flex flex-col justify-between group shadow-md"
+                        className="garcy-glass-card w-[200px] sm:w-[220px] p-3 rounded-xl border border-white/10 bg-gradient-to-br from-[#111318] to-[#08090C] hover:border-[#E5A93C]/60 transition-all flex flex-col justify-between group shadow-md"
                       >
-                        <div className="relative w-full h-[180px] rounded-lg overflow-hidden border border-white/10 bg-[#080B12] mb-2.5 flex-shrink-0">
+                        <div className="relative w-full h-[180px] rounded-lg overflow-hidden border border-white/10 bg-[#08090C] mb-2.5 flex-shrink-0">
                           <img
                             src={getCommitteeImageUrl(member.image)}
                             alt={member.name}
@@ -669,10 +691,10 @@ export default function AdministrationPage() {
                         </div>
 
                         <div className="text-center pt-1">
-                          <h4 className="font-bold text-xs text-white uppercase tracking-tight group-hover:text-[#49A3FF] transition-colors mb-0.5">
+                          <h4 className="font-bold text-xs text-white uppercase tracking-tight group-hover:text-[#E5A93C] transition-colors mb-0.5">
                             {member.name}
                           </h4>
-                          <p className="font-mono text-[9px] text-[#8793A8] uppercase tracking-wider">
+                          <p className="font-mono text-[9px] text-[#9E988A] uppercase tracking-wider">
                             {member.designation}
                           </p>
                         </div>
@@ -688,15 +710,15 @@ export default function AdministrationPage() {
         {/* Person Dossier Modal */}
         {selectedPerson && (
           <div
-            className="fixed inset-0 z-50 bg-[#080B12]/90 backdrop-blur-xl flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-[#08090C]/90 backdrop-blur-xl flex items-center justify-center p-4"
             onClick={() => setSelectedPerson(null)}
           >
             <div
-              className="garcy-glass-card max-w-lg w-full p-6 sm:p-8 text-left relative border border-[#1769FF]/50 shadow-[0_0_50px_rgba(23,105,255,0.35)]"
+              className="garcy-glass-card max-w-lg w-full p-6 sm:p-8 text-left relative border border-[#E5A93C]/50 shadow-[0_0_50px_rgba(229, 169, 60,0.35)]"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-16 h-16 rounded-xl overflow-hidden border border-white/20 bg-[#101725] flex-shrink-0">
+                <div className="w-16 h-16 rounded-xl overflow-hidden border border-white/20 bg-[#111318] flex-shrink-0">
                   <img
                     src={selectedPerson.image}
                     alt={selectedPerson.name}
@@ -704,7 +726,7 @@ export default function AdministrationPage() {
                   />
                 </div>
                 <div>
-                  <span className="text-[10px] font-mono uppercase text-[#49A3FF] font-bold block mb-1">
+                  <span className="text-[10px] font-mono uppercase text-[#E5A93C] font-bold block mb-1">
                     {selectedPerson.occupation || selectedPerson.tier}
                   </span>
                   <h3 className="text-xl sm:text-2xl font-extrabold text-white font-sans">
@@ -713,20 +735,20 @@ export default function AdministrationPage() {
                 </div>
               </div>
 
-              <p className="text-xs sm:text-sm text-[#8793A8] leading-relaxed mb-6 font-sans">
+              <p className="text-xs sm:text-sm text-[#9E988A] leading-relaxed mb-6 font-sans">
                 {selectedPerson.about}
               </p>
 
               {selectedPerson.expertise && (
                 <div className="mb-6">
-                  <span className="font-mono text-[10px] uppercase text-[#49A3FF] font-bold block mb-2">
+                  <span className="font-mono text-[10px] uppercase text-[#E5A93C] font-bold block mb-2">
                     Research &amp; Domain Expertise
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {selectedPerson.expertise.map((exp) => (
                       <span
                         key={exp}
-                        className="px-2.5 py-1 rounded bg-[#1769FF]/15 border border-[#1769FF]/30 text-white font-mono text-[10px]"
+                        className="px-2.5 py-1 rounded bg-[#E5A93C]/15 border border-[#E5A93C]/30 text-white font-mono text-[10px]"
                       >
                         {exp}
                       </span>
@@ -739,7 +761,7 @@ export default function AdministrationPage() {
                 {selectedPerson.email && (
                   <a
                     href={`mailto:${selectedPerson.email}`}
-                    className="text-xs font-mono text-[#49A3FF] hover:text-white flex items-center gap-1.5 font-bold"
+                    className="text-xs font-mono text-[#E5A93C] hover:text-white flex items-center gap-1.5 font-bold"
                   >
                     <FaEnvelope />
                     <span>Contact Office</span>
@@ -748,7 +770,7 @@ export default function AdministrationPage() {
                 <button
                   type="button"
                   onClick={() => setSelectedPerson(null)}
-                  className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-mono text-[#8793A8] uppercase transition-colors"
+                  className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-mono text-[#9E988A] uppercase transition-colors"
                 >
                   Close Dossier
                 </button>
@@ -757,7 +779,7 @@ export default function AdministrationPage() {
               <button
                 type="button"
                 onClick={() => setSelectedPerson(null)}
-                className="absolute top-4 right-4 text-[#8793A8] hover:text-white text-base p-1"
+                className="absolute top-4 right-4 text-[#9E988A] hover:text-white text-base p-1"
                 aria-label="Close"
               >
                 <FaTimes />

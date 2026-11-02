@@ -45,24 +45,24 @@ export default function GarcyBootLoader({ onComplete }) {
         initial={{ opacity: 1 }}
         exit={{ opacity: 0, scale: 0.98 }}
         transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed inset-0 z-[100] bg-[#06080E] text-[#EAF1FF] flex flex-col justify-between p-6 sm:p-10 select-none overflow-hidden"
+        className="fixed inset-0 z-[100] bg-[#08090C] text-[#EAF1FF] flex flex-col justify-between p-6 sm:p-10 select-none overflow-hidden"
       >
         {/* ====================================================================
             TOP WATERMARK HEADER (Non-overlapping Flex Row)
             ==================================================================== */}
         <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 z-10 border-b border-white/5 pb-4">
           <div className="max-w-md space-y-1">
-            <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-widest text-[#49A3FF] font-bold block">
+            <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-widest text-[#E5A93C] font-bold block">
               GRIET HYDERABAD &bull; ADVANCED ACADEMIC CENTER
             </span>
-            <p className="font-sans text-xs sm:text-sm text-[#8793A8] leading-snug">
+            <p className="font-sans text-xs sm:text-sm text-[#9E988A] leading-snug">
               Where curiosity evolves into research, and innovation becomes reality.
             </p>
           </div>
 
           <div className="text-left sm:text-right flex-shrink-0">
-            <span className="font-mono text-[10px] sm:text-xs text-[#8793A8] uppercase tracking-widest flex items-center gap-1.5 sm:justify-end font-semibold">
-              <span className="text-[#1769FF] font-bold text-sm">*</span>
+            <span className="font-mono text-[10px] sm:text-xs text-[#9E988A] uppercase tracking-widest flex items-center gap-1.5 sm:justify-end font-semibold">
+              <span className="text-[#E5A93C] font-bold text-sm">*</span>
               <span>Curiosity Begins Here &bull; EST. 2004</span>
             </span>
           </div>
@@ -75,7 +75,7 @@ export default function GarcyBootLoader({ onComplete }) {
           
           {/* Ambient Hologram Glow Behind Logo */}
           <div className="relative w-full max-w-[560px] sm:max-w-[680px] flex flex-col items-center justify-center mb-6 select-none">
-            <div className="absolute inset-0 bg-[#1769FF]/15 blur-[100px] rounded-full pointer-events-none" />
+            <div className="absolute inset-0 bg-[#E5A93C]/15 blur-[100px] rounded-full pointer-events-none" />
 
             {/* Hardware-accelerated Video Animation (loading.mp4 keyed in real-time) */}
             <div className="relative z-10 w-full flex items-center justify-center">
@@ -92,7 +92,7 @@ export default function GarcyBootLoader({ onComplete }) {
               <img
                 src="/images/logo_subtitle.png"
                 alt="ADVANCED ACADEMIC CENTER"
-                className="w-full h-full object-contain filter drop-shadow-[0_0_15px_rgba(73,163,255,0.9)]"
+                className="w-full h-full object-contain filter drop-shadow-[0_0_15px_rgba(229,169,60,0.7)]"
               />
             </motion.div>
           </div>
@@ -113,7 +113,7 @@ export default function GarcyBootLoader({ onComplete }) {
               <FaArrowRight className="text-xs group-hover:translate-x-1.5 transition-transform" />
             </button>
 
-            <span className="text-[10px] font-mono text-[#8793A8]/70 uppercase tracking-widest mt-4 block">
+            <span className="text-[10px] font-mono text-[#9E988A]/70 uppercase tracking-widest mt-4 block">
               Press Enter or click to enter
             </span>
           </motion.div>
@@ -122,7 +122,7 @@ export default function GarcyBootLoader({ onComplete }) {
         {/* ====================================================================
             BOTTOM METADATA RUNWAY (Clean, Non-overlapping Flex Row)
             ==================================================================== */}
-        <div className="w-full border-t border-white/10 pt-4 flex flex-col sm:flex-row items-center justify-between gap-2.5 z-10 text-[10.5px] font-mono text-[#8793A8] uppercase tracking-wider">
+        <div className="w-full border-t border-white/10 pt-4 flex flex-col sm:flex-row items-center justify-between gap-2.5 z-10 text-[10.5px] font-mono text-[#9E988A] uppercase tracking-wider">
           <div className="flex items-center gap-2">
             <span className="text-white/40">DIRECTORATE:</span>
             <span className="text-white font-semibold">GRIET / AUTONOMOUS</span>
@@ -131,7 +131,7 @@ export default function GarcyBootLoader({ onComplete }) {
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]" />
             <span className="text-white/40">R&amp;D STATUS:</span>
-            <span className="text-[#49A3FF] font-semibold">ACTIVE RESEARCH LAB</span>
+            <span className="text-[#E5A93C] font-semibold">ACTIVE RESEARCH LAB</span>
           </div>
           
           <div className="flex items-center gap-2">

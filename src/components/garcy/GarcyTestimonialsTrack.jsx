@@ -48,13 +48,13 @@ export default function GarcyTestimonialsTrack() {
       {/* Section Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-14">
         <div>
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-3 border backdrop-blur-md bg-[#1769FF]/15 border-[#1769FF]/40 text-[#49A3FF]">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-3 border backdrop-blur-md bg-[#E5A93C]/15 border-[#E5A93C]/40 text-[#E5A93C]">
             <span>06 // AAC Leadership &amp; Alumni</span>
           </div>
 
           <h2 className="font-extrabold text-3xl sm:text-5xl tracking-tighter text-[#EAF1FF] mb-2 uppercase font-sans">
             Minds that lead <br />
-            <span className="italic font-serif font-normal text-[#49A3FF] lowercase tracking-normal text-3xl sm:text-5xl">
+            <span className="italic font-serif font-normal text-[#E5A93C] lowercase tracking-normal text-3xl sm:text-5xl">
               the
             </span>{" "}
             ecosystem.
@@ -64,7 +64,7 @@ export default function GarcyTestimonialsTrack() {
         <div className="mt-4 md:mt-0 flex items-center gap-4">
           <Link
             href="/Administration"
-            className="text-xs font-mono text-[#8793A8] hover:text-[#49A3FF] transition-colors flex items-center gap-1.5 uppercase font-bold"
+            className="text-xs font-mono text-[#9E988A] hover:text-[#E5A93C] transition-colors flex items-center gap-1.5 uppercase font-bold"
           >
             <span>Core Committee &bull; Administration</span>
             <FaArrowRight className="text-[10px]" />
@@ -77,22 +77,22 @@ export default function GarcyTestimonialsTrack() {
         {leaders.map((item, idx) => (
           <div
             key={item.name}
-            className="garcy-glass-card p-6 flex flex-col justify-between hover:bg-[#131d30]/90 transition-all duration-300 h-full border border-white/15 group hover:-translate-y-1 hover:border-[#1769FF]/50"
+            className="garcy-glass-card p-6 flex flex-col justify-between hover:bg-[#131d30]/90 transition-all duration-300 h-full border border-white/15 group hover:-translate-y-1 hover:border-[#E5A93C]/50"
           >
             <div>
-              <div className="flex items-center justify-between text-[10px] font-mono uppercase text-[#8793A8] mb-4">
+              <div className="flex items-center justify-between text-[10px] font-mono uppercase text-[#9E988A] mb-4">
                 <span>0{idx + 1} // LEAD</span>
-                <span className="text-[#49A3FF] px-2.5 py-0.5 rounded-full bg-[#080B12] border border-[#1769FF]/30 font-bold">
+                <span className="text-[#E5A93C] px-2.5 py-0.5 rounded-full bg-[#08090C] border border-[#E5A93C]/30 font-bold">
                   {item.tag}
                 </span>
               </div>
 
               {/* Bold Quote Headline */}
-              <h4 className="text-sm font-extrabold text-[#EAF1FF] mb-3 font-sans tracking-tight leading-snug group-hover:text-[#49A3FF] transition-colors">
+              <h4 className="text-sm font-extrabold text-[#EAF1FF] mb-3 font-sans tracking-tight leading-snug group-hover:text-[#E5A93C] transition-colors">
                 {item.quote}
               </h4>
 
-              <p className="text-xs text-[#8793A8] leading-relaxed font-sans font-normal mb-6">
+              <p className="text-xs text-[#9E988A] leading-relaxed font-sans font-normal mb-6">
                 {item.desc}
               </p>
             </div>
@@ -100,12 +100,12 @@ export default function GarcyTestimonialsTrack() {
             {/* Persona Badge */}
             <div className="pt-4 border-t border-white/10 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-[#080B12] flex items-center justify-center font-mono font-bold text-xs text-[#49A3FF] border border-white/10">
+                <div className="w-8 h-8 rounded-lg bg-[#08090C] flex items-center justify-center font-mono font-bold text-xs text-[#E5A93C] border border-white/10">
                   {item.name.charAt(0)}
                 </div>
                 <div>
                   <div className="text-xs font-bold text-[#EAF1FF] font-sans">{item.name}</div>
-                  <div className="text-[9.5px] font-mono text-[#8793A8] uppercase">{item.role}</div>
+                  <div className="text-[9.5px] font-mono text-[#9E988A] uppercase">{item.role}</div>
                 </div>
               </div>
 
@@ -114,7 +114,7 @@ export default function GarcyTestimonialsTrack() {
                   href={item.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-7 h-7 rounded-lg bg-white/5 hover:bg-[#1769FF] hover:text-white text-[#8793A8] flex items-center justify-center transition-colors"
+                  className="w-7 h-7 rounded-lg bg-white/5 hover:bg-[#E5A93C] hover:text-white text-[#9E988A] flex items-center justify-center transition-colors"
                   title="LinkedIn Profile"
                 >
                   <FaLinkedin className="text-xs" />

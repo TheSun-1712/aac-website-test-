@@ -1,0 +1,51 @@
+[
+  {
+    "id": "wine-quality",
+    "title": "Ensemble–Based Wine Quality Detection using Hybrid Machine Learning Models",
+    "publication": "International Journal of Engineering Research and Technology (IJERT)",
+    "journal": "International Journal of Engineering Research and Technology (IJERT)",
+    "citation": "ISSN: 2278-0181, Vol. 13 Issue 01, August 2024",
+    "year": 2024,
+    "category": "Machine Learning",
+    "authors": [
+      "Dodda Abhiram",
+      "Siddharth Mahesh Balijepally",
+      "Ekantha Sai Sundar"
+    ],
+    "abstract": "This paper proposes a novel ensemble learning method for accurately predicting wine quality using hybrid classification models, feature correlation metrics, and cross-validated decision trees.",
+    "keywords": [
+      "machine learning",
+      "ensemble models",
+      "hybrid classification",
+      "predictive analytics"
+    ],
+    "paperLink": "https://www.ijert.org/",
+    "type": "Journal Paper"
+  },
+  {
+    "id": "pill-reminder-ip",
+    "title": "Design and Validation of Two-Way Electronic Verification for Scheduled Medication Compliance",
+    "publication": "AAC Technical Proceedings & Indian Patent Journal",
+    "journal": "AAC Technical Proceedings & Indian Patent Journal",
+    "citation": "Patent Application 201941002559",
+    "year": 2019,
+    "category": "Healthcare & Embedded",
+    "authors": [
+      "Yelma Chethan Reddy",
+      "Alence Abhinay",
+      "B.S.V.S Anoop",
+      "M Srikanth",
+      "D. Naga pavan",
+      "G Pradeep Reddy"
+    ],
+    "abstract": "Presents the architectural schema, firmware timing diagrams, and sensor validation for an automated electronic medication dispenser with multi-compartment replaceable layers and two-way confirmation.",
+    "keywords": [
+      "biomedical",
+      "medication compliance",
+      "firmware",
+      "iot healthcare"
+    ],
+    "paperLink": "https://ipindiaservices.gov.in/",
+    "type": "Conference Paper"
+  }
+]

@@ -41,21 +41,21 @@ export default function GarcyTelemetry() {
       {/* Section Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-16">
         <div>
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-3 border backdrop-blur-md bg-[#1769FF]/15 border-[#1769FF]/40 text-[#49A3FF]">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-3 border backdrop-blur-md bg-[#E5A93C]/15 border-[#E5A93C]/40 text-[#E5A93C]">
             <FaChartLine className="text-[10px]" />
             <span>04 // Key Performance Indicators</span>
           </div>
 
           <h2 className="font-extrabold text-3xl sm:text-5xl tracking-tighter text-[#EAF1FF] mb-2 uppercase font-sans">
             Empowering Minds, <br />
-            <span className="italic font-serif font-normal text-[#49A3FF] lowercase tracking-normal text-3xl sm:text-5xl">
+            <span className="italic font-serif font-normal text-[#E5A93C] lowercase tracking-normal text-3xl sm:text-5xl">
               shaping
             </span>{" "}
             Tomorrow.
           </h2>
         </div>
 
-        <p className="mt-4 md:mt-0 text-xs sm:text-sm text-[#8793A8] max-w-sm font-sans font-normal leading-relaxed">
+        <p className="mt-4 md:mt-0 text-xs sm:text-sm text-[#9E988A] max-w-sm font-sans font-normal leading-relaxed">
           Dedicated to pushing boundaries in engineering and innovation with verifiable institutional outcomes.
         </p>
       </div>
@@ -71,16 +71,16 @@ export default function GarcyTelemetry() {
               onMouseLeave={() => setActiveMetric(null)}
               className={`garcy-glass-card p-6 flex flex-col justify-between transition-all duration-300 border ${
                 activeMetric === idx
-                  ? "!border-[#1769FF] !bg-[#131d30]/95 scale-[1.02] shadow-[0_0_30px_rgba(23,105,255,0.3)]"
-                  : "border-white/15 hover:bg-[#101725]/80"
+                  ? "!border-[#E5A93C] !bg-[#131d30]/95 scale-[1.02] shadow-[0_0_30px_rgba(229, 169, 60,0.3)]"
+                  : "border-white/15 hover:bg-[#111318]/80"
               }`}
             >
               <div>
-                <div className="flex items-center justify-between text-[10px] font-mono uppercase text-[#8793A8] mb-4">
-                  <span className="w-8 h-8 rounded-lg bg-[#080B12] flex items-center justify-center text-[#49A3FF] text-xs border border-white/10">
+                <div className="flex items-center justify-between text-[10px] font-mono uppercase text-[#9E988A] mb-4">
+                  <span className="w-8 h-8 rounded-lg bg-[#08090C] flex items-center justify-center text-[#E5A93C] text-xs border border-white/10">
                     <Icon />
                   </span>
-                  <span className="text-[#49A3FF] font-bold font-mono">{m.tag}</span>
+                  <span className="text-[#E5A93C] font-bold font-mono">{m.tag}</span>
                 </div>
                 <div className="text-4xl sm:text-5xl font-extrabold text-[#EAF1FF] font-mono tracking-tight mb-2">
                   {m.value}
@@ -90,7 +90,7 @@ export default function GarcyTelemetry() {
                 </div>
               </div>
 
-              <div className="text-[11px] text-[#8793A8] font-mono mt-6 pt-3 border-t border-white/10 leading-snug">
+              <div className="text-[11px] text-[#9E988A] font-mono mt-6 pt-3 border-t border-white/10 leading-snug">
                 {m.desc}
               </div>
             </div>
@@ -105,17 +105,17 @@ export default function GarcyTelemetry() {
           return (
             <div
               key={channel.title}
-              className="garcy-glass-card p-6 border border-white/15 hover:border-[#1769FF]/60 transition-colors"
+              className="garcy-glass-card p-6 border border-white/15 hover:border-[#E5A93C]/60 transition-colors"
             >
               <div className="flex items-center justify-between mb-4">
-                <div className="w-9 h-9 rounded-xl bg-[#080B12] flex items-center justify-center text-[#49A3FF] text-sm border border-white/10">
+                <div className="w-9 h-9 rounded-xl bg-[#08090C] flex items-center justify-center text-[#E5A93C] text-sm border border-white/10">
                   <Icon />
                 </div>
                 <div className="text-right">
-                  <span className="text-base font-mono font-bold text-[#49A3FF]">
+                  <span className="text-base font-mono font-bold text-[#E5A93C]">
                     {channel.percent}%
                   </span>
-                  <div className="text-[9px] font-mono uppercase text-[#8793A8]">
+                  <div className="text-[9px] font-mono uppercase text-[#9E988A]">
                     {channel.status}
                   </div>
                 </div>
@@ -125,14 +125,14 @@ export default function GarcyTelemetry() {
                 {channel.title}
               </h4>
 
-              <p className="text-xs text-[#8793A8] leading-relaxed font-sans mb-5 font-normal">
+              <p className="text-xs text-[#9E988A] leading-relaxed font-sans mb-5 font-normal">
                 {channel.desc}
               </p>
 
               {/* Progress Line */}
-              <div className="w-full h-1.5 rounded-full overflow-hidden bg-[#080B12] border border-white/10">
+              <div className="w-full h-1.5 rounded-full overflow-hidden bg-[#08090C] border border-white/10">
                 <div
-                  className="h-full bg-gradient-to-r from-[#1769FF] to-[#49A3FF]"
+                  className="h-full bg-gradient-to-r from-[#E5A93C] to-[#E5A93C]"
                   style={{ width: `${channel.percent}%` }}
                 />
               </div>

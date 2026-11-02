@@ -1,0 +1,32 @@
+[
+  {
+    "id": "koolgen",
+    "name": "Koolgen Interactives",
+    "founder": "Raunak Bagga (AAC Alumnus)",
+    "founders": [
+      "Raunak Bagga"
+    ],
+    "category": "Interactive Tech & Gaming",
+    "status": "Active Enterprise",
+    "color": "blue",
+    "description": "Pioneering interactive 3D virtual environments, interactive digital twins, and immersive game engine architectures. Keynote speaker at Opulence 2024.",
+    "mission": "Transforming virtual interaction and simulation technologies.",
+    "establishedDate": "2022-06-01T00:00:00.000Z",
+    "website": "https://koolgen.com"
+  },
+  {
+    "id": "great-honey",
+    "name": "The Great Honey Company",
+    "founder": "Srikanth Reddy Tenneti (AAC Alumnus)",
+    "founders": [
+      "Srikanth Reddy Tenneti"
+    ],
+    "category": "Food & Sustainability",
+    "status": "Commercial Scale",
+    "color": "orange",
+    "description": "Sustainable agricultural venture connecting ethically harvested natural produce directly to consumers through digital traceability and testing.",
+    "mission": "Ethical harvesting and sustainable farm-to-table traceability.",
+    "establishedDate": "2021-08-15T00:00:00.000Z",
+    "website": "https://greathoney.com"
+  }
+]

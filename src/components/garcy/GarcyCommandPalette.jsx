@@ -72,23 +72,23 @@ export default function GarcyCommandPalette({ isOpen, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-[150] bg-[#080B12]/85 backdrop-blur-2xl flex items-center justify-center p-3 sm:p-6 select-none"
+      className="fixed inset-0 z-[150] bg-[#08090C]/85 backdrop-blur-2xl flex items-center justify-center p-3 sm:p-6 select-none"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-3xl bg-[#101725]/95 rounded-2xl relative border border-[#1769FF]/40 shadow-[0_0_50px_rgba(23,105,255,0.35)] flex flex-col md:flex-row max-h-[85vh] overflow-hidden"
+        className="w-full max-w-3xl bg-[#111318]/95 rounded-2xl relative border border-[#E5A93C]/40 shadow-[0_0_50px_rgba(229, 169, 60,0.35)] flex flex-col md:flex-row max-h-[85vh] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Left Column: Authentic 3D Floppy Disk Model */}
         <div className="hidden md:flex flex-col items-center justify-between p-6 bg-gradient-to-b from-[#131d30] to-[#0a0f18] border-r border-white/10 w-72 flex-shrink-0">
           <div className="w-full text-left">
-            <span className="text-[9px] font-mono uppercase tracking-widest text-[#49A3FF] bg-[#080B12] px-2.5 py-1 rounded-full border border-[#1769FF]/40 font-bold">
+            <span className="text-[9px] font-mono uppercase tracking-widest text-[#E5A93C] bg-[#08090C] px-2.5 py-1 rounded-full border border-[#E5A93C]/40 font-bold">
               // ARCHIVE MEDIA
             </span>
             <h3 className="text-sm font-extrabold text-[#EAF1FF] font-sans mt-3 uppercase tracking-tight">
               AAC 3.5&quot; Floppy Disk
             </h3>
-            <p className="text-[10.5px] font-mono text-[#8793A8] mt-1 leading-snug">
+            <p className="text-[10.5px] font-mono text-[#9E988A] mt-1 leading-snug">
               Autonomous Systems &amp; R&amp;D Repository 2026
             </p>
           </div>
@@ -122,7 +122,7 @@ export default function GarcyCommandPalette({ isOpen, onClose }) {
             </div>
           </div>
 
-          <div className="w-full text-center text-[9px] font-mono uppercase text-[#8793A8]">
+          <div className="w-full text-center text-[9px] font-mono uppercase text-[#9E988A]">
             Press &uarr; &darr; to navigate &bull; ENTER to select
           </div>
         </div>
@@ -132,7 +132,7 @@ export default function GarcyCommandPalette({ isOpen, onClose }) {
           {/* Top Header */}
           <div className="flex items-center justify-between pb-3 border-b border-white/10">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#1769FF] animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-[#E5A93C] animate-pulse" />
               <span className="text-xs font-mono uppercase tracking-widest text-[#EAF1FF] font-bold">
                 AAC Archive &bull; Command Search
               </span>
@@ -141,7 +141,7 @@ export default function GarcyCommandPalette({ isOpen, onClose }) {
             <button
               type="button"
               onClick={onClose}
-              className="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/15 text-[#8793A8] hover:text-white flex items-center justify-center text-xs transition-colors"
+              className="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/15 text-[#9E988A] hover:text-white flex items-center justify-center text-xs transition-colors"
               aria-label="Close"
             >
               <FaTimes />
@@ -150,7 +150,7 @@ export default function GarcyCommandPalette({ isOpen, onClose }) {
 
           {/* Search Input Bar */}
           <div className="flex items-center gap-3 py-3 border-b border-white/10">
-            <FaSearch className="text-[#8793A8] text-sm flex-shrink-0" />
+            <FaSearch className="text-[#9E988A] text-sm flex-shrink-0" />
             <input
               ref={inputRef}
               type="text"
@@ -160,13 +160,13 @@ export default function GarcyCommandPalette({ isOpen, onClose }) {
                 setSelectedIndex(0);
               }}
               placeholder="Search 12 AAC modules (e.g., Drones, Gprime, Patents)..."
-              className="w-full bg-transparent border-0 text-[#EAF1FF] placeholder-[#8793A8]/60 focus:outline-none text-sm font-sans"
+              className="w-full bg-transparent border-0 text-[#EAF1FF] placeholder-[#9E988A]/60 focus:outline-none text-sm font-sans"
             />
             {query && (
               <button
                 type="button"
                 onClick={() => setQuery("")}
-                className="text-[10px] font-mono uppercase text-[#8793A8] hover:text-white"
+                className="text-[10px] font-mono uppercase text-[#9E988A] hover:text-white"
               >
                 CLEAR
               </button>
@@ -185,8 +185,8 @@ export default function GarcyCommandPalette({ isOpen, onClose }) {
                 }}
                 className={`px-2.5 py-1 rounded-md text-[10px] font-mono uppercase tracking-wider transition-all flex-shrink-0 ${
                   selectedFilter === cat
-                    ? "bg-[#1769FF] text-white font-bold"
-                    : "bg-white/5 text-[#8793A8] hover:text-white hover:bg-white/10"
+                    ? "bg-[#E5A93C] text-white font-bold"
+                    : "bg-white/5 text-[#9E988A] hover:text-white hover:bg-white/10"
                 }`}
               >
                 {cat}
@@ -204,32 +204,32 @@ export default function GarcyCommandPalette({ isOpen, onClose }) {
                   onClick={onClose}
                   className={`group flex items-center justify-between p-3 rounded-xl border transition-all ${
                     selectedIndex === idx
-                      ? "bg-[#1769FF]/20 border-[#1769FF] translate-x-1"
+                      ? "bg-[#E5A93C]/20 border-[#E5A93C] translate-x-1"
                       : "bg-white/[0.02] border-white/5 hover:bg-white/[0.05]"
                   }`}
                 >
                   <div className="min-w-0 pr-4">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-[8.5px] font-mono uppercase px-2 py-0.5 rounded bg-[#080B12] text-[#49A3FF] border border-[#1769FF]/30 font-bold">
+                      <span className="text-[8.5px] font-mono uppercase px-2 py-0.5 rounded bg-[#08090C] text-[#E5A93C] border border-[#E5A93C]/30 font-bold">
                         {item.category}
                       </span>
-                      <h4 className="text-xs sm:text-sm font-bold text-[#EAF1FF] group-hover:text-[#49A3FF] transition-colors truncate">
+                      <h4 className="text-xs sm:text-sm font-bold text-[#EAF1FF] group-hover:text-[#E5A93C] transition-colors truncate">
                         {item.title}
                       </h4>
                     </div>
-                    <p className="text-[11px] text-[#8793A8] font-sans truncate">
+                    <p className="text-[11px] text-[#9E988A] font-sans truncate">
                       {item.desc}
                     </p>
                   </div>
 
-                  <div className="text-xs font-mono text-[#8793A8] group-hover:text-[#49A3FF] flex items-center gap-1.5 flex-shrink-0">
+                  <div className="text-xs font-mono text-[#9E988A] group-hover:text-[#E5A93C] flex items-center gap-1.5 flex-shrink-0">
                     <span className="text-[9px] uppercase hidden sm:inline">SELECT</span>
                     <FaExternalLinkAlt className="text-[9px]" />
                   </div>
                 </Link>
               ))
             ) : (
-              <div className="text-center py-12 text-[#8793A8] font-mono text-xs">
+              <div className="text-center py-12 text-[#9E988A] font-mono text-xs">
                 No matching records found for &ldquo;{query}&rdquo;
               </div>
             )}

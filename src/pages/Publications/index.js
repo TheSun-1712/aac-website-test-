@@ -103,7 +103,7 @@ export default function PublicationsPage() {
       <div className="spotlight" aria-hidden="true" />
 
       {/* Main Stage Canvas */}
-      <main className="stage relative overflow-hidden bg-[#080B12]/92 text-[#EAF1FF] min-h-screen pb-20">
+      <main className="stage relative overflow-hidden bg-[#08090C]/92 text-[#EAF1FF] min-h-screen pb-20">
         
         {/* Floating Header */}
         <GarcyNavbar
@@ -114,20 +114,20 @@ export default function PublicationsPage() {
         {/* Hero Section */}
         <section className="pt-32 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           <div className="text-center max-w-3xl mx-auto mb-14">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-4 border backdrop-blur-md bg-[#1769FF]/15 border-[#1769FF]/40 text-[#49A3FF]">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-4 border backdrop-blur-md bg-[#E5A93C]/15 border-[#E5A93C]/40 text-[#E5A93C]">
               <FaFileAlt className="text-[10px]" />
               <span>Peer-Reviewed Literature &bull; AAC Archive</span>
             </div>
 
             <h1 className="font-extrabold text-4xl sm:text-6xl tracking-tighter leading-tight mb-4 text-[#EAF1FF] uppercase font-sans">
               Research <br />
-              <span className="italic font-serif font-normal text-[#49A3FF] lowercase tracking-normal text-3xl sm:text-5xl">
+              <span className="italic font-serif font-normal text-[#E5A93C] lowercase tracking-normal text-3xl sm:text-5xl">
                 publications
               </span>{" "}
               &amp; Papers.
             </h1>
 
-            <p className="text-sm sm:text-base text-[#8793A8] leading-relaxed font-sans font-normal">
+            <p className="text-sm sm:text-base text-[#9E988A] leading-relaxed font-sans font-normal">
               Scholarly journal papers, IEEE proceedings, and patentable technical treatises authored by student researchers and faculty advisors at GRIET.
             </p>
           </div>
@@ -135,13 +135,13 @@ export default function PublicationsPage() {
           {/* Search & Filter Bar */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-10 garcy-glass-header p-3">
             <div className="relative w-full sm:w-80">
-              <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8793A8] text-xs" />
+              <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9E988A] text-xs" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by title, author, or journal..."
-                className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#080B12] border border-white/10 text-xs font-mono text-white placeholder-[#8793A8]/60 focus:outline-none focus:border-[#1769FF]"
+                className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#08090C] border border-white/10 text-xs font-mono text-white placeholder-[#9E988A]/60 focus:outline-none focus:border-[#E5A93C]"
               />
             </div>
 
@@ -153,8 +153,8 @@ export default function PublicationsPage() {
                   onClick={() => setSelectedCategory(cat.id)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-mono uppercase tracking-wider transition-all whitespace-nowrap ${
                     selectedCategory === cat.id
-                      ? "bg-[#1769FF] text-white font-bold"
-                      : "text-[#8793A8] hover:text-white"
+                      ? "bg-[#E5A93C] text-white font-bold"
+                      : "text-[#9E988A] hover:text-white"
                   }`}
                 >
                   {cat.label}
@@ -168,30 +168,30 @@ export default function PublicationsPage() {
             {filteredPubs.map((pub, idx) => (
               <div
                 key={pub.id || idx}
-                className="garcy-glass-card p-6 sm:p-8 flex flex-col justify-between hover:border-[#1769FF]/70 transition-all duration-300 border border-white/15 shadow-xl bg-gradient-to-br from-[#101725] to-[#080B12]"
+                className="garcy-glass-card p-6 sm:p-8 flex flex-col justify-between hover:border-[#E5A93C]/70 transition-all duration-300 border border-white/15 shadow-xl bg-gradient-to-br from-[#111318] to-[#08090C]"
               >
                 <div>
                   <div className="flex flex-wrap items-center justify-between gap-2 mb-4 text-xs font-mono">
-                    <span className="text-[10px] font-bold text-[#49A3FF] px-2.5 py-0.5 rounded-full bg-[#080B12] border border-[#1769FF]/30 uppercase">
+                    <span className="text-[10px] font-bold text-[#E5A93C] px-2.5 py-0.5 rounded-full bg-[#08090C] border border-[#E5A93C]/30 uppercase">
                       {pub.category || "Research Paper"}
                     </span>
-                    <span className="text-[#8793A8] flex items-center gap-2">
+                    <span className="text-[#9E988A] flex items-center gap-2">
                       <FaCalendarAlt className="text-[10px]" />
                       <span>{pub.year}</span>
                     </span>
                   </div>
 
-                  <h2 className="text-xl sm:text-2xl font-bold text-[#EAF1FF] mb-3 font-sans hover:text-[#49A3FF] transition-colors leading-snug">
+                  <h2 className="text-xl sm:text-2xl font-bold text-[#EAF1FF] mb-3 font-sans hover:text-[#E5A93C] transition-colors leading-snug">
                     {pub.title}
                   </h2>
 
-                  <div className="text-xs font-mono text-[#8793A8] mb-3 flex items-center gap-2 flex-wrap">
+                  <div className="text-xs font-mono text-[#9E988A] mb-3 flex items-center gap-2 flex-wrap">
                     <span className="text-[#EAF1FF] font-semibold">{pub.journal}</span>
-                    {pub.citation && <span className="text-[#49A3FF]">&bull; {pub.citation}</span>}
+                    {pub.citation && <span className="text-[#E5A93C]">&bull; {pub.citation}</span>}
                   </div>
 
-                  <div className="text-xs font-sans text-[#8793A8] mb-4 flex items-center gap-2">
-                    <FaUserGraduate className="text-[#49A3FF] flex-shrink-0" />
+                  <div className="text-xs font-sans text-[#9E988A] mb-4 flex items-center gap-2">
+                    <FaUserGraduate className="text-[#E5A93C] flex-shrink-0" />
                     <span>
                       Authors:{" "}
                       <strong className="text-white">
@@ -200,7 +200,7 @@ export default function PublicationsPage() {
                     </span>
                   </div>
 
-                  <p className="text-xs sm:text-sm text-[#8793A8] leading-relaxed font-sans mb-6 pt-4 border-t border-white/10">
+                  <p className="text-xs sm:text-sm text-[#9E988A] leading-relaxed font-sans mb-6 pt-4 border-t border-white/10">
                     {pub.abstract || pub.description}
                   </p>
                 </div>
@@ -208,7 +208,7 @@ export default function PublicationsPage() {
                 <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-[#10b981]" />
-                    <span className="text-[#8793A8] uppercase text-[10px]">PEER-REVIEWED &bull; OPEN ACCESS</span>
+                    <span className="text-[#9E988A] uppercase text-[10px]">PEER-REVIEWED &bull; OPEN ACCESS</span>
                   </div>
 
                   {pub.link && (
@@ -216,7 +216,7 @@ export default function PublicationsPage() {
                       href={pub.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs text-[#49A3FF] hover:text-white uppercase font-bold transition-colors"
+                      className="inline-flex items-center gap-1.5 text-xs text-[#E5A93C] hover:text-white uppercase font-bold transition-colors"
                     >
                       <span>Access Publication</span>
                       <FaExternalLinkAlt className="text-[9px]" />
@@ -227,7 +227,7 @@ export default function PublicationsPage() {
             ))}
 
             {filteredPubs.length === 0 && (
-              <div className="text-center py-16 text-[#8793A8] font-mono text-sm">
+              <div className="text-center py-16 text-[#9E988A] font-mono text-sm">
                 No publications found matching your filter criteria.
               </div>
             )}

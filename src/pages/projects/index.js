@@ -58,12 +58,12 @@ export default function ProjectsPage() {
           position: "fixed",
           inset: "4px",
           borderRadius: "20px",
-          background: "#02050B",
+          background: "#08090C",
           overflow: "hidden",
           display: "flex",
           flexDirection: "column",
           isolation: "isolate",
-          border: "1px solid rgba(73, 163, 255, 0.14)",
+          border: "1px solid #2A261F",
         }}
       >
         {/* Floating Header */}
@@ -75,10 +75,6 @@ export default function ProjectsPage() {
         {/* 3D Dome Gallery — fills remaining height */}
         <div style={{ flex: 1, position: "relative", minHeight: 0, overflow: "hidden" }}>
           <GarcyProjectsGallery
-            onSelectCase={(caseId) => {
-              setSelectedCaseId(caseId);
-              setCaseStudiesOpen(true);
-            }}
             onNavigateBack={() => router.push("/moment")}
           />
         </div>

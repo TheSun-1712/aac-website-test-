@@ -281,7 +281,7 @@ export default function GarcyTornado({ onNavigateProjects, onNavigateHome }) {
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
-      className={`tornado-scene relative w-full h-full flex items-center justify-center overflow-hidden select-none bg-[#020408] ${
+      className={`tornado-scene relative w-full h-full flex items-center justify-center overflow-hidden select-none bg-[#08090C] ${
         isDragging ? "cursor-grabbing" : "cursor-grab"
       }`}
       style={{
@@ -294,7 +294,7 @@ export default function GarcyTornado({ onNavigateProjects, onNavigateHome }) {
     >
       {/* Background radial atmosphere */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-[#1769FF]/5 blur-[220px]" />
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-[#E5A93C]/5 blur-[220px]" />
       </div>
 
       {/* ====================================================================
@@ -313,12 +313,12 @@ export default function GarcyTornado({ onNavigateProjects, onNavigateHome }) {
           className="absolute inset-0 -m-20 rounded-full pointer-events-none"
           style={{
             background:
-              "radial-gradient(circle at center, rgba(2, 4, 8, 0.95) 0%, rgba(2, 4, 8, 0.8) 48%, rgba(2, 4, 8, 0) 75%)",
+              "radial-gradient(circle at center, rgba(8, 9, 12, 0.95) 0%, rgba(8, 9, 12, 0.8) 48%, rgba(8, 9, 12, 0) 75%)",
           }}
         />
 
         {/* Club Logo Emblem */}
-        <div className="relative z-10 w-16 h-16 sm:w-20 sm:h-20 mb-3 drop-shadow-[0_8px_24px_rgba(23,105,255,0.45)]">
+        <div className="relative z-10 w-16 h-16 sm:w-20 sm:h-20 mb-3 drop-shadow-[0_8px_24px_rgba(229,169,60,0.45)]">
           <Image
             src="/images/logo.png"
             alt="Advanced Academic Center Logo"
@@ -334,10 +334,10 @@ export default function GarcyTornado({ onNavigateProjects, onNavigateHome }) {
           <h2 className="font-black text-2xl sm:text-3xl md:text-4xl text-white tracking-tight leading-none uppercase drop-shadow-md font-sans">
             CURIOSITY
           </h2>
-          <h2 className="font-serif italic font-semibold text-2xl sm:text-3xl md:text-4xl text-[#49A3FF] tracking-tight leading-none mt-1">
+          <h2 className="font-serif italic font-semibold text-2xl sm:text-3xl md:text-4xl text-[#E5A93C] tracking-tight leading-none mt-1">
             begins here.
           </h2>
-          <p className="font-mono text-[9.5px] sm:text-[10.5px] uppercase tracking-[0.24em] text-white/50 mt-3 font-medium">
+          <p className="font-mono text-[9.5px] sm:text-[10.5px] uppercase tracking-[0.24em] text-[#9E988A] mt-3 font-medium">
             Advanced Academic Center // GRIET
           </p>
         </div>
@@ -360,12 +360,12 @@ export default function GarcyTornado({ onNavigateProjects, onNavigateHome }) {
             className="tornado-card-item absolute left-0 top-0 rounded-2xl overflow-hidden cursor-pointer transition-shadow duration-300 group"
             style={{
               transformOrigin: "center center",
-              background: "rgba(10, 18, 34, 0.92)",
+              background: "#111318",
               backdropFilter: "blur(20px)",
               WebkitBackdropFilter: "blur(20px)",
-              border: "1px solid rgba(73, 163, 255, 0.28)",
+              border: "1px solid #2A261F",
               boxShadow:
-                "0 20px 50px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.12)",
+                "0 20px 50px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.08)",
               willChange: "transform, opacity",
             }}
             onMouseEnter={() => setHoveredCardId(card.id)}
@@ -373,7 +373,7 @@ export default function GarcyTornado({ onNavigateProjects, onNavigateHome }) {
             onClick={() => handleCardClick(card.link)}
           >
             {/* Card Image Thumbnail */}
-            <div className="relative w-full h-[54%] overflow-hidden bg-[#070D18]">
+            <div className="relative w-full h-[54%] overflow-hidden bg-[#08090C]">
               <Image
                 src={card.image}
                 alt={card.title}
@@ -385,12 +385,12 @@ export default function GarcyTornado({ onNavigateProjects, onNavigateHome }) {
                 className="absolute inset-0"
                 style={{
                   background:
-                    "linear-gradient(to bottom, rgba(10,18,34,0.1) 0%, rgba(10,18,34,0.95) 100%)",
+                    "linear-gradient(to bottom, rgba(17,19,24,0.1) 0%, rgba(17,19,24,0.95) 100%)",
                 }}
               />
               {/* Category Pill */}
               <div className="absolute top-3 left-3 z-10">
-                <span className="font-mono text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-[#060C18]/85 text-[#49A3FF] border border-[#49A3FF]/40 backdrop-blur-md">
+                <span className="font-mono text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-[#08090C]/85 text-[#E5A93C] border border-[#2A261F] backdrop-blur-md">
                   {card.tag}
                 </span>
               </div>
@@ -399,20 +399,20 @@ export default function GarcyTornado({ onNavigateProjects, onNavigateHome }) {
             {/* Card Content Info */}
             <div className="p-4 flex flex-col justify-between h-[46%]">
               <div>
-                <h3 className="font-bold text-[15px] sm:text-[16px] text-[#EAF1FF] font-sans leading-tight group-hover:text-[#49A3FF] transition-colors">
+                <h3 className="font-bold text-[15px] sm:text-[16px] text-[#FAF6ED] font-sans leading-tight group-hover:text-[#F6C463] transition-colors">
                   {card.title}
                 </h3>
-                <p className="font-sans text-[11.5px] text-white/55 leading-relaxed mt-1.5 line-clamp-2">
+                <p className="font-sans text-[11.5px] text-[#9E988A] leading-relaxed mt-1.5 line-clamp-2">
                   {card.subtitle}
                 </p>
               </div>
 
               {/* Bottom link indicator */}
-              <div className="flex items-center justify-between pt-2 border-t border-white/10 mt-auto">
-                <span className="font-mono text-[9px] uppercase tracking-widest text-[#49A3FF] font-semibold">
+              <div className="flex items-center justify-between pt-2 border-t border-[#2A261F] mt-auto">
+                <span className="font-mono text-[9px] uppercase tracking-widest text-[#E5A93C] font-semibold group-hover:text-[#F6C463]">
                   Explore Section
                 </span>
-                <span className="text-white/40 group-hover:text-white transition-colors text-xs font-mono">
+                <span className="text-[#9E988A] group-hover:text-white transition-colors text-xs font-mono">
                   →
                 </span>
               </div>
@@ -422,7 +422,7 @@ export default function GarcyTornado({ onNavigateProjects, onNavigateHome }) {
       </div>
 
       {/* Hint Text (.tornado-hint) */}
-      <p className="tornado-hint" aria-hidden="true">
+      <p className="tornado-hint" style={{ color: "#9E988A" }} aria-hidden="true">
         DRAG TO ROTATE HELIX &bull; SCROLL DOWN TO PROJECTS
       </p>
 
@@ -436,7 +436,7 @@ export default function GarcyTornado({ onNavigateProjects, onNavigateHome }) {
         className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center justify-center cursor-pointer group pointer-events-auto"
         aria-label="Continue to projects"
       >
-        <div className="w-10 h-10 rounded-full border border-white/15 bg-white/5 backdrop-blur-md flex items-center justify-center text-white/60 group-hover:border-[#49A3FF] group-hover:text-[#49A3FF] transition-all shadow-lg">
+        <div className="w-10 h-10 rounded-full border border-[#2A261F] bg-[#111318]/70 backdrop-blur-md flex items-center justify-center text-[#9E988A] group-hover:border-[#E5A93C] group-hover:text-[#E5A93C] transition-all shadow-lg">
           <svg width="12" height="12" viewBox="0 0 10 10" fill="none">
             <path
               d="M5 1v8M1 5.5l4 3.5 4-3.5"

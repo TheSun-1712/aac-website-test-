@@ -48,14 +48,14 @@ export default function GarcyStoryRunway() {
       
       {/* Top Editorial Headline */}
       <div className="max-w-4xl mb-16 text-left">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-4 border backdrop-blur-md bg-[#1769FF]/15 border-[#1769FF]/40 text-[#49A3FF]">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-4 border backdrop-blur-md bg-[#E5A93C]/15 border-[#E5A93C]/40 text-[#E5A93C]">
           <FaCompass className="text-[10px]" />
           <span>03 // Discover AAC GRIET</span>
         </div>
         
         <h2 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-[#EAF1FF] tracking-tighter uppercase leading-[1.08] mb-6 font-sans">
           A Center Committed <br />
-          <span className="italic font-serif font-normal text-[#49A3FF] lowercase tracking-normal text-3xl sm:text-5xl">
+          <span className="italic font-serif font-normal text-[#E5A93C] lowercase tracking-normal text-3xl sm:text-5xl">
             to
           </span>{" "}
           Excellence.
@@ -66,7 +66,7 @@ export default function GarcyStoryRunway() {
             AAC works on some of the most challenging frontiers of student engineering:{" "}
             <em>autonomous systems</em>, <em>intelligent edge hardware</em>, and <em>patentable IP</em>.
           </p>
-          <p className="text-sm sm:text-lg text-[#8793A8] font-normal leading-relaxed">
+          <p className="text-sm sm:text-lg text-[#9E988A] font-normal leading-relaxed">
             Fostering innovation, experiential learning, and entrepreneurship across disciplines at Gokaraju Rangaraju Institute of Engineering and Technology.
           </p>
         </div>
@@ -79,37 +79,37 @@ export default function GarcyStoryRunway() {
           return (
             <div
               key={item.id}
-              className="garcy-glass-card p-6 sm:p-8 flex flex-col justify-between hover:border-[#1769FF]/60 transition-all duration-300 group border border-white/15"
+              className="garcy-glass-card p-6 sm:p-8 flex flex-col justify-between hover:border-[#E5A93C]/60 transition-all duration-300 group border border-white/15"
             >
               <div>
-                <div className="flex items-center justify-between text-xs font-mono uppercase text-[#8793A8] mb-6">
-                  <span className="w-10 h-10 rounded-xl bg-[#101725] flex items-center justify-center text-[#49A3FF] text-base border border-white/10">
+                <div className="flex items-center justify-between text-xs font-mono uppercase text-[#9E988A] mb-6">
+                  <span className="w-10 h-10 rounded-xl bg-[#111318] flex items-center justify-center text-[#E5A93C] text-base border border-white/10">
                     <Icon />
                   </span>
-                  <span className="px-2.5 py-1 rounded-full bg-[#080B12] border border-[#1769FF]/30 text-[9.5px] text-[#49A3FF] font-bold">
+                  <span className="px-2.5 py-1 rounded-full bg-[#08090C] border border-[#E5A93C]/30 text-[9.5px] text-[#E5A93C] font-bold">
                     {item.tag}
                   </span>
                 </div>
 
-                <div className="text-[10px] font-mono text-[#8793A8] uppercase tracking-wider mb-1 font-semibold">
+                <div className="text-[10px] font-mono text-[#9E988A] uppercase tracking-wider mb-1 font-semibold">
                   {item.subtitle}
                 </div>
 
-                <h3 className="text-2xl font-bold text-[#EAF1FF] mb-3 group-hover:text-[#49A3FF] transition-colors font-sans">
+                <h3 className="text-2xl font-bold text-[#EAF1FF] mb-3 group-hover:text-[#E5A93C] transition-colors font-sans">
                   {item.title}
                 </h3>
 
-                <p className="text-xs sm:text-sm text-[#8793A8] leading-relaxed font-sans font-normal">
+                <p className="text-xs sm:text-sm text-[#9E988A] leading-relaxed font-sans font-normal">
                   {item.body}
                 </p>
               </div>
 
-              <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-[#8793A8] group-hover:text-white transition-colors">
-                <Link href={item.link} className="flex items-center gap-1.5 hover:text-[#49A3FF]">
+              <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-[#9E988A] group-hover:text-white transition-colors">
+                <Link href={item.link} className="flex items-center gap-1.5 hover:text-[#E5A93C]">
                   <span>Explore More</span>
                   <FaExternalLinkAlt className="text-[9px]" />
                 </Link>
-                <span className="text-[#49A3FF] opacity-0 group-hover:opacity-100 transition-opacity">&rarr;</span>
+                <span className="text-[#E5A93C] opacity-0 group-hover:opacity-100 transition-opacity">&rarr;</span>
               </div>
             </div>
           );
@@ -123,7 +123,7 @@ export default function GarcyStoryRunway() {
             <div className="text-xs sm:text-sm font-bold font-mono tracking-wider text-[#EAF1FF]">
               {partner.name}
             </div>
-            <div className="text-[9px] font-mono text-[#8793A8] uppercase mt-0.5">
+            <div className="text-[9px] font-mono text-[#9E988A] uppercase mt-0.5">
               {partner.role}
             </div>
           </div>

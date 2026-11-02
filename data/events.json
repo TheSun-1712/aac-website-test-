@@ -1,0 +1,70 @@
+[
+  {
+    "id": "opulence",
+    "title": "Opulence — Flagship Technical Symposium",
+    "event": "Opulence — Flagship Technical Symposium",
+    "date": "JUNE 2024",
+    "category": "symposium",
+    "status": "ANNUAL FLAGSHIP",
+    "location": "GRIET Campus, Hyderabad",
+    "organizer": "Advanced Academic Center",
+    "description": "AAC's flagship symposium with 400+ participants and distinguished speakers: Pranali Bose (ML Engineer), Raunak Bagga (Koolgen CEO), Srikanth Reddy (Great Honey Co). Included Ideathon (21 teams), G-Prime (42 teams), and LLM workshops.",
+    "detailedDescription": "Flagship symposium organized by the Advanced Academic Center showcasing state-of-the-art technological demos, industry speaker sessions, competitive coding, and inter-collegiate hackathons.",
+    "path": "/Events/Opulence2023",
+    "mainImageUrl": "https://res.cloudinary.com/aacgriet/image/upload/v1730537987/AAC-web/news_events/expo2023/wxvfrd1n979puot2zgny.jpg",
+    "images": [
+      "https://res.cloudinary.com/aacgriet/image/upload/v1730537987/AAC-web/news_events/expo2023/wxvfrd1n979puot2zgny.jpg"
+    ],
+    "ctaText": "Explore Symposium",
+    "ctaLink": "/Events/Opulence2023"
+  },
+  {
+    "id": "gprime",
+    "title": "G-Prime Competitive Coding Contest",
+    "event": "G-Prime Competitive Coding Contest",
+    "date": "ANNUAL EDITION",
+    "category": "hackathon",
+    "status": "RESULTS LIVE",
+    "location": "AAC Labs & Distributed Engine",
+    "organizer": "Advanced Academic Center",
+    "description": "Premier competitive programming contest featuring Rapidfire speed testing, Cascade problem sets, and Data Structures challenges with sub-second judging.",
+    "detailedDescription": "High-concurrency algorithmic battleground testing speed, efficiency, and edge-case handling across complex mathematical and computational graph algorithms.",
+    "path": "/gprime2026-results",
+    "mainImageUrl": "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_400,w_500/v1664100162/AAC-web/news_events/Juniorshackathon2_opwpyj.jpg",
+    "images": [
+      "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_400,w_500/v1664100162/AAC-web/news_events/Juniorshackathon2_opwpyj.jpg"
+    ],
+    "ctaText": "View Live Results",
+    "ctaLink": "/gprime2026-results"
+  },
+  {
+    "id": "expo2023",
+    "title": "AAC Expo 2023 — Technology Exhibition",
+    "event": "AAC Expo 2023 — Technology Exhibition",
+    "date": "DECEMBER 2023",
+    "category": "symposium",
+    "status": "COMPLETED",
+    "location": "GRIET Campus, Hyderabad",
+    "organizer": "Advanced Academic Center",
+    "description": "Annual project expo showcasing revolutionary student prototypes in IoT, deep learning, biomedical sensing, and autonomous hardware.",
+    "detailedDescription": "Over 50 working hardware prototypes displayed before academic juries, patent evaluators, and institutional leaders.",
+    "path": "/Events/Expo2023",
+    "mainImageUrl": "https://res.cloudinary.com/aacgriet/image/upload/v1730537987/AAC-web/news_events/expo2023/wxvfrd1n979puot2zgny.jpg",
+    "images": []
+  },
+  {
+    "id": "conclave",
+    "title": "Data Analytics Conclave",
+    "event": "Data Analytics Conclave",
+    "date": "GUEST KEYNOTE",
+    "category": "symposium",
+    "status": "KEYNOTE SESSIONS",
+    "location": "GRIET Campus, Hyderabad",
+    "organizer": "Advanced Academic Center",
+    "description": "Impactful data science platform led by Mr. Satish Yellanki (20+ years IT exposure, Oracle database optimization and business intelligence expert).",
+    "detailedDescription": "Deep dive into enterprise data pipelines, high-volume transactional indexing, and predictive business analytics.",
+    "path": "/Events/Conclave",
+    "mainImageUrl": "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_400,w_500/v1664100167/AAC-web/news_events/nrsc5_e8it62.jpg",
+    "images": []
+  }
+]

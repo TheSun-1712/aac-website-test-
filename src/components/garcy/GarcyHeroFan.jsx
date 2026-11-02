@@ -80,11 +80,11 @@ export default function GarcyHeroFan({ onContinue }) {
   return (
     <section
       id="hero"
-      className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden select-none bg-[#06080E] py-20 px-4"
+      className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden select-none bg-[#08090C] py-20 px-4"
     >
       {/* Background ambient lighting */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-[#1769FF]/5 blur-[160px]" />
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-[#E5A93C]/5 blur-[160px]" />
       </div>
 
       {/* ====================================================================
@@ -141,7 +141,7 @@ export default function GarcyHeroFan({ onContinue }) {
                   WebkitBackdropFilter: "blur(32px)",
                   borderColor: "rgba(255, 255, 255, 0.12)",
                   boxShadow:
-                    "0 24px 60px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.12), 0 0 0 1px rgba(23,105,255,0.2)",
+                    "0 24px 60px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.12), 0 0 0 1px rgba(229, 169, 60,0.2)",
                 }}
               >
                 {/* Avatar Icon */}
@@ -162,7 +162,7 @@ export default function GarcyHeroFan({ onContinue }) {
                     <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-white/50 truncate font-semibold">
                       {activeNotif.sender}
                     </span>
-                    <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-wider text-[#49A3FF] flex-shrink-0 font-bold px-1.5 py-0.5 rounded bg-[#1769FF]/15 border border-[#49A3FF]/30">
+                    <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-wider text-[#E5A93C] flex-shrink-0 font-bold px-1.5 py-0.5 rounded bg-[#E5A93C]/15 border border-[#E5A93C]/30">
                       {activeNotif.time}
                     </span>
                   </div>
@@ -187,7 +187,7 @@ export default function GarcyHeroFan({ onContinue }) {
               <div
                 key={notif.id}
                 onClick={(e) => handleCardClick(e, notif.link)}
-                className="w-full flex items-center gap-4 p-4 sm:p-5 rounded-2xl border cursor-pointer hover:border-[#49A3FF]/50 transition-all group"
+                className="w-full flex items-center gap-4 p-4 sm:p-5 rounded-2xl border cursor-pointer hover:border-[#E5A93C]/50 transition-all group"
                 style={{
                   background: "rgba(16, 24, 42, 0.92)",
                   backdropFilter: "blur(32px)",
@@ -211,12 +211,12 @@ export default function GarcyHeroFan({ onContinue }) {
                     <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-white/50 truncate font-semibold">
                       {notif.sender}
                     </span>
-                    <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-wider text-[#49A3FF] flex-shrink-0 font-bold px-1.5 py-0.5 rounded bg-[#1769FF]/15 border border-[#49A3FF]/30">
+                    <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-wider text-[#E5A93C] flex-shrink-0 font-bold px-1.5 py-0.5 rounded bg-[#E5A93C]/15 border border-[#E5A93C]/30">
                       {notif.time}
                     </span>
                   </div>
 
-                  <p className="text-[16px] sm:text-[18px] font-bold text-[#EAF1FF] leading-snug font-sans tracking-tight group-hover:text-[#49A3FF] transition-colors">
+                  <p className="text-[16px] sm:text-[18px] font-bold text-[#EAF1FF] leading-snug font-sans tracking-tight group-hover:text-[#E5A93C] transition-colors">
                     {notif.message}
                   </p>
                 </div>
@@ -238,7 +238,7 @@ export default function GarcyHeroFan({ onContinue }) {
               <div
                 key={i}
                 className={`h-1 rounded-full transition-all duration-300 ${
-                  i === currentIndex ? "w-4 bg-[#49A3FF]" : "w-1.5 bg-white/20"
+                  i === currentIndex ? "w-4 bg-[#E5A93C]" : "w-1.5 bg-white/20"
                 }`}
               />
             ))}
@@ -259,13 +259,13 @@ export default function GarcyHeroFan({ onContinue }) {
             onClick={handleScrollDown}
             className="absolute bottom-8 sm:bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 cursor-pointer group"
           >
-            <span className="font-mono text-[9.5px] uppercase tracking-widest text-white/40 group-hover:text-[#49A3FF] transition-colors">
+            <span className="font-mono text-[9.5px] uppercase tracking-widest text-white/40 group-hover:text-[#E5A93C] transition-colors">
               Scroll to explore
             </span>
             <motion.div
               animate={{ y: [0, 6, 0] }}
               transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
-              className="w-9 h-9 rounded-full border border-white/15 bg-white/5 backdrop-blur-md flex items-center justify-center text-white/60 group-hover:border-[#49A3FF] group-hover:text-[#49A3FF] transition-colors shadow-lg"
+              className="w-9 h-9 rounded-full border border-white/15 bg-white/5 backdrop-blur-md flex items-center justify-center text-white/60 group-hover:border-[#E5A93C] group-hover:text-[#E5A93C] transition-colors shadow-lg"
             >
               <svg width="12" height="12" viewBox="0 0 10 10" fill="none">
                 <path

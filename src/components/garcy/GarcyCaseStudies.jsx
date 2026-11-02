@@ -214,7 +214,7 @@ The glove uses integrated flex and orientation sensors to accurately capture fin
                   type="button"
                   onClick={() => setSelectedCase(item.id)}
                   className={`px-3 py-1 rounded-lg text-[10px] font-mono uppercase tracking-wider transition-colors ${
-                    selectedCase === item.id ? "bg-[#1769FF] text-white font-bold" : "text-gray-400 hover:text-white"
+                    selectedCase === item.id ? "bg-[#E5A93C] text-white font-bold" : "text-gray-400 hover:text-white"
                   }`}
                 >
                   {item.label}

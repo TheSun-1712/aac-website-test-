@@ -1,0 +1,30 @@
+[
+  {
+    "id": "alumni-1",
+    "name": "G Suhas",
+    "designation": "Systems Engineer",
+    "company": "Google Cloud",
+    "graduationYear": 2022,
+    "department": "CSE",
+    "email": "suhas@alumni.griet.ac.in",
+    "linkedin": "https://linkedin.com",
+    "currentLocation": "Bengaluru, India",
+    "image": "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_400,w_400/v1664100140/AAC-web/corecommitee/suhasg_r73mrq.jpg",
+    "status": "active",
+    "bio": "Former AAC Core Lead, focused on cloud distributed architectures and microservices."
+  },
+  {
+    "id": "alumni-2",
+    "name": "Rishwanth Perumandla",
+    "designation": "Machine Learning Researcher",
+    "company": "Microsoft Research",
+    "graduationYear": 2022,
+    "department": "IT",
+    "email": "rishwanth@alumni.griet.ac.in",
+    "linkedin": "https://linkedin.com",
+    "currentLocation": "Hyderabad, India",
+    "image": "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_400,w_400/v1664100139/AAC-web/corecommitee/rishwanth_nsbket.jpg",
+    "status": "active",
+    "bio": "Lead author on AAC computer vision models, passionate about low-latency edge inference."
+  }
+]

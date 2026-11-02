@@ -132,7 +132,7 @@ export default function AchievementsPage() {
       <div className="spotlight" aria-hidden="true" />
 
       {/* Main Stage Canvas */}
-      <main className="stage relative overflow-hidden bg-[#080B12]/92 text-[#EAF1FF] min-h-screen pb-20">
+      <main className="stage relative overflow-hidden bg-[#08090C]/92 text-[#EAF1FF] min-h-screen pb-20">
         
         {/* Floating Header */}
         <GarcyNavbar
@@ -143,20 +143,20 @@ export default function AchievementsPage() {
         {/* Hero Section */}
         <section className="pt-32 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           <div className="text-center max-w-3xl mx-auto mb-14">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-4 border backdrop-blur-md bg-[#1769FF]/15 border-[#1769FF]/40 text-[#49A3FF]">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-4 border backdrop-blur-md bg-[#E5A93C]/15 border-[#E5A93C]/40 text-[#E5A93C]">
               <FaTrophy className="text-[10px]" />
               <span>Verifiable Milestones &bull; National Honors</span>
             </div>
 
             <h1 className="font-extrabold text-4xl sm:text-6xl tracking-tighter leading-tight mb-4 text-[#EAF1FF] uppercase font-sans">
               Achievements &amp; <br />
-              <span className="italic font-serif font-normal text-[#49A3FF] lowercase tracking-normal text-3xl sm:text-5xl">
+              <span className="italic font-serif font-normal text-[#E5A93C] lowercase tracking-normal text-3xl sm:text-5xl">
                 milestones
               </span>{" "}
               Earned.
             </h1>
 
-            <p className="text-sm sm:text-base text-[#8793A8] leading-relaxed font-sans font-normal">
+            <p className="text-sm sm:text-base text-[#9E988A] leading-relaxed font-sans font-normal">
               AICTE Vishwakarma Awards, strategic ISRO NRSC collaborations, official Indian Patent publications, and national hackathon podium finishes.
             </p>
           </div>
@@ -164,13 +164,13 @@ export default function AchievementsPage() {
           {/* Search & Filter Bar */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-10 garcy-glass-header p-3">
             <div className="relative w-full sm:w-80">
-              <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8793A8] text-xs" />
+              <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9E988A] text-xs" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search milestones or awards..."
-                className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#080B12] border border-white/10 text-xs font-mono text-white placeholder-[#8793A8]/60 focus:outline-none focus:border-[#1769FF]"
+                className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#08090C] border border-white/10 text-xs font-mono text-white placeholder-[#9E988A]/60 focus:outline-none focus:border-[#E5A93C]"
               />
             </div>
 
@@ -182,8 +182,8 @@ export default function AchievementsPage() {
                   onClick={() => setSelectedFilter(f.id)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-mono uppercase tracking-wider transition-all whitespace-nowrap ${
                     selectedFilter === f.id
-                      ? "bg-[#1769FF] text-white font-bold"
-                      : "text-[#8793A8] hover:text-white"
+                      ? "bg-[#E5A93C] text-white font-bold"
+                      : "text-[#9E988A] hover:text-white"
                   }`}
                 >
                   {f.label}
@@ -197,14 +197,14 @@ export default function AchievementsPage() {
             {filtered.map((item, idx) => (
               <div
                 key={item.id || idx}
-                className="garcy-glass-card p-6 sm:p-7 flex flex-col justify-between hover:border-[#1769FF]/70 transition-all duration-300 group hover:-translate-y-1 border border-white/15 shadow-xl bg-gradient-to-br from-[#101725] to-[#080B12]"
+                className="garcy-glass-card p-6 sm:p-7 flex flex-col justify-between hover:border-[#E5A93C]/70 transition-all duration-300 group hover:-translate-y-1 border border-white/15 shadow-xl bg-gradient-to-br from-[#111318] to-[#08090C]"
               >
                 <div>
                   <div className="flex items-center justify-between text-xs font-mono uppercase mb-4">
-                    <span className="text-[9.5px] font-bold text-[#49A3FF] px-2.5 py-0.5 rounded-full bg-[#080B12] border border-[#1769FF]/30">
+                    <span className="text-[9.5px] font-bold text-[#E5A93C] px-2.5 py-0.5 rounded-full bg-[#08090C] border border-[#E5A93C]/30">
                       {item.tag || item.category}
                     </span>
-                    <span className="px-2 py-0.5 rounded-full bg-[#080B12] text-[#49A3FF] border border-[#1769FF]/40 text-[8.5px] font-bold flex items-center gap-1">
+                    <span className="px-2 py-0.5 rounded-full bg-[#08090C] text-[#E5A93C] border border-[#E5A93C]/40 text-[8.5px] font-bold flex items-center gap-1">
                       <FaCheckCircle className="text-[7.5px]" />
                       <span>VERIFIED</span>
                     </span>
@@ -212,7 +212,7 @@ export default function AchievementsPage() {
 
                   {/* Photo if present */}
                   {item.image && (
-                    <div className="w-full h-44 rounded-xl overflow-hidden mb-5 border border-white/10 bg-[#080B12]">
+                    <div className="w-full h-44 rounded-xl overflow-hidden mb-5 border border-white/10 bg-[#08090C]">
                       <img
                         src={item.image}
                         alt={item.title}
@@ -221,16 +221,16 @@ export default function AchievementsPage() {
                     </div>
                   )}
 
-                  <h2 className="text-lg font-bold text-[#EAF1FF] mb-2 font-sans group-hover:text-[#49A3FF] transition-colors leading-snug">
+                  <h2 className="text-lg font-bold text-[#EAF1FF] mb-2 font-sans group-hover:text-[#E5A93C] transition-colors leading-snug">
                     {item.title}
                   </h2>
 
-                  <div className="p-2.5 rounded-lg bg-[#080B12]/80 border border-white/10 text-[10px] font-mono text-[#8793A8] mb-4 space-y-0.5">
+                  <div className="p-2.5 rounded-lg bg-[#08090C]/80 border border-white/10 text-[10px] font-mono text-[#9E988A] mb-4 space-y-0.5">
                     <div className="text-[#EAF1FF] font-semibold">{item.registry}</div>
-                    <div className="text-[#49A3FF] font-bold">{item.date}</div>
+                    <div className="text-[#E5A93C] font-bold">{item.date}</div>
                   </div>
 
-                  <p className="text-xs text-[#8793A8] leading-relaxed font-sans font-normal mb-6">
+                  <p className="text-xs text-[#9E988A] leading-relaxed font-sans font-normal mb-6">
                     {item.desc}
                   </p>
                 </div>
@@ -239,24 +239,24 @@ export default function AchievementsPage() {
                   {item.link ? (
                     <Link
                       href={item.link}
-                      className="inline-flex items-center gap-1.5 text-xs text-[#49A3FF] hover:text-white uppercase font-bold transition-colors"
+                      className="inline-flex items-center gap-1.5 text-xs text-[#E5A93C] hover:text-white uppercase font-bold transition-colors"
                     >
                       <span>Inspect Evidence</span>
                       <FaExternalLinkAlt className="text-[9px]" />
                     </Link>
                   ) : (
-                    <span className="text-[10px] text-[#8793A8] uppercase font-bold">
+                    <span className="text-[10px] text-[#9E988A] uppercase font-bold">
                       OFFICIAL CERTIFICATION
                     </span>
                   )}
-                  <span className="text-[9px] text-[#8793A8] font-mono">GRIET AAC</span>
+                  <span className="text-[9px] text-[#9E988A] font-mono">GRIET AAC</span>
                 </div>
               </div>
             ))}
           </div>
 
           {filtered.length === 0 && (
-            <div className="text-center py-16 text-[#8793A8] font-mono text-sm">
+            <div className="text-center py-16 text-[#9E988A] font-mono text-sm">
               No achievements found matching your filter criteria.
             </div>
           )}

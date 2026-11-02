@@ -73,14 +73,14 @@ export default function GarcyInnovationDome({ onSelectCase }) {
       {/* Header and Tab Switcher */}
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-14">
         <div>
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-3 border backdrop-blur-md bg-[#1769FF]/15 border-[#1769FF]/40 text-[#49A3FF]">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-3 border backdrop-blur-md bg-[#E5A93C]/15 border-[#E5A93C]/40 text-[#E5A93C]">
             {activeTab === "on-campus" ? <FaGraduationCap className="text-[10px]" /> : <FaRocket className="text-[10px]" />}
             <span>05 // Campus Life &amp; Innovation Dome</span>
           </div>
 
           <h2 className="font-extrabold text-3xl sm:text-5xl tracking-tighter text-[#EAF1FF] mb-2 uppercase font-sans">
             On Campus <br />
-            <span className="italic font-serif font-normal text-[#49A3FF] lowercase tracking-normal text-3xl sm:text-5xl">
+            <span className="italic font-serif font-normal text-[#E5A93C] lowercase tracking-normal text-3xl sm:text-5xl">
               versus
             </span>{" "}
             Innovation.
@@ -94,8 +94,8 @@ export default function GarcyInnovationDome({ onSelectCase }) {
             onClick={() => setActiveTab("on-campus")}
             className={`px-4 py-2 rounded-xl text-xs font-mono uppercase tracking-wider transition-all flex items-center gap-2 ${
               activeTab === "on-campus"
-                ? "bg-[#1769FF] text-white font-bold shadow-[0_4px_20px_rgba(23,105,255,0.4)]"
-                : "text-[#8793A8] hover:text-white hover:bg-white/10"
+                ? "bg-[#E5A93C] text-white font-bold shadow-[0_4px_20px_rgba(229, 169, 60,0.4)]"
+                : "text-[#9E988A] hover:text-white hover:bg-white/10"
             }`}
           >
             <FaGraduationCap />
@@ -107,8 +107,8 @@ export default function GarcyInnovationDome({ onSelectCase }) {
             onClick={() => setActiveTab("innovation")}
             className={`px-4 py-2 rounded-xl text-xs font-mono uppercase tracking-wider transition-all flex items-center gap-2 ${
               activeTab === "innovation"
-                ? "bg-[#1769FF] text-white font-bold shadow-[0_4px_20px_rgba(23,105,255,0.4)]"
-                : "text-[#8793A8] hover:text-white hover:bg-white/10"
+                ? "bg-[#E5A93C] text-white font-bold shadow-[0_4px_20px_rgba(229, 169, 60,0.4)]"
+                : "text-[#9E988A] hover:text-white hover:bg-white/10"
             }`}
           >
             <FaRocket />
@@ -122,38 +122,38 @@ export default function GarcyInnovationDome({ onSelectCase }) {
         {displayItems.map((item) => (
           <div
             key={item.title}
-            className="group garcy-glass-card p-6 sm:p-7 flex flex-col justify-between hover:border-[#1769FF]/60 transition-all duration-300 hover:-translate-y-1 border border-white/15"
+            className="group garcy-glass-card p-6 sm:p-7 flex flex-col justify-between hover:border-[#E5A93C]/60 transition-all duration-300 hover:-translate-y-1 border border-white/15"
           >
             <div>
               {/* Category & Badge */}
               <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-wider mb-4">
-                <span className="text-[#8793A8] font-bold">{item.category}</span>
-                <span className="px-2.5 py-0.5 rounded-full bg-[#080B12] text-[#49A3FF] border border-[#1769FF]/30 font-bold">
+                <span className="text-[#9E988A] font-bold">{item.category}</span>
+                <span className="px-2.5 py-0.5 rounded-full bg-[#08090C] text-[#E5A93C] border border-[#E5A93C]/30 font-bold">
                   {item.tag}
                 </span>
               </div>
 
               {/* Title */}
-              <h3 className="text-xl font-bold text-[#EAF1FF] mb-2 group-hover:text-[#49A3FF] transition-colors leading-snug font-sans">
+              <h3 className="text-xl font-bold text-[#EAF1FF] mb-2 group-hover:text-[#E5A93C] transition-colors leading-snug font-sans">
                 {item.title}
               </h3>
 
               {/* Date / Status Tag */}
-              <div className="text-[10px] font-mono text-[#49A3FF] uppercase tracking-wide mb-3">
+              <div className="text-[10px] font-mono text-[#E5A93C] uppercase tracking-wide mb-3">
                 STATUS: {item.date}
               </div>
 
               {/* Description */}
-              <p className="text-xs sm:text-sm text-[#8793A8] leading-relaxed font-sans font-normal">
+              <p className="text-xs sm:text-sm text-[#9E988A] leading-relaxed font-sans font-normal">
                 {item.desc}
               </p>
             </div>
 
             {/* Bottom Actions */}
-            <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-[#8793A8]">
+            <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-[#9E988A]">
               <Link
                 href={item.link}
-                className="hover:text-[#49A3FF] transition-colors flex items-center gap-1 uppercase"
+                className="hover:text-[#E5A93C] transition-colors flex items-center gap-1 uppercase"
               >
                 <span>OPEN DIRECTORY</span>
                 <FaArrowRight className="text-[9px]" />
@@ -163,7 +163,7 @@ export default function GarcyInnovationDome({ onSelectCase }) {
                 <button
                   type="button"
                   onClick={() => onSelectCase(item.caseId)}
-                  className="px-2.5 py-1 rounded-lg bg-[#1769FF]/20 hover:bg-[#1769FF] hover:text-white text-[10px] uppercase font-bold transition-all text-[#49A3FF] flex items-center gap-1"
+                  className="px-2.5 py-1 rounded-lg bg-[#E5A93C]/20 hover:bg-[#E5A93C] hover:text-white text-[10px] uppercase font-bold transition-all text-[#E5A93C] flex items-center gap-1"
                 >
                   <FaLayerGroup className="text-[9px]" />
                   <span>CASE STUDY &rarr;</span>

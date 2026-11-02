@@ -1,0 +1,56 @@
+[
+  {
+    "title": "Nidaar Price Winners",
+    "category": "National Honor",
+    "date": "2026-11-02",
+    "names": [],
+    "description": "Won Nidaar Drone Competition SARX",
+    "mainImage": "https://www.metroindia.net/uploads/articles/article_85052238.webp",
+    "status": "published",
+    "event": "Nidaar Price Winners",
+    "content": "Won Nidaar Drone Competition SARX",
+    "abstract": "Won Nidaar Drone Competition SARX",
+    "bio": "Won Nidaar Drone Competition SARX",
+    "mission": "Won Nidaar Drone Competition SARX",
+    "id": "achievements-1793637324464",
+    "createdAt": "2026-11-02T16:35:24.464Z",
+    "updatedAt": "2026-11-02T18:11:57.370Z",
+    "mainImageUrl": "https://www.metroindia.net/uploads/articles/article_85052238.webp",
+    "image": "https://www.metroindia.net/uploads/articles/article_85052238.webp",
+    "cover": "https://www.metroindia.net/uploads/articles/article_85052238.webp",
+    "img": "https://www.metroindia.net/uploads/articles/article_85052238.webp"
+  },
+  {
+    "id": "vishwakarma-award",
+    "title": "AICTE Vishwakarma Award 2018",
+    "category": "National Honor",
+    "date": "2018-12-10T00:00:00.000Z",
+    "names": [
+      "Advanced Academic Center",
+      "GRIET Student Delegation"
+    ],
+    "mainImage": "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_400,w_500/v1664100184/AAC-web/news_events/vishwakarma_zzzwlh.jpg",
+    "images": [
+      "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_400,w_500/v1664100184/AAC-web/news_events/vishwakarma_zzzwlh.jpg"
+    ],
+    "description": "Prestigious national recognition honoring AAC student engineering innovation, practical problem-solving ethics, and community-driven technology solutions.",
+    "status": "published"
+  },
+  {
+    "id": "nrsc-mou",
+    "title": "Signing of Official R&D MOU with NRSC (ISRO)",
+    "category": "Strategic Alliance",
+    "date": "2023-09-15T00:00:00.000Z",
+    "names": [
+      "AAC Director",
+      "Dr. Mamidi Kiran Kumar",
+      "NRSC Scientists"
+    ],
+    "mainImage": "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_400,w_500/v1664100167/AAC-web/news_events/nrsc5_e8it62.jpg",
+    "images": [
+      "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_400,w_500/v1664100167/AAC-web/news_events/nrsc5_e8it62.jpg"
+    ],
+    "description": "Institutional memorandum of understanding signed between GRIET AAC and NRSC, fostering collaborative student research, remote sensing data analytics, and aerospace workshops.",
+    "status": "published"
+  }
+]

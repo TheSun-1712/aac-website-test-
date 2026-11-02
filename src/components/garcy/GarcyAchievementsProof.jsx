@@ -122,19 +122,19 @@ export default function GarcyAchievementsProof() {
       {/* Section Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
         <div>
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-3 border backdrop-blur-md bg-[#1769FF]/15 border-[#1769FF]/40 text-[#49A3FF]">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-3 border backdrop-blur-md bg-[#E5A93C]/15 border-[#E5A93C]/40 text-[#E5A93C]">
             <span>07 // Verified Institutional Achievements</span>
           </div>
 
           <h2 className="font-extrabold text-3xl sm:text-5xl tracking-tighter text-[#EAF1FF] mb-2 uppercase font-sans">
             Proof, not <br />
-            <span className="italic font-serif font-normal text-[#49A3FF] lowercase tracking-normal text-3xl sm:text-5xl">
+            <span className="italic font-serif font-normal text-[#E5A93C] lowercase tracking-normal text-3xl sm:text-5xl">
               claims.
             </span>
           </h2>
         </div>
 
-        <p className="mt-4 md:mt-0 text-xs sm:text-sm text-[#8793A8] max-w-sm font-sans font-normal leading-relaxed">
+        <p className="mt-4 md:mt-0 text-xs sm:text-sm text-[#9E988A] max-w-sm font-sans font-normal leading-relaxed">
           Verifiable patent application registries, national hackathon trophies, and peer-reviewed IEEE publications.
         </p>
       </div>
@@ -144,16 +144,16 @@ export default function GarcyAchievementsProof() {
         {telemetryBadges.map((badge) => (
           <div
             key={badge.label}
-            className="p-5 rounded-2xl bg-[#101725]/80 border border-white/15 flex flex-col justify-between shadow-lg"
+            className="p-5 rounded-2xl bg-[#111318]/80 border border-white/15 flex flex-col justify-between shadow-lg"
           >
-            <div className="text-[10px] font-mono uppercase text-[#8793A8] tracking-wider">
+            <div className="text-[10px] font-mono uppercase text-[#9E988A] tracking-wider">
               {badge.label}
             </div>
-            <div className="text-3xl sm:text-4xl font-extrabold font-mono text-[#49A3FF] my-2">
+            <div className="text-3xl sm:text-4xl font-extrabold font-mono text-[#E5A93C] my-2">
               {badge.value}
             </div>
             <div className="text-[10px] font-mono text-[#EAF1FF] flex items-center gap-1">
-              <FaCheckCircle className="text-[#1769FF] text-[9px]" />
+              <FaCheckCircle className="text-[#E5A93C] text-[9px]" />
               <span>{badge.note}</span>
             </div>
           </div>
@@ -169,8 +169,8 @@ export default function GarcyAchievementsProof() {
             onClick={() => setActiveFilter(cat.id)}
             className={`px-4 py-2 rounded-xl text-xs font-mono uppercase tracking-wider transition-all flex-shrink-0 ${
               activeFilter === cat.id
-                ? "bg-[#1769FF] text-white font-bold shadow-[0_4px_16px_rgba(23,105,255,0.4)]"
-                : "bg-[#101725] text-[#8793A8] hover:text-white border border-white/10 hover:border-white/20"
+                ? "bg-[#E5A93C] text-white font-bold shadow-[0_4px_16px_rgba(229, 169, 60,0.4)]"
+                : "bg-[#111318] text-[#9E988A] hover:text-white border border-white/10 hover:border-white/20"
             }`}
           >
             {cat.label}
@@ -185,30 +185,30 @@ export default function GarcyAchievementsProof() {
           return (
             <div
               key={item.id}
-              className="garcy-glass-card p-6 flex flex-col justify-between hover:border-[#1769FF]/70 transition-all duration-300 group hover:-translate-y-1 border border-white/15 shadow-xl"
+              className="garcy-glass-card p-6 flex flex-col justify-between hover:border-[#E5A93C]/70 transition-all duration-300 group hover:-translate-y-1 border border-white/15 shadow-xl"
             >
               <div>
                 {/* Header Tag + Verified Pill */}
                 <div className="flex items-center justify-between text-xs font-mono uppercase mb-4">
-                  <span className="flex items-center gap-1.5 text-[#49A3FF] font-bold text-[10px]">
+                  <span className="flex items-center gap-1.5 text-[#E5A93C] font-bold text-[10px]">
                     <Icon className="text-xs" />
                     <span>{item.tag}</span>
                   </span>
-                  <span className="px-2 py-0.5 rounded-full bg-[#080B12] text-[#49A3FF] border border-[#1769FF]/40 text-[8.5px] font-bold flex items-center gap-1">
+                  <span className="px-2 py-0.5 rounded-full bg-[#08090C] text-[#E5A93C] border border-[#E5A93C]/40 text-[8.5px] font-bold flex items-center gap-1">
                     <FaCheckCircle className="text-[7.5px]" />
                     <span>VERIFIED</span>
                   </span>
                 </div>
 
                 {/* Title */}
-                <h3 className="text-lg font-bold text-[#EAF1FF] mb-2 font-sans group-hover:text-[#49A3FF] transition-colors leading-snug">
+                <h3 className="text-lg font-bold text-[#EAF1FF] mb-2 font-sans group-hover:text-[#E5A93C] transition-colors leading-snug">
                   {item.title}
                 </h3>
 
                 {/* Registry & Application No */}
-                <div className="p-2.5 rounded-lg bg-[#080B12]/80 border border-white/10 text-[10px] font-mono text-[#8793A8] mb-4 space-y-0.5">
+                <div className="p-2.5 rounded-lg bg-[#08090C]/80 border border-white/10 text-[10px] font-mono text-[#9E988A] mb-4 space-y-0.5">
                   <div className="text-[#EAF1FF] font-semibold">{item.registry}</div>
-                  <div className="text-[#49A3FF] font-bold">{item.appNo} &bull; {item.date}</div>
+                  <div className="text-[#E5A93C] font-bold">{item.appNo} &bull; {item.date}</div>
                 </div>
 
                 {/* Evidence Photo Preview */}
@@ -223,7 +223,7 @@ export default function GarcyAchievementsProof() {
                 )}
 
                 {/* Description */}
-                <p className="text-xs text-[#8793A8] leading-relaxed font-sans font-normal mb-6">
+                <p className="text-xs text-[#9E988A] leading-relaxed font-sans font-normal mb-6">
                   {item.desc}
                 </p>
               </div>
@@ -232,13 +232,13 @@ export default function GarcyAchievementsProof() {
               <div className="pt-4 border-t border-white/10 flex items-center justify-between">
                 <Link
                   href={item.link}
-                  className="inline-flex items-center gap-1.5 text-xs font-mono text-[#49A3FF] hover:text-white transition-colors uppercase font-bold"
+                  className="inline-flex items-center gap-1.5 text-xs font-mono text-[#E5A93C] hover:text-white transition-colors uppercase font-bold"
                 >
                   <span>Inspect Evidence</span>
                   <FaExternalLinkAlt className="text-[9px]" />
                 </Link>
 
-                <span className="text-[9px] font-mono text-[#8793A8] uppercase">
+                <span className="text-[9px] font-mono text-[#9E988A] uppercase">
                   AAC ARCHIVE
                 </span>
               </div>

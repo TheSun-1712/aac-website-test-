@@ -1,0 +1,42 @@
+[
+  {
+    "id": "automated-pill-reminder",
+    "title": "An automated electronic device for reminding consumption of pills scheduled and even for missed schedules with specified two way confirmation along with replaceable pill compartments layer as value addition been facilitated to the changing requirements.",
+    "shortTitle": "Automated Electronic Pill Reminder Device",
+    "category": "Healthcare",
+    "status": "PUBLISHED ONLINE",
+    "patentOffice": "India",
+    "applicationNumber": "201941002559",
+    "date": "2019-01-21T00:00:00.000Z",
+    "inventors": [
+      "Yelma Chethan Reddy",
+      "Alence Abhinay",
+      "B.S.V.S Anoop",
+      "M Srikanth",
+      "D.Naga pavan",
+      "G Pradeep Reddy"
+    ],
+    "description": "This patent is for an innovative device designed to help patients remember to take their medications on schedule. The device includes multiple pill compartments that can be customized and provides two-way confirmation to ensure medications are taken properly.",
+    "color": "purple"
+  },
+  {
+    "id": "smart-glove-sign-language",
+    "title": "A SMART GLOVE FOR RECOGNIZING AND COMMUNICATING SIGN LANGUAGE AND ASSOCIATED METHOD THEREOF.",
+    "shortTitle": "Smart Glove for Sign Language Translation",
+    "category": "Assistive Technology",
+    "status": "PUBLISHED ONLINE",
+    "patentOffice": "India",
+    "applicationNumber": "202041038106",
+    "date": "2020-09-03T00:00:00.000Z",
+    "inventors": [
+      "Jashwanth Kranthi Bopanna",
+      "Santosh Sanjeev",
+      "Bharath Varma Kantheti",
+      "Gowtham Sai Ponnekanti",
+      "Suhas Gangireddy",
+      "G Pradeep Reddy"
+    ],
+    "description": "This patent describes a wearable technology in the form of a glove that can recognize sign language gestures and translate them into text or speech using flex sensor arrays and IMU tracking.",
+    "color": "blue"
+  }
+]

@@ -25,8 +25,8 @@ const Layout = ({ children }) => {
     document.documentElement.style.scrollBehavior = 'smooth';
     document.body.style.overflowX = 'hidden';
     document.documentElement.style.overflowX = 'hidden';
-    document.body.style.backgroundColor = '#080B12';
-    document.documentElement.style.backgroundColor = '#080B12';
+    document.body.style.backgroundColor = '#08090C';
+    document.documentElement.style.backgroundColor = '#08090C';
     document.documentElement.style.overflow = 'auto';
     
     return () => {
@@ -59,7 +59,7 @@ const Layout = ({ children }) => {
 
   return (
     <div 
-      className="flex flex-col min-h-screen bg-[#080B12] text-[#EAF1FF]" 
+      className="flex flex-col min-h-screen bg-[#08090C] text-[#EAF1FF]" 
       style={{ overflow: 'hidden' }}
     >
       <GarcyNavbar onOpenSearch={() => setSearchOpen(true)} />

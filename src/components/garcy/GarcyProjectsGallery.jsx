@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
-import { FaTimes, FaExternalLinkAlt } from "react-icons/fa";
+import { FaTimes, FaExternalLinkAlt, FaGithub } from "react-icons/fa";
+import { useDatabase } from "@/hooks/useDatabase";
 
 // AAC Core Engineering Projects & Prototypes
 const DOME_PROJECTS = [
@@ -12,6 +13,8 @@ const DOME_PROJECTS = [
     link: "/projects",
     year: "2024–2025",
     desc: "Autonomous multi-rotor UAV platform featuring edge obstacle avoidance, GPS waypoint guidance, and live telemetry downlink developed at AAC Robotics Lab.",
+    githubRepo: "https://github.com/AAC-GRIET",
+    team: "AAC Robotics Lab Team",
   },
   {
     id: "nav",
@@ -21,6 +24,8 @@ const DOME_PROJECTS = [
     link: "/projects",
     year: "2024–2025",
     desc: "Sub-meter AR indoor positioning and directional wayfinding system mapping GRIET campus complexes.",
+    githubRepo: "https://github.com/AAC-GRIET",
+    team: "Abhiram Pedamallu, V. Dinesh Chandra, Seetaram Koushik",
   },
   {
     id: "pill",
@@ -30,6 +35,8 @@ const DOME_PROJECTS = [
     link: "/Patents",
     year: "PATENT PUBLISHED",
     desc: "Patented assistive medical adherence system with modular dosage cartridges and two-way verification.",
+    githubRepo: "https://github.com/AAC-GRIET",
+    team: "Yelma Chethan Reddy, Alence Abhinay, B.S.V.S Anoop",
   },
   {
     id: "glove",
@@ -39,6 +46,8 @@ const DOME_PROJECTS = [
     link: "/Patents",
     year: "PATENT PUBLISHED",
     desc: "Low-latency sensory wearable interpreting Indian Sign Language gestures into synthesized speech.",
+    githubRepo: "https://github.com/AAC-GRIET",
+    team: "Jashwanth Kranthi Bopanna, Santosh Sanjeev, Bharath Varma",
   },
   {
     id: "energy",
@@ -48,6 +57,8 @@ const DOME_PROJECTS = [
     link: "/projects",
     year: "2023–2025",
     desc: "Intelligent power telemetry network balancing building energy loads and optimizing institutional consumption.",
+    githubRepo: "https://github.com/AAC-GRIET",
+    team: "Abhiram Dodda, Manav, Srija Cherukuri",
   },
   {
     id: "satellite",
@@ -57,6 +68,8 @@ const DOME_PROJECTS = [
     link: "/News",
     year: "RESEARCH MoU",
     desc: "High-resolution multispectral imaging payload designed under academic partnership with National Remote Sensing Centre.",
+    githubRepo: "https://github.com/AAC-GRIET",
+    team: "AAC Space Payload Cell",
   },
   {
     id: "rover",
@@ -66,6 +79,8 @@ const DOME_PROJECTS = [
     link: "/projects",
     year: "2025",
     desc: "All-terrain research rover utilizing solar harvesting and real-time obstacle avoidance telemetry.",
+    githubRepo: "https://github.com/AAC-GRIET",
+    team: "Autonomous Vehicles Group",
   },
   {
     id: "matrix",
@@ -75,6 +90,8 @@ const DOME_PROJECTS = [
     link: "/Research",
     year: "ROOM 3614",
     desc: "Flagship innovation hub incubating student engineering prototypes, patents, and multi-disciplinary research.",
+    githubRepo: "https://github.com/AAC-GRIET",
+    team: "Core Committee & Fellows",
   },
   {
     id: "gprime",
@@ -84,6 +101,8 @@ const DOME_PROJECTS = [
     link: "/gprime2026-results",
     year: "CONTEST INFRA",
     desc: "Distributed sandboxed code evaluation engine supporting high-concurrency national coding competitions.",
+    githubRepo: "https://github.com/AAC-GRIET",
+    team: "Software Systems Engineering",
   },
 ];
 
@@ -116,11 +135,31 @@ function quadMatrix([p0, p1, p2, p3], width, height) {
 }
 
 export default function GarcyProjectsGallery({ onSelectCase, onNavigateBack }) {
+  const { data: dbProjects } = useDatabase("projects");
   const rootRef = useRef(null);
   const surfaceRef = useRef(null);
 
   const [selectedProject, setSelectedProject] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+
+  const projectsData = useMemo(() => {
+    if (dbProjects && dbProjects.length > 0) {
+      return dbProjects.map((p) => ({
+        id: p.id || p._id || p.slug || `proj-${Math.random()}`,
+        title: p.title || "Project",
+        services: (p.categories || p.category || "ENGINEERING").toUpperCase(),
+        image: p.mainImageUrl || p.image || "/images/pic.webp",
+        link: p.link || `/projects/${p.id || p._id || p.slug || ""}`,
+        year: p.publishedAt ? new Date(p.publishedAt).getFullYear().toString() : (p.year || "2025"),
+        desc: p.description || p.content || "",
+        content: p.content || "",
+        githubRepo: p.githubRepo || p.github || p.githubUrl || p.repo || "",
+        team: Array.isArray(p.names) ? p.names.join(", ") : (p.names || p.author || p.team || ""),
+        raw: p,
+      }));
+    }
+    return DOME_PROJECTS;
+  }, [dbProjects]);
 
   // Dome coordinate state refs
   const stateRef = useRef({
@@ -131,11 +170,11 @@ export default function GarcyProjectsGallery({ onSelectCase, onNavigateBack }) {
     vx: 0,
     vy: 0,
     pointer: null,
-    dragX: 0,
-    dragY: 0,
-    dragTargetX: 0,
-    dragTargetY: 0,
     dragDistance: 0,
+    lastMoveX: 0,
+    lastMoveY: 0,
+    lastMoveTime: 0,
+    clickedTileId: null,
     cursorX: 0,
     cursorY: 0,
     cursorTargetX: 0,
@@ -185,16 +224,17 @@ export default function GarcyProjectsGallery({ onSelectCase, onNavigateBack }) {
     if (!root || !surface) return;
 
     const s = stateRef.current;
-    const count = DOME_PROJECTS.length;
+    const count = projectsData.length;
     const periods = gridPeriods(count);
     const cols = Math.ceil((Math.ceil(s.width / s.stepX) + 2) / periods.columns) * periods.columns;
     const period = periods.rows;
     const nextRows = Math.ceil((Math.ceil(s.height / s.stepY) + 2) / period) * period;
 
-    if (cols === s.columns && nextRows === s.rows && s.pool.length > 0) return;
+    if (cols === s.columns && nextRows === s.rows && s.pool.length > 0 && s.lastCount === count) return;
 
     s.columns = cols;
     s.rows = nextRows;
+    s.lastCount = count;
     surface.innerHTML = "";
     s.pool = [];
 
@@ -205,7 +245,7 @@ export default function GarcyProjectsGallery({ onSelectCase, onNavigateBack }) {
         const column = col - Math.floor(cols / 2);
         const line = row - Math.floor(nextRows / 2);
         const projectIndex = gridCell(column, line, count);
-        const project = DOME_PROJECTS[projectIndex];
+        const project = projectsData[projectIndex];
 
         const card = document.createElement("div");
         card.className = "dome-tile";
@@ -263,7 +303,7 @@ export default function GarcyProjectsGallery({ onSelectCase, onNavigateBack }) {
         span.textContent = project.services;
         span.style.fontFamily = "var(--garcy-mono, monospace)";
         span.style.fontSize = "9.5px";
-        span.style.color = "#49A3FF";
+        span.style.color = "#E5A93C";
         span.style.textTransform = "uppercase";
         span.style.letterSpacing = "0.08em";
         span.style.fontWeight = "600";
@@ -279,7 +319,7 @@ export default function GarcyProjectsGallery({ onSelectCase, onNavigateBack }) {
     }
 
     surface.appendChild(fragment);
-  }, []);
+  }, [projectsData]);
 
   const measure = useCallback(() => {
     const root = rootRef.current;
@@ -300,6 +340,11 @@ export default function GarcyProjectsGallery({ onSelectCase, onNavigateBack }) {
 
     buildPool();
   }, [buildPool]);
+
+  // Re-measure and build when projects data updates
+  useEffect(() => {
+    measure();
+  }, [measure]);
 
   // Main 60fps Paint loop: Dome warping and 3D matrix projection
   const paint = useCallback(() => {
@@ -377,10 +422,18 @@ export default function GarcyProjectsGallery({ onSelectCase, onNavigateBack }) {
       const s = stateRef.current;
 
       if (s.pointer === null) {
-        s.targetX += (s.vx * dt) / 16.67;
-        s.targetY += (s.vy * dt) / 16.67;
-        s.vx *= Math.pow(0.92, dt / 16.67);
-        s.vy *= Math.pow(0.92, dt / 16.67);
+        if (Math.abs(s.vx) > 0.02) {
+          s.targetX += (s.vx * dt) / 16.67;
+          s.vx *= Math.pow(0.92, dt / 16.67);
+        } else {
+          s.vx = 0;
+        }
+        if (Math.abs(s.vy) > 0.02) {
+          s.targetY += (s.vy * dt) / 16.67;
+          s.vy *= Math.pow(0.92, dt / 16.67);
+        } else {
+          s.vy = 0;
+        }
       }
 
       const blend = 1 - Math.pow(0.88, dt / 16.67);
@@ -418,12 +471,14 @@ export default function GarcyProjectsGallery({ onSelectCase, onNavigateBack }) {
     const s = stateRef.current;
     s.pointer = e.pointerId;
     s.dragDistance = 0;
-    s.dragX = e.clientX;
-    s.dragY = e.clientY;
-    s.dragTargetX = s.targetX;
-    s.dragTargetY = s.targetY;
+    s.lastMoveX = e.clientX;
+    s.lastMoveY = e.clientY;
+    s.lastMoveTime = performance.now();
     s.vx = 0;
     s.vy = 0;
+
+    const tile = e.target.closest(".dome-tile");
+    s.clickedTileId = tile ? tile.dataset.id : null;
 
     setIsDragging(true);
     if (surfaceRef.current) {
@@ -443,16 +498,27 @@ export default function GarcyProjectsGallery({ onSelectCase, onNavigateBack }) {
 
     if (e.pointerId !== s.pointer) return;
 
-    const dx = e.clientX - s.dragX;
-    const dy = e.clientY - s.dragY;
-    s.dragDistance = Math.max(s.dragDistance, Math.hypot(dx, dy));
+    const now = performance.now();
+    const dt = Math.max(1, now - (s.lastMoveTime || now));
+    const deltaX = e.clientX - s.lastMoveX;
+    const deltaY = e.clientY - s.lastMoveY;
 
-    const speed = 1.6;
-    s.targetX = s.dragTargetX + dx * speed;
-    s.targetY = s.dragTargetY + dy * speed;
+    s.dragDistance += Math.hypot(deltaX, deltaY);
 
-    s.vx = dx * 0.4;
-    s.vy = dy * 0.4;
+    const speed = 1.35;
+    s.targetX += deltaX * speed;
+    s.targetY += deltaY * speed;
+
+    if (dt > 0) {
+      const instVx = (deltaX / dt) * 16.67 * speed;
+      const instVy = (deltaY / dt) * 16.67 * speed;
+      s.vx = s.vx * 0.4 + instVx * 0.6;
+      s.vy = s.vy * 0.4 + instVy * 0.6;
+    }
+
+    s.lastMoveX = e.clientX;
+    s.lastMoveY = e.clientY;
+    s.lastMoveTime = now;
   };
 
   const handlePointerUp = (e) => {
@@ -461,19 +527,28 @@ export default function GarcyProjectsGallery({ onSelectCase, onNavigateBack }) {
       setIsDragging(false);
       s.pointer = null;
 
-      // If clicked without substantial dragging, open project details!
-      if (s.dragDistance < 8) {
-        const tile = e.target.closest(".dome-tile");
-        if (tile) {
-          const id = tile.dataset.id;
-          const proj = DOME_PROJECTS.find((p) => p.id === id);
-          if (proj) {
-            saveState();
-            if (onSelectCase) {
-              onSelectCase(proj.id);
-            } else {
-              setSelectedProject(proj);
-            }
+      // If released after pause, kill momentum so it stays exactly where released
+      const now = performance.now();
+      if (now - (s.lastMoveTime || now) > 60) {
+        s.vx = 0;
+        s.vy = 0;
+      } else {
+        s.vx = clamp(s.vx, -35, 35);
+        s.vy = clamp(s.vy, -25, 25);
+      }
+
+      saveState();
+
+      // If clicked without dragging (dragDistance < 10), open project details!
+      if (s.dragDistance < 10 && s.clickedTileId) {
+        const proj =
+          projectsData.find((p) => String(p.id) === String(s.clickedTileId)) ||
+          DOME_PROJECTS.find((p) => String(p.id) === String(s.clickedTileId));
+        if (proj) {
+          if (onSelectCase) {
+            onSelectCase(proj.id);
+          } else {
+            setSelectedProject(proj);
           }
         }
       }
@@ -529,7 +604,7 @@ export default function GarcyProjectsGallery({ onSelectCase, onNavigateBack }) {
       onPointerLeave={() => {
         stateRef.current.lensTarget = 0;
       }}
-      className={`projects relative w-full h-full overflow-hidden select-none bg-gradient-to-br from-[#121622] via-[#070A10] to-[#020306] text-[#EAF1FF] ${
+      className={`projects relative w-full h-full overflow-hidden select-none bg-[#08090C] text-[#FAF6ED] ${
         isDragging ? "dome-dragging cursor-grabbing" : "cursor-grab"
       }`}
       style={{
@@ -539,29 +614,29 @@ export default function GarcyProjectsGallery({ onSelectCase, onNavigateBack }) {
       }}
     >
       {/* Top Breadcrumb Navigation */}
-      <div className="relative z-30 flex items-center justify-between px-6 sm:px-10 pt-3 pb-2 border-b border-white/10 pointer-events-auto">
+      <div className="relative z-30 flex items-center justify-between px-6 sm:px-10 pt-3 pb-2 border-b border-[#2A261F] pointer-events-auto">
         <div className="flex items-center gap-3">
           {onNavigateBack ? (
             <button
               type="button"
               onClick={onNavigateBack}
-              className="font-mono text-[10.5px] uppercase tracking-[0.2em] text-[#49A3FF] font-semibold hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="font-mono text-[10.5px] uppercase tracking-[0.2em] text-[#E5A93C] hover:text-[#F6C463] font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <span>← 02 // 3D HELIX</span>
             </button>
           ) : (
-            <span className="font-mono text-[10.5px] uppercase tracking-[0.2em] text-[#49A3FF] font-semibold">
+            <span className="font-mono text-[10.5px] uppercase tracking-[0.2em] text-[#E5A93C] font-semibold">
               03 // SHOWCASE
             </span>
           )}
-          <span className="text-white/20">/</span>
+          <span className="text-[#9E988A]/40">/</span>
           <h2 className="font-sans font-bold text-xs sm:text-sm uppercase tracking-wider text-white">
             Engineering Projects &amp; Autonomous Systems
           </h2>
         </div>
 
         <div className="hidden sm:flex items-center gap-2">
-          <span className="font-mono text-[9px] uppercase tracking-widest text-white/50">
+          <span className="font-mono text-[9px] uppercase tracking-widest text-[#9E988A]">
             DRAG ANYWHERE IN 2D OR SCROLL TO EXPLORE
           </span>
         </div>
@@ -593,7 +668,7 @@ export default function GarcyProjectsGallery({ onSelectCase, onNavigateBack }) {
         <button
           type="button"
           onClick={handlePrev}
-          className="projects-back group flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/15 text-xs font-semibold text-white transition-all shadow-lg cursor-pointer"
+          className="projects-back group flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#111318] hover:bg-[#181A20] backdrop-blur-xl border border-[#2A261F] text-xs font-semibold text-[#FAF6ED] hover:text-[#E5A93C] transition-all shadow-lg cursor-pointer"
           aria-label="Previous projects"
         >
           <span className="group-hover:-translate-x-1 transition-transform">←</span>
@@ -602,7 +677,7 @@ export default function GarcyProjectsGallery({ onSelectCase, onNavigateBack }) {
         <button
           type="button"
           onClick={handleNext}
-          className="projects-next group flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/15 text-xs font-semibold text-white transition-all shadow-lg cursor-pointer"
+          className="projects-next group flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#111318] hover:bg-[#181A20] backdrop-blur-xl border border-[#2A261F] text-xs font-semibold text-[#FAF6ED] hover:text-[#E5A93C] transition-all shadow-lg cursor-pointer"
           aria-label="Next projects"
         >
           <span>Next</span>
@@ -617,26 +692,40 @@ export default function GarcyProjectsGallery({ onSelectCase, onNavigateBack }) {
           onClick={() => setSelectedProject(null)}
         >
           <div
-            className="relative w-full max-w-2xl bg-[#090F1D] border border-[#49A3FF]/40 rounded-2xl p-6 sm:p-8 shadow-[0_30px_90px_rgba(0,0,0,0.95)]"
+            className="relative w-full max-w-2xl bg-[#111318] border border-[#2A261F] rounded-2xl p-6 sm:p-8 shadow-[0_30px_90px_rgba(0,0,0,0.95)] max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setSelectedProject(null)}
-              className="absolute top-5 right-5 text-white/50 hover:text-white p-2 text-sm cursor-pointer"
+              className="absolute top-5 right-5 text-[#9E988A] hover:text-white p-2 text-sm cursor-pointer rounded-lg hover:bg-white/5 transition-colors"
               aria-label="Close modal"
             >
               <FaTimes />
             </button>
 
-            <span className="font-mono text-[10px] uppercase tracking-widest text-[#49A3FF] font-bold px-2.5 py-1 rounded bg-[#1769FF]/20 border border-[#1769FF]/40 inline-block mb-3">
-              {selectedProject.services} // {selectedProject.year}
-            </span>
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[#E5A93C] font-bold px-2.5 py-1 rounded bg-[#E5A93C]/10 border border-[#2A261F]">
+                {selectedProject.services}
+              </span>
+              {selectedProject.year && (
+                <span className="font-mono text-[10px] uppercase tracking-widest text-[#9E988A] px-2.5 py-1 rounded bg-white/5 border border-[#2A261F]">
+                  {selectedProject.year}
+                </span>
+              )}
+            </div>
 
-            <h2 className="font-sans font-bold text-2xl sm:text-3xl text-white mb-4">
+            <h2 className="font-sans font-bold text-2xl sm:text-3xl text-white mb-2">
               {selectedProject.title}
             </h2>
 
-            <div className="relative w-full h-56 sm:h-64 rounded-xl overflow-hidden mb-6 border border-white/10">
+            {selectedProject.team && (
+              <div className="flex items-center gap-2 text-xs font-mono text-[#9E988A] mb-4">
+                <span className="text-[#E5A93C]">Team:</span>
+                <span className="text-white/80">{selectedProject.team}</span>
+              </div>
+            )}
+
+            <div className="relative w-full h-56 sm:h-64 rounded-xl overflow-hidden mb-6 border border-[#2A261F]">
               <Image
                 src={selectedProject.image}
                 alt={selectedProject.title}
@@ -645,24 +734,44 @@ export default function GarcyProjectsGallery({ onSelectCase, onNavigateBack }) {
               />
             </div>
 
-            <p className="font-sans text-sm sm:text-base text-white/70 leading-relaxed mb-6">
+            <p className="font-sans text-sm sm:text-base text-[#FAF6ED]/85 leading-relaxed mb-4">
               {selectedProject.desc}
             </p>
 
-            <div className="flex items-center justify-between pt-4 border-t border-white/10">
+            {selectedProject.content && selectedProject.content !== selectedProject.desc && (
+              <div className="font-sans text-xs sm:text-sm text-[#9E988A] leading-relaxed mb-6 bg-white/[0.02] p-4 rounded-xl border border-white/5 whitespace-pre-line">
+                {selectedProject.content}
+              </div>
+            )}
+
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-[#2A261F]">
               <button
                 onClick={() => setSelectedProject(null)}
-                className="font-mono text-xs uppercase tracking-wider text-white/60 hover:text-white transition-colors cursor-pointer"
+                className="font-mono text-xs uppercase tracking-wider text-[#9E988A] hover:text-white transition-colors cursor-pointer"
               >
                 ← Return to Collage
               </button>
-              <a
-                href={selectedProject.link}
-                className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-black bg-[#49A3FF] hover:bg-white px-5 py-2.5 rounded-lg font-bold transition-all shadow-md"
-              >
-                <span>Full Project Page</span>
-                <FaExternalLinkAlt className="text-[10px]" />
-              </a>
+              
+              <div className="flex items-center gap-3">
+                {selectedProject.githubRepo && (
+                  <a
+                    href={selectedProject.githubRepo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-white bg-[#181A20] hover:bg-[#20242C] border border-[#2A261F] hover:border-[#E5A93C]/40 px-4 py-2.5 rounded-lg font-semibold transition-all shadow-md"
+                  >
+                    <FaGithub className="text-sm text-[#E5A93C]" />
+                    <span>GitHub Repo</span>
+                  </a>
+                )}
+                <a
+                  href={selectedProject.link}
+                  className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-[#08090C] bg-[#E5A93C] hover:bg-[#F6C463] px-5 py-2.5 rounded-lg font-bold transition-all shadow-md"
+                >
+                  <span>Full Project Page</span>
+                  <FaExternalLinkAlt className="text-[10px]" />
+                </a>
+              </div>
             </div>
           </div>
         </div>

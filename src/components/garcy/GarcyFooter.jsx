@@ -23,7 +23,7 @@ export default function GarcyFooter() {
   ];
 
   return (
-    <footer className="relative bg-[#06080e] text-[#8793A8] pt-20 pb-12 px-4 sm:px-6 border-t border-white/10">
+    <footer className="relative bg-[#08090C] text-[#9E988A] pt-20 pb-12 px-4 sm:px-6 border-t border-white/10">
       <div className="max-w-7xl mx-auto">
         
         {/* Main Grid */}
@@ -42,25 +42,25 @@ export default function GarcyFooter() {
                 />
               </div>
               <span className="text-xl font-extrabold tracking-tight text-[#EAF1FF] font-sans uppercase">
-                AAC <span className="text-[#8793A8] font-normal">// GRIET</span>
+                AAC <span className="text-[#9E988A] font-normal">// GRIET</span>
               </span>
             </div>
 
-            <p className="text-xs sm:text-sm text-[#8793A8] leading-relaxed max-w-sm mb-6 font-sans font-normal">
+            <p className="text-xs sm:text-sm text-[#9E988A] leading-relaxed max-w-sm mb-6 font-sans font-normal">
               Advanced Academic Center &bull; Gokaraju Rangaraju Institute of Engineering and Technology. Preparing future engineers through autonomous systems, robotics, and patentable deep-tech inventions.
             </p>
 
-            <div className="text-[11px] font-mono text-[#8793A8] space-y-1">
+            <div className="text-[11px] font-mono text-[#9E988A] space-y-1">
               <div>Room 3614, Block 3, GRIET Campus &bull; Hyderabad 500090</div>
-              <div>Official Email: <a href="mailto:aacgriet.org@gmail.com" className="text-[#49A3FF] hover:underline font-bold">aacgriet.org@gmail.com</a></div>
-              <div>Instagram: <a href="https://instagram.com/aac_grietofficial?igshid=YmMyMTA2M2Y=" target="_blank" rel="noopener noreferrer" className="text-[#49A3FF] hover:underline">@aac_grietofficial</a></div>
+              <div>Official Email: <a href="mailto:aacgriet.org@gmail.com" className="text-[#E5A93C] hover:underline font-bold">aacgriet.org@gmail.com</a></div>
+              <div>Instagram: <a href="https://instagram.com/aac_grietofficial?igshid=YmMyMTA2M2Y=" target="_blank" rel="noopener noreferrer" className="text-[#E5A93C] hover:underline">@aac_grietofficial</a></div>
             </div>
           </div>
 
           {/* Directory Column */}
           <div className="md:col-span-7">
             <div className="text-[10px] font-mono uppercase tracking-widest text-[#EAF1FF] mb-4 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#1769FF]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#E5A93C]" />
               <span>Center Directory &bull; 12 Indexed Nodes</span>
             </div>
 
@@ -69,7 +69,7 @@ export default function GarcyFooter() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="hover:text-[#49A3FF] transition-colors truncate text-[#8793A8]"
+                  className="hover:text-[#E5A93C] transition-colors truncate text-[#9E988A]"
                 >
                   &rarr; {link.label}
                 </Link>
@@ -79,7 +79,7 @@ export default function GarcyFooter() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-[11px] font-mono text-[#8793A8]/70 gap-4">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-[11px] font-mono text-[#9E988A]/70 gap-4">
           <div>
             &copy; {new Date().getFullYear()} ADVANCED ACADEMIC CENTER (AAC) GRIET. ALL RIGHTS RESERVED.
           </div>
@@ -87,7 +87,7 @@ export default function GarcyFooter() {
           <button
             type="button"
             onClick={scrollToTop}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-[#1769FF] hover:text-white text-[#8793A8] transition-all uppercase text-[10px] border border-white/5 font-mono"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-[#E5A93C] hover:text-white text-[#9E988A] transition-all uppercase text-[10px] border border-white/5 font-mono"
           >
             <span>Return To Top</span>
             <FaArrowUp className="text-[9px]" />

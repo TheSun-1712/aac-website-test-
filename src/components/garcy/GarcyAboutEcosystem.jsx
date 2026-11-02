@@ -99,37 +99,37 @@ export default function GarcyAboutEcosystem() {
     <section id="about" className="relative py-28 px-4 sm:px-6 max-w-7xl mx-auto border-b border-white/10">
       
       {/* Background Ambient Radial Glow */}
-      <div className="absolute right-1/4 top-1/2 w-[500px] h-[500px] bg-[#1769FF]/10 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute right-1/4 top-1/2 w-[500px] h-[500px] bg-[#E5A93C]/10 rounded-full blur-[150px] pointer-events-none" />
 
       {/* Section Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-16">
         <div>
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-3 border backdrop-blur-md bg-[#1769FF]/15 border-[#1769FF]/40 text-[#49A3FF]">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-3 border backdrop-blur-md bg-[#E5A93C]/15 border-[#E5A93C]/40 text-[#E5A93C]">
             <FaShieldAlt className="text-[10px]" />
             <span>09 // The Organization &amp; Ecosystem</span>
           </div>
 
           <h2 className="font-extrabold text-3xl sm:text-5xl tracking-tighter text-[#EAF1FF] mb-2 uppercase font-sans">
             The ecosystem behind <br />
-            <span className="italic font-serif font-normal text-[#49A3FF] lowercase tracking-normal text-3xl sm:text-5xl">
+            <span className="italic font-serif font-normal text-[#E5A93C] lowercase tracking-normal text-3xl sm:text-5xl">
               the breakthroughs.
             </span>
           </h2>
         </div>
 
-        <p className="mt-4 md:mt-0 text-xs sm:text-sm text-[#8793A8] max-w-sm font-sans font-normal leading-relaxed">
+        <p className="mt-4 md:mt-0 text-xs sm:text-sm text-[#9E988A] max-w-sm font-sans font-normal leading-relaxed">
           Founded in 2004 at GRIET Hyderabad — 20+ years of fostering scientific temper, patentable inventions, and student technology ventures.
         </p>
       </div>
 
       {/* 5-Stage Research Induction Protocol */}
       <div className="mb-20">
-        <div className="flex items-center justify-between text-xs font-mono uppercase text-[#8793A8] mb-6">
+        <div className="flex items-center justify-between text-xs font-mono uppercase text-[#9E988A] mb-6">
           <span className="font-bold text-[#EAF1FF] flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[#1769FF] animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-[#E5A93C] animate-pulse" />
             <span>5-Stage Research Induction Protocol</span>
           </span>
-          <span className="text-[10px] text-[#49A3FF]">SELECT STEP TO INSPECT</span>
+          <span className="text-[10px] text-[#E5A93C]">SELECT STEP TO INSPECT</span>
         </div>
 
         {/* Step Track Selector */}
@@ -143,15 +143,15 @@ export default function GarcyAboutEcosystem() {
                 onClick={() => setActiveStep(idx)}
                 className={`p-3.5 rounded-xl border text-left transition-all duration-300 ${
                   isSelected
-                    ? "bg-[#101725] border-[#1769FF] shadow-[0_4px_20px_rgba(23,105,255,0.35)]"
-                    : "bg-[#101725]/50 border-white/10 hover:border-white/20"
+                    ? "bg-[#111318] border-[#E5A93C] shadow-[0_4px_20px_rgba(229, 169, 60,0.35)]"
+                    : "bg-[#111318]/50 border-white/10 hover:border-white/20"
                 }`}
               >
                 <div className="flex items-center justify-between text-xs font-mono mb-2">
-                  <span className={`font-bold ${isSelected ? "text-[#49A3FF]" : "text-[#8793A8]"}`}>
+                  <span className={`font-bold ${isSelected ? "text-[#E5A93C]" : "text-[#9E988A]"}`}>
                     STEP {s.step}
                   </span>
-                  <span className="text-[9px] text-[#8793A8] font-mono">{s.metric}</span>
+                  <span className="text-[9px] text-[#9E988A] font-mono">{s.metric}</span>
                 </div>
                 <div className="text-xs font-bold font-sans text-[#EAF1FF] truncate">
                   {s.title}
@@ -162,19 +162,19 @@ export default function GarcyAboutEcosystem() {
         </div>
 
         {/* Active Step Detailed Card */}
-        <div className="garcy-glass-card p-6 sm:p-8 border border-[#1769FF]/50 bg-gradient-to-br from-[#101725] via-[#0d1424] to-[#080B12] shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="garcy-glass-card p-6 sm:p-8 border border-[#E5A93C]/50 bg-gradient-to-br from-[#111318] via-[#0d1424] to-[#08090C] shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#1769FF] to-[#080B12] flex items-center justify-center font-mono font-extrabold text-xl text-[#49A3FF] border border-[#1769FF]/60 shadow-lg flex-shrink-0">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#E5A93C] to-[#08090C] flex items-center justify-center font-mono font-extrabold text-xl text-[#E5A93C] border border-[#E5A93C]/60 shadow-lg flex-shrink-0">
               <StepIcon />
             </div>
             <div>
-              <div className="text-[10px] font-mono text-[#49A3FF] uppercase tracking-wider mb-0.5 font-bold">
+              <div className="text-[10px] font-mono text-[#E5A93C] uppercase tracking-wider mb-0.5 font-bold">
                 STAGE {currentStep.step} &bull; {currentStep.subtitle}
               </div>
               <h3 className="text-xl sm:text-2xl font-extrabold text-[#EAF1FF] font-sans">
                 {currentStep.title}
               </h3>
-              <p className="text-xs sm:text-sm text-[#8793A8] leading-relaxed max-w-2xl mt-1 font-sans">
+              <p className="text-xs sm:text-sm text-[#9E988A] leading-relaxed max-w-2xl mt-1 font-sans">
                 {currentStep.desc}
               </p>
             </div>
@@ -182,7 +182,7 @@ export default function GarcyAboutEcosystem() {
 
           <Link
             href="/About"
-            className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1769FF] hover:bg-[#49A3FF] hover:text-black text-white text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-md"
+            className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#E5A93C] hover:bg-[#E5A93C] hover:text-black text-white text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-md"
           >
             <span>Learn About Induction</span>
             <FaExternalLinkAlt className="text-[9px]" />
@@ -192,38 +192,38 @@ export default function GarcyAboutEcosystem() {
 
       {/* Institutional Accreditation Wall */}
       <div>
-        <div className="flex items-center justify-between text-xs font-mono uppercase text-[#8793A8] mb-6">
+        <div className="flex items-center justify-between text-xs font-mono uppercase text-[#9E988A] mb-6">
           <span className="font-bold text-[#EAF1FF] flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#1769FF]" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#E5A93C]" />
             <span>Institutional Backing &amp; National Accreditation</span>
           </span>
-          <span className="text-[10px] text-[#8793A8]">GRIET HYDERABAD</span>
+          <span className="text-[10px] text-[#9E988A]">GRIET HYDERABAD</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {partners.map((p) => (
             <div
               key={p.name}
-              className="p-5 rounded-2xl bg-[#101725]/60 border border-white/15 hover:border-[#1769FF]/60 transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1 shadow-lg"
+              className="p-5 rounded-2xl bg-[#111318]/60 border border-white/15 hover:border-[#E5A93C]/60 transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1 shadow-lg"
             >
               <div>
-                <div className="flex items-center justify-between text-[9px] font-mono uppercase text-[#8793A8] mb-3">
-                  <span className="px-2 py-0.5 rounded-md bg-[#080B12] text-[#49A3FF] font-bold border border-[#1769FF]/30">
+                <div className="flex items-center justify-between text-[9px] font-mono uppercase text-[#9E988A] mb-3">
+                  <span className="px-2 py-0.5 rounded-md bg-[#08090C] text-[#E5A93C] font-bold border border-[#E5A93C]/30">
                     {p.badge}
                   </span>
                   <span>{p.metric}</span>
                 </div>
-                <h4 className="text-sm font-extrabold text-[#EAF1FF] font-sans group-hover:text-[#49A3FF] transition-colors leading-snug mb-1">
+                <h4 className="text-sm font-extrabold text-[#EAF1FF] font-sans group-hover:text-[#E5A93C] transition-colors leading-snug mb-1">
                   {p.name}
                 </h4>
-                <p className="text-[11px] text-[#8793A8] font-sans">
+                <p className="text-[11px] text-[#9E988A] font-sans">
                   {p.role}
                 </p>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[10px] font-mono text-[#8793A8]">
+              <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[10px] font-mono text-[#9E988A]">
                 <span>VERIFIED</span>
-                <span className="text-[#1769FF]">&bull;</span>
+                <span className="text-[#E5A93C]">&bull;</span>
               </div>
             </div>
           ))}
