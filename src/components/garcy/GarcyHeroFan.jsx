@@ -1,218 +1,285 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
-import Link from "next/link";
-import {
-  FaRocket,
-  FaLightbulb,
-  FaAtom,
-  FaCheckCircle,
-  FaChevronDown,
-  FaChevronUp,
-  FaExternalLinkAlt,
-  FaCompass,
-} from "react-icons/fa";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
+import { useRouter } from "next/router";
 
-export default function GarcyHeroFan() {
-  const [expanded, setExpanded] = useState(false);
-  const [hoveredIndex, setHoveredIndex] = useState(null);
+const NOTIFICATIONS = [
+  {
+    id: 1,
+    avatar: "/images/AAC1.png",
+    sender: "AICTE  •  NATIONAL EXCELLENCE",
+    time: "NOW",
+    message: "AAC wins the AICTE National Vishwakarma Award.",
+    link: "/Achievements",
+  },
+  {
+    id: 2,
+    avatar: "/images/AAC2.png",
+    sender: "ISRO  •  NRSC MoU SIGNED",
+    time: "NOW",
+    message: "AAC partners with ISRO NRSC for advanced satellite imaging R&D.",
+    link: "/News",
+  },
+  {
+    id: 3,
+    avatar: "/images/AAC3.png",
+    sender: "GPRIME 2026  •  LEADERBOARD LIVE",
+    time: "NOW",
+    message: "Gprime 2026 results are live! Check the national leaderboard.",
+    link: "/gprime2026-results",
+  },
+  {
+    id: 4,
+    avatar: "/images/pic.webp",
+    sender: "AAC AUTONOMOUS LAB  •  PROTOTYPE",
+    time: "NOW",
+    message: "Autonomous multi-rotor UAV prototype campus flight verified.",
+    link: "/projects",
+  },
+];
 
-  // Exact AAC Club Portals & Initiatives
-  const initiatives = [
-    {
-      id: "gprime",
-      sender: "GPRIME 2026 CONTEST",
-      time: "RESULTS LIVE",
-      title: "Gprime 2026 Results Live! Check Leaderboard & Scores",
-      desc: "Flagship competitive programming and algorithmic hackathon hosted by AAC GRIET.",
-      tag: "Flagship Contest",
-      icon: FaRocket,
-      link: "/gprime2026-results",
-      badgeColor: "#49A3FF",
-    },
-    {
-      id: "research",
-      sender: "RESEARCH MATRIX",
-      time: "5 DOMAINS",
-      title: "Interdisciplinary Research across 5 Specialized Domains",
-      desc: "Deep Learning, IoT & Embedded Systems, Web & App Development, ML-Ops, and Scopus publications.",
-      tag: "R&D Domains",
-      icon: FaAtom,
-      link: "/Research",
-      badgeColor: "#1769FF",
-    },
-    {
-      id: "patents",
-      sender: "INTELLECTUAL PROPERTY CELL",
-      time: "IPO PUBLISHED",
-      title: "Published Indian Patents: Pill Reminder & Smart Sign Language Glove",
-      desc: "Official Indian Patent Office published inventions engineered by AAC student cohorts.",
-      tag: "IP Portfolio",
-      icon: FaLightbulb,
-      link: "/Patents",
-      badgeColor: "#49A3FF",
-    },
-    {
-      id: "startups",
-      sender: "STUDENT STARTUP INCUBATOR",
-      time: "INCUBATED",
-      title: "Student-Led Technology Spinoffs & Commercial Startups",
-      desc: "Commercialized student ventures: Koolgen Interactives, The Great Honey Company, and CampusNav.",
-      tag: "Incubation",
-      icon: FaCheckCircle,
-      link: "/Startups",
-      badgeColor: "#1769FF",
-    },
-  ];
+export default function GarcyHeroFan({ onContinue }) {
+  const router = useRouter();
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [showArrow, setShowArrow] = useState(false);
+
+  // Sequential arrival of notifications like iOS drops
+  useEffect(() => {
+    const timers = [
+      setTimeout(() => setCurrentIndex(0), 300),
+      setTimeout(() => setCurrentIndex(1), 1800),
+      setTimeout(() => setCurrentIndex(2), 3300),
+      setTimeout(() => setCurrentIndex(3), 4800),
+      setTimeout(() => setShowArrow(true), 5600),
+    ];
+
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
+  const handleCardClick = (e, link) => {
+    e.stopPropagation();
+    if (isExpanded && link) {
+      router.push(link);
+    } else {
+      // Toggle expand / collapse
+      setIsExpanded((prev) => !prev);
+    }
+  };
+
+  const handleScrollDown = () => {
+    if (onContinue) {
+      onContinue();
+    } else {
+      router.push("/moment");
+    }
+  };
+
+  const activeNotif = NOTIFICATIONS[currentIndex];
 
   return (
     <section
       id="hero"
-      className="relative min-h-[94vh] flex flex-col items-center justify-between pt-28 pb-14 px-4 sm:px-6"
+      className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden select-none bg-[#06080E] py-20 px-4"
     >
-      {/* Top Banner Alert & Tag */}
-      <div className="text-center max-w-4xl mx-auto z-10">
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
-          <Link href="/gprime2026-results" className="group">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full font-mono font-semibold text-xs transition-all bg-[#1769FF]/15 border border-[#1769FF]/40 text-[#49A3FF] hover:bg-[#1769FF]/25 shadow-md">
-              <FaRocket className="animate-bounce text-[10px]" />
-              <span>Gprime 2026 Results Live! View Leaderboard &rarr;</span>
-            </div>
-          </Link>
-
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-mono bg-[#101725]/60 border-white/15 text-[#8793A8] backdrop-blur-md">
-            <span className="w-2 h-2 rounded-full animate-ping bg-[#1769FF]" />
-            <span>Curiosity Begins Here &bull; GRIET Hyderabad</span>
-          </div>
-        </div>
-
-        {/* Hero Title with Space Grotesk Typography */}
-        <h1 className="font-extrabold text-4xl sm:text-6xl lg:text-7xl tracking-tighter leading-[1.04] mb-4 text-[#EAF1FF] uppercase drop-shadow-xl font-sans">
-          Advanced Academic Center
-        </h1>
-
-        <h2 className="text-lg sm:text-2xl font-bold text-[#49A3FF] mb-5 tracking-tight font-sans drop-shadow">
-          Gokaraju Rangaraju Institute of Engineering and Technology
-        </h2>
-
-        <p className="max-w-2xl mx-auto text-base sm:text-lg text-[#8793A8] leading-relaxed mb-8 drop-shadow font-sans font-normal">
-          An interdisciplinary research hub where creativity, innovation, and excellence converge to shape the future — building autonomous systems, deep-tech hardware, and patentable inventions.
-        </p>
-
-        {/* Action Triggers */}
-        <div className="flex flex-wrap items-center justify-center gap-4">
-          <a
-            href="#moment"
-            className="inline-flex items-center gap-2.5 px-7 py-3.5 font-bold text-xs sm:text-sm uppercase tracking-wider rounded-full transition-all duration-200 shadow-[0_8px_30px_rgba(23,105,255,0.4)] bg-[#1769FF] text-white hover:bg-[#49A3FF] hover:text-black hover:scale-105 font-mono"
-          >
-            <span>Explore 3D Portal</span>
-            <FaCompass className="text-xs" />
-          </a>
-
-          <Link
-            href="/projects"
-            className="inline-flex items-center gap-2.5 px-7 py-3.5 border font-semibold text-xs sm:text-sm uppercase tracking-wider rounded-full backdrop-blur-md bg-[#101725]/60 border-white/20 text-[#EAF1FF] hover:border-[#1769FF] hover:bg-[#101725]/90 transition-all font-mono"
-          >
-            <span>R&amp;D Projects</span>
-            <span className="text-[#49A3FF] font-bold">50+</span>
-          </Link>
-        </div>
+      {/* Background ambient lighting */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-[#1769FF]/5 blur-[160px]" />
       </div>
 
-      {/* The Authentic Fan Stack */}
-      <div className="w-full max-w-xl mx-auto z-20 my-auto mt-12">
-        <div className="flex items-center justify-between text-[10.5px] font-mono uppercase text-[#8793A8] mb-2.5 px-2">
-          <span className="flex items-center gap-2 font-bold text-[#EAF1FF]">
-            <span className="w-2 h-2 rounded-full bg-[#1769FF] animate-pulse" />
-            <span>01 // Featured Initiatives</span>
-          </span>
-          <button
-            type="button"
-            onClick={() => setExpanded(!expanded)}
-            className="hover:text-[#49A3FF] text-[#8793A8] transition-colors flex items-center gap-1.5 font-mono text-[10.5px] uppercase font-medium"
+      {/* ====================================================================
+          iOS NOTIFICATION STACK — centered, popping sequentially & expandable (sec_05 -> sec_06)
+          ==================================================================== */}
+      <div className="relative z-10 w-full max-w-[560px] mx-auto flex flex-col items-center justify-center">
+        {!isExpanded ? (
+          /* COLLAPSED STACK VIEW (Matching sec_04 and sec_05) */
+          <div
+            className="relative w-full cursor-pointer"
+            onClick={(e) => handleCardClick(e, null)}
           >
-            <span>{expanded ? "Stack Cards" : "Expand All (4)"}</span>
-            {expanded ? <FaChevronUp /> : <FaChevronDown />}
-          </button>
-        </div>
+            {/* Layer -2 */}
+            <div
+              className="absolute left-1/2 -translate-x-1/2 top-4 w-[90%] h-[84px] rounded-2xl pointer-events-none transition-all duration-500"
+              style={{
+                background: "rgba(12, 18, 32, 0.5)",
+                border: "1px solid rgba(255, 255, 255, 0.05)",
+                opacity: currentIndex >= 2 ? 0.7 : 0,
+                transform: "translate(-50%, 18px) scale(0.92)",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.6)",
+              }}
+            />
 
-        {/* Container for Stack */}
-        <div
-          className="relative transition-all duration-500 ease-out"
-          style={{ minHeight: expanded ? `${initiatives.length * 114}px` : "120px" }}
-        >
-          {initiatives.map((item, index) => {
-            const Icon = item.icon;
-            const offsetY = expanded ? index * 106 : index * 10;
-            const scale = expanded ? 1 : 1 - index * 0.035;
-            const opacity = expanded ? 1 : index > 2 ? 0 : 1 - index * 0.16;
-            const zIndex = initiatives.length - index;
+            {/* Layer -1 */}
+            <div
+              className="absolute left-1/2 -translate-x-1/2 top-2 w-[95%] h-[88px] rounded-2xl pointer-events-none transition-all duration-500"
+              style={{
+                background: "rgba(14, 21, 38, 0.7)",
+                border: "1px solid rgba(255, 255, 255, 0.08)",
+                opacity: currentIndex >= 1 ? 0.85 : 0,
+                transform: "translate(-50%, 9px) scale(0.96)",
+                boxShadow: "0 12px 35px rgba(0,0,0,0.65)",
+              }}
+            />
 
-            return (
+            {/* Active Front Card */}
+            <AnimatePresence mode="wait">
               <motion.div
-                key={item.id}
-                layout
-                initial={{ opacity: 0, y: 20 }}
-                animate={{
-                  opacity,
-                  y: offsetY,
-                  scale,
-                  zIndex,
+                key={activeNotif.id}
+                initial={{ opacity: 0, y: -45, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 15, scale: 0.96 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 340,
+                  damping: 26,
+                  mass: 0.8,
                 }}
-                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-                className={`notification flex items-center gap-4 p-3.5 sm:p-4 cursor-pointer bg-[#101725]/85 border-white/15 ${
-                  hoveredIndex === index ? "!border-[#1769FF] !bg-[#131d30]/95" : ""
-                }`}
-                style={{ top: 0 }}
-                data-depth={index}
-                onClick={() => setExpanded(!expanded)}
+                className="relative z-10 w-full flex items-center gap-4 p-4 sm:p-5 rounded-2xl border transition-all group"
+                style={{
+                  background: "rgba(16, 24, 42, 0.92)",
+                  backdropFilter: "blur(32px)",
+                  WebkitBackdropFilter: "blur(32px)",
+                  borderColor: "rgba(255, 255, 255, 0.12)",
+                  boxShadow:
+                    "0 24px 60px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.12), 0 0 0 1px rgba(23,105,255,0.2)",
+                }}
               >
-                {/* Left Portrait / Square Badge */}
-                <div className="portrait flex-shrink-0">
-                  <div className="w-full h-full bg-gradient-to-br from-[#101725] to-[#080B12] flex items-center justify-center text-xl text-[#49A3FF] border border-white/10 rounded-xl">
-                    <Icon />
-                  </div>
+                {/* Avatar Icon */}
+                <div className="flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden bg-[#0A0F1A] border border-white/15 shadow-inner">
+                  <Image
+                    src={activeNotif.avatar}
+                    alt={activeNotif.sender}
+                    width={64}
+                    height={64}
+                    priority
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
                 </div>
 
-                {/* Right Content */}
-                <div className="notification-copy">
-                  <div className="notification-meta">
-                    <span className="sender truncate text-[#8793A8]">{item.sender}</span>
-                    <span className="timestamp text-[#49A3FF]">{item.time}</span>
+                {/* Content */}
+                <div className="flex-1 min-w-0 pr-1">
+                  <div className="flex items-center justify-between gap-2 mb-1.5">
+                    <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-white/50 truncate font-semibold">
+                      {activeNotif.sender}
+                    </span>
+                    <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-wider text-[#49A3FF] flex-shrink-0 font-bold px-1.5 py-0.5 rounded bg-[#1769FF]/15 border border-[#49A3FF]/30">
+                      {activeNotif.time}
+                    </span>
                   </div>
 
-                  <h3 className="message truncate text-[#EAF1FF]">
-                    {item.title}
-                  </h3>
-
-                  <div className="flex items-center justify-between text-[10px] font-mono text-[#8793A8] mt-0.5">
-                    <span className="truncate">{item.desc}</span>
-                    <Link
-                      href={item.link}
-                      onClick={(e) => e.stopPropagation()}
-                      className="ml-2 text-[#49A3FF] hover:text-white flex items-center gap-1 flex-shrink-0 font-bold"
-                    >
-                      <span>VIEW</span>
-                      <FaExternalLinkAlt className="text-[8px]" />
-                    </Link>
-                  </div>
+                  <p className="text-[16px] sm:text-[18px] md:text-[20px] font-bold text-[#EAF1FF] leading-snug font-sans tracking-tight">
+                    {activeNotif.message}
+                  </p>
                 </div>
               </motion.div>
-            );
-          })}
+            </AnimatePresence>
+          </div>
+        ) : (
+          /* EXPANDED NOTIFICATIONS LIST (Matching sec_06.png) */
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+            className="w-full flex flex-col gap-3"
+          >
+            {NOTIFICATIONS.map((notif) => (
+              <div
+                key={notif.id}
+                onClick={(e) => handleCardClick(e, notif.link)}
+                className="w-full flex items-center gap-4 p-4 sm:p-5 rounded-2xl border cursor-pointer hover:border-[#49A3FF]/50 transition-all group"
+                style={{
+                  background: "rgba(16, 24, 42, 0.92)",
+                  backdropFilter: "blur(32px)",
+                  WebkitBackdropFilter: "blur(32px)",
+                  borderColor: "rgba(255, 255, 255, 0.12)",
+                  boxShadow: "0 12px 35px rgba(0,0,0,0.7)",
+                }}
+              >
+                <div className="flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden bg-[#0A0F1A] border border-white/15">
+                  <Image
+                    src={notif.avatar}
+                    alt={notif.sender}
+                    width={64}
+                    height={64}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </div>
+
+                <div className="flex-1 min-w-0 pr-1">
+                  <div className="flex items-center justify-between gap-2 mb-1.5">
+                    <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-white/50 truncate font-semibold">
+                      {notif.sender}
+                    </span>
+                    <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-wider text-[#49A3FF] flex-shrink-0 font-bold px-1.5 py-0.5 rounded bg-[#1769FF]/15 border border-[#49A3FF]/30">
+                      {notif.time}
+                    </span>
+                  </div>
+
+                  <p className="text-[16px] sm:text-[18px] font-bold text-[#EAF1FF] leading-snug font-sans tracking-tight group-hover:text-[#49A3FF] transition-colors">
+                    {notif.message}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </motion.div>
+        )}
+
+        {/* Stack Counter Indicator / Collapse Hint */}
+        <div
+          className="mt-4 flex items-center gap-2 cursor-pointer opacity-70 hover:opacity-100 transition-opacity"
+          onClick={() => setIsExpanded((prev) => !prev)}
+        >
+          <span className="font-mono text-[9px] uppercase tracking-wider text-white/50">
+            {isExpanded ? "Click to stack notifications" : "Click to view all notifications"}
+          </span>
+          <div className="flex items-center gap-1">
+            {NOTIFICATIONS.map((_, i) => (
+              <div
+                key={i}
+                className={`h-1 rounded-full transition-all duration-300 ${
+                  i === currentIndex ? "w-4 bg-[#49A3FF]" : "w-1.5 bg-white/20"
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Down Indicator */}
-      <div className="z-10 flex flex-col items-center gap-1.5 mt-8 pointer-events-none">
-        <span className="text-[9.5px] font-mono uppercase tracking-widest text-[#8793A8]">
-          Scroll to explore 3D Portal &bull; All 12 Divisions
-        </span>
-        <div className="w-6 h-6 rounded-full border border-white/20 flex items-center justify-center text-xs text-[#49A3FF] animate-bounce">
-          &darr;
-        </div>
-      </div>
+      {/* ====================================================================
+          SCROLL ARROW PROMPT (Bottom Center)
+          ==================================================================== */}
+      <AnimatePresence>
+        {showArrow && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            onClick={handleScrollDown}
+            className="absolute bottom-8 sm:bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 cursor-pointer group"
+          >
+            <span className="font-mono text-[9.5px] uppercase tracking-widest text-white/40 group-hover:text-[#49A3FF] transition-colors">
+              Scroll to explore
+            </span>
+            <motion.div
+              animate={{ y: [0, 6, 0] }}
+              transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
+              className="w-9 h-9 rounded-full border border-white/15 bg-white/5 backdrop-blur-md flex items-center justify-center text-white/60 group-hover:border-[#49A3FF] group-hover:text-[#49A3FF] transition-colors shadow-lg"
+            >
+              <svg width="12" height="12" viewBox="0 0 10 10" fill="none">
+                <path
+                  d="M5 1v8M1 5.5l4 3.5 4-3.5"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
