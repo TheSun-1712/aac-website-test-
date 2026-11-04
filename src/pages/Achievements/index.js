@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import BackgroundVideo from "@/components/BackgroundVideo";
@@ -6,22 +6,21 @@ import GarcyNavbar from "@/components/garcy/GarcyNavbar";
 import GarcyFooter from "@/components/garcy/GarcyFooter";
 import GarcyCommandPalette from "@/components/garcy/GarcyCommandPalette";
 import GarcyCaseStudies from "@/components/garcy/GarcyCaseStudies";
+import Garcy3DZoomGallery from "@/components/garcy/Garcy3DZoomGallery";
 import { useDatabase } from "@/hooks/useDatabase";
 import {
   FaTrophy,
-  FaAward,
   FaSearch,
-  FaCheckCircle,
+  FaTimes,
+  FaFilter,
   FaCalendarAlt,
-  FaExternalLinkAlt,
-  FaShieldAlt,
-  FaLightbulb,
 } from "react-icons/fa";
 
 export default function AchievementsPage() {
   const { data: dbAchievements } = useDatabase("achievements");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
+  const [selectedYear, setSelectedYear] = useState("all");
   const [searchOpen, setSearchOpen] = useState(false);
   const [caseStudiesOpen, setCaseStudiesOpen] = useState(false);
 
@@ -67,6 +66,7 @@ export default function AchievementsPage() {
       date: "Published 2019",
       tag: "INDIAN PATENT",
       registry: "Indian Patent Office",
+      image: "/images/AAC1.png",
       desc: "Official patent publication for a medication reminder device with two-way confirmation and customizable replaceable compartments. Invented by 6 AAC fellows.",
       link: "/Patents",
     },
@@ -78,6 +78,7 @@ export default function AchievementsPage() {
       date: "Published 2020",
       tag: "INDIAN PATENT",
       registry: "Indian Patent Office",
+      image: "/images/AAC3.png",
       desc: "Official patent publication for a wearable flex sensor glove translating sign language gestures into instant synthesized speech and text in real-time.",
       link: "/Patents",
     },
@@ -89,6 +90,7 @@ export default function AchievementsPage() {
       date: "August 2024",
       tag: "SCOPUS / IJERT",
       registry: "IJERT (ISSN: 2278-0181, Vol. 13)",
+      image: "/images/AAC2.png",
       desc: "Scholarly research paper on ensemble-based machine learning for predictive quality classification authored by Dodda Abhiram and fellow AAC researchers.",
       link: "/Publications",
     },
@@ -105,14 +107,52 @@ export default function AchievementsPage() {
     { id: "patent", label: "Patents" },
   ];
 
-  const filtered = displayAchievements.filter((item) => {
-    const matchesSearch =
-      (item.title || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (item.desc || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (item.category || "").toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = selectedFilter === "all" || item.type === selectedFilter;
-    return matchesSearch && matchesFilter;
-  });
+  // Dynamically extract distinct years from achievements
+  const availableYears = useMemo(() => {
+    const years = new Set();
+    displayAchievements.forEach((item) => {
+      const match = (item.date || "").match(/\b(20\d\d)\b/);
+      if (match) {
+        years.add(match[1]);
+      } else if (item.year) {
+        years.add(String(item.year));
+      } else if (item.publishedAt) {
+        years.add(new Date(item.publishedAt).getFullYear().toString());
+      } else if (item.createdAt) {
+        years.add(new Date(item.createdAt).getFullYear().toString());
+      }
+    });
+    return ["all", ...Array.from(years).sort((a, b) => b.localeCompare(a))];
+  }, [displayAchievements]);
+
+  const filtered = useMemo(() => {
+    return displayAchievements.filter((item) => {
+      const title = (item.title || "").toLowerCase();
+      const desc = (item.desc || item.description || "").toLowerCase();
+      const category = (item.category || "").toLowerCase();
+      const registry = (item.registry || "").toLowerCase();
+      const q = searchTerm.toLowerCase().trim();
+      const matchesSearch =
+        !q ||
+        title.includes(q) ||
+        desc.includes(q) ||
+        category.includes(q) ||
+        registry.includes(q);
+
+      const matchesFilter = selectedFilter === "all" || item.type === selectedFilter;
+
+      let itemYear = "";
+      const match = (item.date || "").match(/\b(20\d\d)\b/);
+      if (match) itemYear = match[1];
+      else if (item.year) itemYear = String(item.year);
+      else if (item.publishedAt) itemYear = new Date(item.publishedAt).getFullYear().toString();
+      else if (item.createdAt) itemYear = new Date(item.createdAt).getFullYear().toString();
+
+      const matchesYear = selectedYear === "all" || itemYear === selectedYear;
+
+      return matchesSearch && matchesFilter && matchesYear;
+    });
+  }, [displayAchievements, searchTerm, selectedFilter, selectedYear]);
 
   return (
     <>
@@ -142,7 +182,7 @@ export default function AchievementsPage() {
 
         {/* Hero Section */}
         <section className="pt-32 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto mb-14">
+          <div className="text-center max-w-3xl mx-auto mb-10">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-4 border backdrop-blur-md bg-[#E5A93C]/15 border-[#E5A93C]/40 text-[#E5A93C]">
               <FaTrophy className="text-[10px]" />
               <span>Verifiable Milestones &bull; National Honors</span>
@@ -156,110 +196,99 @@ export default function AchievementsPage() {
               Earned.
             </h1>
 
-            <p className="text-sm sm:text-base text-[#9E988A] leading-relaxed font-sans font-normal">
+            <p className="text-sm sm:text-base text-[#9E988A] leading-relaxed font-sans font-normal mb-8">
               AICTE Vishwakarma Awards, strategic ISRO NRSC collaborations, official Indian Patent publications, and national hackathon podium finishes.
             </p>
-          </div>
 
-          {/* Search & Filter Bar */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-10 garcy-glass-header p-3">
-            <div className="relative w-full sm:w-80">
-              <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9E988A] text-xs" />
+            {/* Interactive Search Bar */}
+            <div className="relative max-w-lg mx-auto mb-6">
+              <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#9E988A] text-xs pointer-events-none" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search milestones or awards..."
-                className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#08090C] border border-white/10 text-xs font-mono text-white placeholder-[#9E988A]/60 focus:outline-none focus:border-[#E5A93C]"
+                placeholder="Search achievements by title, milestone, or registry..."
+                className="w-full pl-10 pr-10 py-3 rounded-2xl bg-[#111318] border border-[#2A261F] text-white placeholder-[#9E988A]/60 text-xs font-sans focus:outline-none focus:border-[#E5A93C] transition-colors shadow-lg"
               />
+              {searchTerm && (
+                <button
+                  type="button"
+                  onClick={() => setSearchTerm("")}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9E988A] hover:text-white text-xs p-1"
+                >
+                  <FaTimes />
+                </button>
+              )}
             </div>
 
-            <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+            {/* Category Filter Pills */}
+            <div className="flex items-center justify-center gap-2 overflow-x-auto scrollbar-none pb-2 mb-3">
               {filters.map((f) => (
                 <button
                   key={f.id}
                   type="button"
                   onClick={() => setSelectedFilter(f.id)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-mono uppercase tracking-wider transition-all whitespace-nowrap ${
+                  className={`px-4 py-2 rounded-xl text-xs font-sans font-semibold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
                     selectedFilter === f.id
-                      ? "bg-[#E5A93C] text-white font-bold"
-                      : "text-[#9E988A] hover:text-white"
+                      ? "bg-[#E5A93C] text-[#08090C] font-bold shadow-md"
+                      : "bg-[#111318] text-[#9E988A] hover:text-white border border-[#2A261F]"
                   }`}
                 >
                   {f.label}
                 </button>
               ))}
             </div>
-          </div>
 
-          {/* Achievements Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((item, idx) => (
-              <div
-                key={item.id || idx}
-                className="garcy-glass-card p-6 sm:p-7 flex flex-col justify-between hover:border-[#E5A93C]/70 transition-all duration-300 group hover:-translate-y-1 border border-white/15 shadow-xl bg-gradient-to-br from-[#111318] to-[#08090C]"
-              >
-                <div>
-                  <div className="flex items-center justify-between text-xs font-mono uppercase mb-4">
-                    <span className="text-[9.5px] font-bold text-[#E5A93C] px-2.5 py-0.5 rounded-full bg-[#08090C] border border-[#E5A93C]/30">
-                      {item.tag || item.category}
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full bg-[#08090C] text-[#E5A93C] border border-[#E5A93C]/40 text-[8.5px] font-bold flex items-center gap-1">
-                      <FaCheckCircle className="text-[7.5px]" />
-                      <span>VERIFIED</span>
-                    </span>
-                  </div>
-
-                  {/* Photo if present */}
-                  {item.image && (
-                    <div className="w-full h-44 rounded-xl overflow-hidden mb-5 border border-white/10 bg-[#08090C]">
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    </div>
-                  )}
-
-                  <h2 className="text-lg font-bold text-[#EAF1FF] mb-2 font-sans group-hover:text-[#E5A93C] transition-colors leading-snug">
-                    {item.title}
-                  </h2>
-
-                  <div className="p-2.5 rounded-lg bg-[#08090C]/80 border border-white/10 text-[10px] font-mono text-[#9E988A] mb-4 space-y-0.5">
-                    <div className="text-[#EAF1FF] font-semibold">{item.registry}</div>
-                    <div className="text-[#E5A93C] font-bold">{item.date}</div>
-                  </div>
-
-                  <p className="text-xs text-[#9E988A] leading-relaxed font-sans font-normal mb-6">
-                    {item.desc}
-                  </p>
-                </div>
-
-                <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono">
-                  {item.link ? (
-                    <Link
-                      href={item.link}
-                      className="inline-flex items-center gap-1.5 text-xs text-[#E5A93C] hover:text-white uppercase font-bold transition-colors"
-                    >
-                      <span>Inspect Evidence</span>
-                      <FaExternalLinkAlt className="text-[9px]" />
-                    </Link>
-                  ) : (
-                    <span className="text-[10px] text-[#9E988A] uppercase font-bold">
-                      OFFICIAL CERTIFICATION
-                    </span>
-                  )}
-                  <span className="text-[9px] text-[#9E988A] font-mono">GRIET AAC</span>
-                </div>
+            {/* Dynamic Year Filter Pills */}
+            {availableYears.length > 2 && (
+              <div className="flex items-center justify-center gap-1.5 overflow-x-auto scrollbar-none pb-2 mb-3">
+                <span className="text-[10px] font-mono text-[#9E988A] uppercase tracking-wider mr-1 flex items-center gap-1">
+                  <FaCalendarAlt className="text-[9px] text-[#E5A93C]" />
+                  Year:
+                </span>
+                {availableYears.map((yr) => (
+                  <button
+                    key={yr}
+                    type="button"
+                    onClick={() => setSelectedYear(yr)}
+                    className={`px-3 py-1 rounded-lg text-[11px] font-mono tracking-wider transition-all cursor-pointer whitespace-nowrap ${
+                      selectedYear === yr
+                        ? "bg-[#E5A93C]/20 border border-[#E5A93C] text-[#E5A93C] font-bold"
+                        : "bg-[#111318]/60 text-[#9E988A] hover:text-white border border-white/5"
+                    }`}
+                  >
+                    {yr === "all" ? "All Years" : yr}
+                  </button>
+                ))}
               </div>
-            ))}
+            )}
+
+            {/* Result Counter & Active Filter Badge */}
+            <div className="text-[11px] font-mono text-[#9E988A] mt-2">
+              Showing <span className="text-[#E5A93C] font-bold">{filtered.length}</span> of {displayAchievements.length} achievements
+              {(searchTerm || selectedFilter !== "all" || selectedYear !== "all") && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchTerm("");
+                    setSelectedFilter("all");
+                    setSelectedYear("all");
+                  }}
+                  className="ml-3 text-[10px] text-[#E5A93C] hover:underline cursor-pointer"
+                >
+                  Reset filters
+                </button>
+              )}
+            </div>
           </div>
 
-          {filtered.length === 0 && (
-            <div className="text-center py-16 text-[#9E988A] font-mono text-sm">
-              No achievements found matching your filter criteria.
-            </div>
-          )}
+          {/* 3D Zoom Fly-Through Gallery */}
+          <div className="mb-14">
+            <Garcy3DZoomGallery
+              items={filtered}
+              category="achievements"
+            />
+          </div>
         </section>
 
         {/* Global Footer */}

@@ -75,9 +75,9 @@ export default function GarcyNavbar({ onOpenSearch, onOpenCaseStudies }) {
       <header className="fixed top-3 left-0 right-0 z-50 px-3 sm:px-6 pointer-events-none transition-all duration-300">
         <div className="max-w-[1480px] mx-auto flex items-center justify-between">
           
-          {/* Studio Brand Logo Pill */}
+          {/* Studio Brand Logo Pill - Routes to /moment */}
           <Link
-            href="/"
+            href="/moment"
             className="pointer-events-auto garcy-glass-header px-3.5 py-2 flex items-center gap-2.5 group hover:border-[#E5A93C]/60 transition-all shadow-lg"
           >
             <div className="relative w-5 h-5 flex items-center justify-center">

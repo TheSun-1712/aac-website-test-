@@ -21,7 +21,6 @@ import {
   FaLightbulb,
   FaTimes,
   FaExternalLinkAlt,
-  FaCompass,
 } from "react-icons/fa";
 
 export default function AdministrationPage() {

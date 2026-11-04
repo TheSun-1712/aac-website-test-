@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import BackgroundVideo from "@/components/BackgroundVideo";
@@ -6,21 +6,20 @@ import GarcyNavbar from "@/components/garcy/GarcyNavbar";
 import GarcyFooter from "@/components/garcy/GarcyFooter";
 import GarcyCommandPalette from "@/components/garcy/GarcyCommandPalette";
 import GarcyCaseStudies from "@/components/garcy/GarcyCaseStudies";
+import Garcy3DZoomGallery from "@/components/garcy/Garcy3DZoomGallery";
 import { useDatabase } from "@/hooks/useDatabase";
 import {
   FaCalendarAlt,
   FaSearch,
-  FaMapMarkerAlt,
-  FaRocket,
-  FaArrowRight,
-  FaExternalLinkAlt,
-  FaUsers,
+  FaTimes,
+  FaFilter,
 } from "react-icons/fa";
 
 export default function EventsPage() {
   const { data: eventsData } = useDatabase("events");
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [selectedYear, setSelectedYear] = useState("all");
   const [searchOpen, setSearchOpen] = useState(false);
   const [caseStudiesOpen, setCaseStudiesOpen] = useState(false);
 
@@ -32,6 +31,7 @@ export default function EventsPage() {
       category: "symposium",
       status: "ANNUAL FLAGSHIP",
       badgeColor: "#E5A93C",
+      mainImageUrl: "https://res.cloudinary.com/aacgriet/image/upload/v1730537987/AAC-web/news_events/expo2023/wxvfrd1n979puot2zgny.jpg",
       description: "AAC's flagship symposium with 400+ participants and distinguished speakers: Pranali Bose (ML Engineer), Raunak Bagga (Koolgen CEO), Srikanth Reddy (Great Honey Co). Included Ideathon (21 teams), G-Prime (42 teams), and LLM workshops.",
       path: "/Events/Opulence2023",
       venue: "GRIET Campus, Hyderabad",
@@ -44,6 +44,7 @@ export default function EventsPage() {
       category: "hackathon",
       status: "RESULTS LIVE",
       badgeColor: "#E5A93C",
+      mainImageUrl: "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_400,w_500/v1664100162/AAC-web/news_events/Juniorshackathon2_opwpyj.jpg",
       description: "Premier competitive programming contest featuring Rapidfire speed testing, Cascade problem sets, and Data Structures challenges with sub-second judging.",
       path: "/gprime2026-results",
       venue: "AAC Labs & Distributed Engine",
@@ -56,6 +57,7 @@ export default function EventsPage() {
       category: "symposium",
       status: "COMPLETED",
       badgeColor: "#E5A93C",
+      mainImageUrl: "/images/pic.webp",
       description: "Annual project expo showcasing revolutionary student prototypes in IoT, deep learning, biomedical sensing, and autonomous hardware.",
       path: "/Events/Expo2023",
       venue: "GRIET Campus, Hyderabad",
@@ -68,6 +70,7 @@ export default function EventsPage() {
       category: "symposium",
       status: "KEYNOTE SESSIONS",
       badgeColor: "#E5A93C",
+      mainImageUrl: "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_400,w_500/v1664100167/AAC-web/news_events/nrsc5_e8it62.jpg",
       description: "Impactful data science platform led by Mr. Satish Yellanki (20+ years IT exposure, Oracle database optimization and business intelligence expert).",
       path: "/Events/Conclave",
       venue: "GRIET Campus, Hyderabad",
@@ -80,6 +83,7 @@ export default function EventsPage() {
       category: "hackathon",
       status: "PROJECT CERTIFICATION",
       badgeColor: "#E5A93C",
+      mainImageUrl: "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_400,w_500/v1664100184/AAC-web/news_events/vishwakarma_zzzwlh.jpg",
       description: "First-ever road show of completed student projects inaugurated by Chief Guest A.V.V. Prasad (NRSC), Guest of Honor M.G. Sekharam, and Dean Dr. Ramamurthy Suri.",
       path: "/Events/Awards",
       venue: "GRIET Campus Auditorium",
@@ -92,6 +96,7 @@ export default function EventsPage() {
       category: "symposium",
       status: "EDUCATIONAL",
       badgeColor: "#E5A93C",
+      mainImageUrl: "/images/AAC2.png",
       description: "Cyber security symposium covering enterprise attack vectors, vulnerability scanning, and secure firmware development with guest expert Mr. M. Prasanna.",
       path: "/Events/CyberSecuritySeminar",
       venue: "GRIET Campus, Hyderabad",
@@ -104,6 +109,7 @@ export default function EventsPage() {
       category: "bootcamp",
       status: "ACTIVE 24/7 LAB",
       badgeColor: "#E5A93C",
+      mainImageUrl: "/images/8.webp",
       description: "Official opening of AAC's dedicated laboratory space in Block 3, Room 3614, boosted by Dr. M.G. Sekharam, Dr. J. Praveen, and Dr. S. Ramamurthy.",
       path: "/Events/Labstart",
       venue: "Block 3, Room 3614, GRIET",
@@ -116,6 +122,7 @@ export default function EventsPage() {
       category: "symposium",
       status: "COMPLETED",
       badgeColor: "#E5A93C",
+      mainImageUrl: "/images/AAC1.png",
       description: "Exposition of undergraduate technical projects, hardware models, and research prototypes developed under faculty guidance.",
       path: "/Events/Expo2022",
       venue: "GRIET Campus, Hyderabad",
@@ -132,16 +139,39 @@ export default function EventsPage() {
     { id: "bootcamp", label: "Bootcamps" },
   ];
 
-  const filteredEvents = displayEvents.filter((item) => {
-    const title = item.title || item.event || "";
-    const desc = item.description || "";
-    const matchesSearch =
-      title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      desc.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCat =
-      categoryFilter === "all" || item.category === categoryFilter;
-    return matchesSearch && matchesCat;
-  });
+  // Extract distinct years dynamically from events
+  const availableYears = useMemo(() => {
+    const years = new Set();
+    displayEvents.forEach((item) => {
+      const match = (item.date || "").match(/\b(20\d\d)\b/);
+      if (match) years.add(match[1]);
+      else if (item.publishedAt) years.add(new Date(item.publishedAt).getFullYear().toString());
+      else if (item.actualDate) years.add(new Date(item.actualDate).getFullYear().toString());
+    });
+    return ["all", ...Array.from(years).sort((a, b) => b.localeCompare(a))];
+  }, [displayEvents]);
+
+  const filteredEvents = useMemo(() => {
+    return displayEvents.filter((item) => {
+      const title = (item.title || item.event || "").toLowerCase();
+      const desc = (item.description || item.content || "").toLowerCase();
+      const venue = (item.venue || item.location || "").toLowerCase();
+      const q = searchTerm.toLowerCase().trim();
+      const matchesSearch = !q || title.includes(q) || desc.includes(q) || venue.includes(q);
+
+      const matchesCat = categoryFilter === "all" || item.category === categoryFilter;
+
+      let itemYear = "";
+      const match = (item.date || "").match(/\b(20\d\d)\b/);
+      if (match) itemYear = match[1];
+      else if (item.publishedAt) itemYear = new Date(item.publishedAt).getFullYear().toString();
+      else if (item.actualDate) itemYear = new Date(item.actualDate).getFullYear().toString();
+
+      const matchesYear = selectedYear === "all" || itemYear === selectedYear;
+
+      return matchesSearch && matchesCat && matchesYear;
+    });
+  }, [displayEvents, searchTerm, categoryFilter, selectedYear]);
 
   return (
     <>
@@ -185,130 +215,90 @@ export default function EventsPage() {
               Chronicle.
             </h1>
 
-            <p className="text-sm sm:text-base text-[#9E988A] leading-relaxed font-sans font-normal">
+            <p className="text-sm sm:text-base text-[#9E988A] leading-relaxed font-sans font-normal mb-8">
               Flagship competitive programming championships, annual hardware expos, and technical training bootcamps hosted at AAC GRIET.
             </p>
-          </div>
 
-          {/* Search & Filter Bar */}
-          <div className="garcy-glass-card p-4 sm:p-5 border border-white/15 mb-12 shadow-2xl">
-            <div className="flex flex-col md:flex-row items-center gap-4">
+            {/* Interactive Search Bar */}
+            <div className="relative max-w-lg mx-auto mb-6">
+              <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#9E988A] text-xs pointer-events-none" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search events by title, keyword, or venue..."
+                className="w-full pl-10 pr-10 py-3 rounded-2xl bg-[#111318] border border-[#2A261F] text-white placeholder-[#9E988A]/60 text-xs font-sans focus:outline-none focus:border-[#E5A93C] transition-colors shadow-lg"
+              />
+              {searchTerm && (
+                <button
+                  type="button"
+                  onClick={() => setSearchTerm("")}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9E988A] hover:text-white transition-colors p-1"
+                  aria-label="Clear search"
+                >
+                  <FaTimes className="text-xs" />
+                </button>
+              )}
+            </div>
 
-              {/* Search Input */}
-              <div className="flex-1 w-full flex items-center gap-3 px-4 py-2.5 rounded-xl bg-[#08090C]/80 border border-white/10">
-                <FaSearch className="text-[#9E988A] text-xs flex-shrink-0" />
-                <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Search events by name, venue, or keyword..."
-                  className="w-full bg-transparent border-0 text-white placeholder-[#9E988A]/60 focus:outline-none text-xs font-mono"
-                />
-                {searchTerm && (
-                  <button
-                    type="button"
-                    onClick={() => setSearchTerm("")}
-                    className="text-[10px] font-mono text-[#9E988A] hover:text-white uppercase"
-                  >
-                    CLEAR
-                  </button>
-                )}
-              </div>
-
-              {/* Filter Pills */}
-              <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto scrollbar-none">
+            {/* Filter Rows: Categories & Years */}
+            <div className="space-y-3">
+              {/* Category Filter Pills */}
+              <div className="flex items-center justify-center gap-2 overflow-x-auto scrollbar-none pb-1 flex-wrap">
                 {categories.map((cat) => (
                   <button
                     key={cat.id}
                     type="button"
                     onClick={() => setCategoryFilter(cat.id)}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-mono uppercase tracking-wider transition-all flex-shrink-0 ${categoryFilter === cat.id
-                        ? "bg-[#E5A93C] text-white font-bold shadow-md"
-                        : "bg-[#111318] text-[#9E988A] hover:text-white border border-white/10"
-                      }`}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-sans font-semibold uppercase tracking-wider transition-all cursor-pointer ${
+                      categoryFilter === cat.id
+                        ? "bg-[#E5A93C] text-[#08090C] font-bold shadow-md"
+                        : "bg-[#111318] text-[#9E988A] hover:text-white border border-[#2A261F]"
+                    }`}
                   >
                     {cat.label}
                   </button>
                 ))}
               </div>
-            </div>
-          </div>
 
-          {/* Events Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredEvents.map((item, idx) => (
-              <div
-                key={item.id || idx}
-                className="garcy-glass-card p-6 flex flex-col justify-between hover:border-[#E5A93C]/70 transition-all duration-300 group hover:-translate-y-1 border border-white/15 shadow-xl bg-gradient-to-br from-[#111318] to-[#08090C]"
-              >
-                <div>
-                  {/* Top Bar: Date & Status Badge */}
-                  <div className="flex items-center justify-between text-xs font-mono uppercase text-[#9E988A] mb-4">
-                    <span className="flex items-center gap-1.5 text-[#EAF1FF] font-bold">
-                      <FaCalendarAlt className="text-[#E5A93C] text-[10px]" />
-                      <span>{item.date}</span>
-                    </span>
-                    <span
-                      className="px-2.5 py-0.5 rounded-full bg-[#08090C] text-[8.5px] font-bold border"
-                      style={{
-                        color: item.badgeColor || "#E5A93C",
-                        borderColor: `${item.badgeColor || "#E5A93C"}55`,
-                      }}
-                    >
-                      {item.status || "EVENT"}
-                    </span>
-                  </div>
-
-                  {/* Title */}
-                  <h3 className="text-lg font-bold text-[#EAF1FF] mb-2.5 font-sans group-hover:text-[#E5A93C] transition-colors leading-snug">
-                    {item.title}
-                  </h3>
-
-                  {/* Metadata: Venue & Participants */}
-                  <div className="flex flex-wrap items-center gap-3 text-[10px] font-mono text-[#9E988A] mb-4">
-                    {item.venue && (
-                      <span className="flex items-center gap-1">
-                        <FaMapMarkerAlt className="text-[#E5A93C]" />
-                        <span className="truncate max-w-[140px]">{item.venue}</span>
-                      </span>
-                    )}
-                    {item.participants && (
-                      <span className="flex items-center gap-1">
-                        <FaUsers className="text-[#E5A93C]" />
-                        <span>{item.participants}</span>
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Description */}
-                  <p className="text-xs text-[#9E988A] leading-relaxed font-sans font-normal mb-6">
-                    {item.description}
-                  </p>
-                </div>
-
-                {/* Bottom Action Link */}
-                <div className="pt-4 border-t border-white/10 flex items-center justify-between">
-                  <Link
-                    href={item.path || "/Events"}
-                    className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-[#E5A93C] hover:text-white transition-colors"
-                  >
-                    <span>Inspect Event</span>
-                    <FaArrowRight className="text-[9px]" />
-                  </Link>
-
-                  <span className="text-[9px] font-mono text-[#9E988A] uppercase">
-                    AAC // 0{idx + 1}
+              {/* Year-Wise / Date Filter Pills */}
+              {availableYears.length > 2 && (
+                <div className="flex items-center justify-center gap-1.5 overflow-x-auto scrollbar-none pb-1 flex-wrap font-mono text-[11px]">
+                  <span className="text-[#9E988A] text-[10px] uppercase font-bold mr-1 flex items-center gap-1">
+                    <FaFilter className="text-[9px] text-[#E5A93C]" />
+                    YEAR:
                   </span>
+                  {availableYears.map((yr) => (
+                    <button
+                      key={yr}
+                      type="button"
+                      onClick={() => setSelectedYear(yr)}
+                      className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                        selectedYear === yr
+                          ? "bg-[#E5A93C]/20 border border-[#E5A93C] text-[#E5A93C] font-bold"
+                          : "bg-[#111318] text-[#9E988A] hover:text-white border border-[#2A261F]"
+                      }`}
+                    >
+                      {yr === "all" ? "All Years" : yr}
+                    </button>
+                  ))}
                 </div>
+              )}
+
+              {/* Results count indicator */}
+              <div className="text-[11px] font-mono text-[#9E988A] pt-1">
+                Showing <span className="text-[#E5A93C] font-bold">{filteredEvents.length}</span> of {displayEvents.length} events
               </div>
-            ))}
+            </div>
           </div>
 
-          {filteredEvents.length === 0 && (
-            <div className="text-center py-20 text-[#9E988A] font-mono text-xs">
-              No matching events found for query &ldquo;{searchTerm}&rdquo;
-            </div>
-          )}
+          {/* 3D Zoom Fly-Through Gallery */}
+          <div className="mb-14">
+            <Garcy3DZoomGallery
+              items={filteredEvents}
+              category="events"
+            />
+          </div>
         </section>
 
         {/* Footer */}

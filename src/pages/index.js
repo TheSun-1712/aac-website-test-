@@ -7,14 +7,18 @@ import GarcyBootLoader from "@/components/garcy/GarcyBootLoader";
 export default function Home() {
   const router = useRouter();
 
-  // Clear any legacy sessionStorage flags so the loading screen always appears
   useEffect(() => {
     try {
-      sessionStorage.removeItem("aac_boot_done");
+      if (sessionStorage.getItem("aac_boot_done") === "true") {
+        router.replace("/moment");
+      }
     } catch (e) {}
-  }, []);
+  }, [router]);
 
   const handleBootComplete = () => {
+    try {
+      sessionStorage.setItem("aac_boot_done", "true");
+    } catch (e) {}
     router.push("/moment");
   };
 

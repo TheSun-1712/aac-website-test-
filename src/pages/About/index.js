@@ -6,85 +6,20 @@ import GarcyNavbar from "@/components/garcy/GarcyNavbar";
 import GarcyFooter from "@/components/garcy/GarcyFooter";
 import GarcyCommandPalette from "@/components/garcy/GarcyCommandPalette";
 import GarcyCaseStudies from "@/components/garcy/GarcyCaseStudies";
+import GarcyDomainsGlobeShowcase from "@/components/garcy/GarcyDomainsGlobeShowcase";
 import {
-  FaBrain,
-  FaCode,
-  FaMobile,
-  FaWifi,
-  FaEye,
   FaGraduationCap,
   FaCheckCircle,
   FaShieldAlt,
   FaRocket,
-  FaMicrochip,
   FaMapMarkerAlt,
-  FaAtom,
   FaExternalLinkAlt,
 } from "react-icons/fa";
 
 export default function AboutPage() {
   const [activeStep, setActiveStep] = useState(0);
-  const [activeDomain, setActiveDomain] = useState(0);
   const [searchOpen, setSearchOpen] = useState(false);
   const [caseStudiesOpen, setCaseStudiesOpen] = useState(false);
-
-  const domains = [
-    {
-      code: "01",
-      icon: FaCode,
-      title: "Web Development",
-      shortName: "WEB",
-      tagline: "High-Performance Cloud & Distributed Web Systems",
-      description:
-        "Full-stack software engineering using modern component paradigms, distributed cloud infrastructure, microservices, and edge computing.",
-      technologies: ["React", "Next.js", "TypeScript", "Node.js", "PostgreSQL", "Docker", "TailwindCSS"],
-      projects: ["Enterprise Student Portal", "Distributed Research Archive", "Real-time Telemetry Dashboard"],
-    },
-    {
-      code: "02",
-      icon: FaMobile,
-      title: "App Development",
-      shortName: "APP",
-      tagline: "Native & Cross-Platform Mobile Architectures",
-      description:
-        "Engineered mobile experiences with offline-first synchronization, low memory footprint, and reactive state architectures across iOS & Android.",
-      technologies: ["Flutter", "React Native", "Swift", "Kotlin", "Firebase", "SQLite", "REST / GraphQL"],
-      projects: ["AAC Mobile Companion", "Campus Navigation & Events", "Offline Assessment Client"],
-    },
-    {
-      code: "03",
-      icon: FaBrain,
-      title: "Deep Learning",
-      shortName: "DL",
-      tagline: "Neural Architectures, Transformers & Cognitive AI",
-      description:
-        "Applied artificial intelligence and deep neural network research spanning computer vision, natural language modeling, and autonomous decision systems.",
-      technologies: ["PyTorch", "TensorFlow", "Transformers", "CUDA", "OpenCV", "Scikit-Learn", "Python"],
-      projects: ["Vision Object Classifier", "NLP Academic Synthesizer", "Edge Defect Detection Model"],
-    },
-    {
-      code: "04",
-      icon: FaWifi,
-      title: "Internet of Things",
-      shortName: "IOT",
-      tagline: "Embedded Telemetry & Smart Sensor Networks",
-      description:
-        "Low-latency hardware integration, microcontroller programming, sensor networks, edge machine learning, and automation protocols.",
-      technologies: ["ESP32", "Arduino", "Raspberry Pi", "MQTT", "C / C++", "Zigbee", "LoRaWAN"],
-      projects: ["Smart Campus Energy Grid", "Autonomous Weather Node", "Lab Environmental Telemetry"],
-    },
-    {
-      code: "05",
-      icon: FaEye,
-      title: "Machine Learning Operations",
-      shortName: "ML-OPS",
-      tagline: "Production Machine Learning Pipelines & Deployments",
-      description:
-        "Automated continuous training pipelines, model monitoring, containerization, scalable inference engines, and reproducibility frameworks.",
-      technologies: ["Kubeflow", "MLflow", "Docker", "Kubernetes", "FastAPI", "Prometheus", "GitOps"],
-      projects: ["Automated Model Registry", "Live Inference Microservice", "Drift Detection Pipeline"],
-    },
-  ];
 
   const selectionSteps = [
     {
@@ -150,8 +85,6 @@ export default function AboutPage() {
   ];
 
   const currentStep = selectionSteps[activeStep];
-  const currentDomain = domains[activeDomain];
-  const DomainIcon = currentDomain.icon;
 
   return (
     <>
@@ -251,100 +184,8 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* 5 Specialized Research Domains */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-b border-white/10">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
-            <div>
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[10.5px] font-semibold tracking-wide uppercase mb-3 border backdrop-blur-md bg-[#E5A93C]/15 border-[#E5A93C]/40 text-[#E5A93C]">
-                <span>01 // Academic Specialization Matrix</span>
-              </div>
-              <h2 className="font-extrabold text-3xl sm:text-5xl tracking-tighter text-[#EAF1FF] uppercase font-sans">
-                5 Specialized Domains.
-              </h2>
-            </div>
-            <p className="mt-4 md:mt-0 text-xs sm:text-sm text-[#9E988A] max-w-sm font-sans font-normal leading-relaxed">
-              Interdisciplinary training curricula preparing students across computational, embedded, and mobile disciplines.
-            </p>
-          </div>
-
-          {/* Domain Tabs */}
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 mb-8">
-            {domains.map((dom, idx) => {
-              const isSelected = activeDomain === idx;
-              return (
-                <button
-                  key={dom.code}
-                  type="button"
-                  onClick={() => setActiveDomain(idx)}
-                  className={`p-4 rounded-xl border text-left transition-all ${
-                    isSelected
-                      ? "bg-[#111318] border-[#E5A93C] shadow-[0_4px_20px_rgba(229, 169, 60,0.35)]"
-                      : "bg-[#111318]/50 border-white/10 hover:border-white/20"
-                  }`}
-                >
-                  <div className="text-[10px] font-mono text-[#E5A93C] font-bold mb-1">
-                    DOMAIN {dom.code}
-                  </div>
-                  <div className="text-xs font-bold text-white font-sans truncate">
-                    {dom.title}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Active Domain Detailed Card */}
-          <div className="garcy-glass-card p-6 sm:p-8 border border-[#E5A93C]/50 bg-gradient-to-br from-[#111318] to-[#08090C]">
-            <div className="flex items-start gap-5 mb-6">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#E5A93C] to-[#08090C] flex items-center justify-center text-xl text-[#E5A93C] border border-[#E5A93C]/60 flex-shrink-0">
-                <DomainIcon />
-              </div>
-              <div>
-                <div className="text-[10px] font-mono text-[#E5A93C] uppercase font-bold tracking-wider mb-1">
-                  DOMAIN {currentDomain.code} &bull; {currentDomain.tagline}
-                </div>
-                <h3 className="text-2xl font-extrabold text-white font-sans mb-2">
-                  {currentDomain.title}
-                </h3>
-                <p className="text-xs sm:text-sm text-[#9E988A] leading-relaxed font-sans max-w-3xl">
-                  {currentDomain.description}
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-white/10">
-              <div>
-                <div className="text-[10px] font-mono text-[#E5A93C] uppercase font-bold tracking-wider mb-3">
-                  Core Technologies:
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {currentDomain.technologies.map((t) => (
-                    <span
-                      key={t}
-                      className="px-3 py-1 rounded-lg bg-[#08090C] border border-white/10 text-xs font-mono text-[#EAF1FF]"
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <div className="text-[10px] font-mono text-[#E5A93C] uppercase font-bold tracking-wider mb-3">
-                  Flagship Lab Deliverables:
-                </div>
-                <div className="space-y-1.5 text-xs text-[#9E988A] font-sans">
-                  {currentDomain.projects.map((proj) => (
-                    <div key={proj} className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#E5A93C]" />
-                      <span>{proj}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* 5 Specialized Research Domains & 3D Interactive Globe Showcase */}
+        <GarcyDomainsGlobeShowcase />
 
         {/* 5-Stage Selection & Induction Protocol */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-b border-white/10">

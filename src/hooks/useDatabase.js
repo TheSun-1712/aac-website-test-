@@ -3,15 +3,24 @@ import { useState, useEffect } from 'react';
 
 const API_BASE = '/api/data';
 
-export const useDatabase = (tableName) => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+export const useDatabase = (tableName, initialData = []) => {
+  const [data, setData] = useState(() => {
+    if (initialData && initialData.length > 0) return initialData;
+    if (typeof window !== "undefined") {
+      try {
+        const cached = sessionStorage.getItem(`aac_cache_${tableName}`);
+        if (cached) return JSON.parse(cached);
+      } catch (e) {}
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState(() => (initialData && initialData.length > 0 ? false : true));
   const [error, setError] = useState(null);
 
   // Fetch data from database
   const fetchData = async () => {
     try {
-      setLoading(true);
+      if (data.length === 0) setLoading(true);
       const response = await fetch(`${API_BASE}/${tableName}`);
       
       if (!response.ok) {
@@ -19,12 +28,17 @@ export const useDatabase = (tableName) => {
       }
       
       const result = await response.json();
-      setData(result.data || []);
+      const items = result.data || [];
+      setData(items);
+      if (typeof window !== "undefined") {
+        try {
+          sessionStorage.setItem(`aac_cache_${tableName}`, JSON.stringify(items));
+        } catch (e) {}
+      }
       setError(null);
     } catch (err) {
       console.error(`Error fetching ${tableName}:`, err);
       setError(err.message);
-      setData([]);
     } finally {
       setLoading(false);
     }

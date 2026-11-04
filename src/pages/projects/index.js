@@ -1,13 +1,23 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { readCollection } from "@/lib/jsonStore";
 
 import GarcyNavbar from "@/components/garcy/GarcyNavbar";
 import GarcyProjectsGallery from "@/components/garcy/GarcyProjectsGallery";
 import GarcyCommandPalette from "@/components/garcy/GarcyCommandPalette";
 import GarcyCaseStudies from "@/components/garcy/GarcyCaseStudies";
 
-export default function ProjectsPage() {
+export async function getServerSideProps() {
+  const initialProjects = readCollection("projects");
+  return {
+    props: {
+      initialProjects: JSON.parse(JSON.stringify(initialProjects || [])),
+    },
+  };
+}
+
+export default function ProjectsPage({ initialProjects = [] }) {
   const router = useRouter();
   const [searchOpen, setSearchOpen] = useState(false);
   const [caseStudiesOpen, setCaseStudiesOpen] = useState(false);
@@ -75,6 +85,7 @@ export default function ProjectsPage() {
         {/* 3D Dome Gallery — fills remaining height */}
         <div style={{ flex: 1, position: "relative", minHeight: 0, overflow: "hidden" }}>
           <GarcyProjectsGallery
+            initialProjects={initialProjects}
             onNavigateBack={() => router.push("/moment")}
           />
         </div>

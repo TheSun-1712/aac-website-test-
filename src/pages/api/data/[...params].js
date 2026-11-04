@@ -205,6 +205,15 @@ const transformDataForDB = (tableName, data) => {
   }
 };
 
+// Helper to prevent database connection timeouts from stalling responses
+const withTimeout = (promise, ms = 200) => {
+  let timeoutId;
+  const timeoutPromise = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error("DB Timeout")), ms);
+  });
+  return Promise.race([promise, timeoutPromise]).finally(() => clearTimeout(timeoutId));
+};
+
 export default async function handler(req, res) {
   const { params } = req.query;
   const [tableName, id] = params || [];
@@ -218,20 +227,20 @@ export default async function handler(req, res) {
 
   switch (req.method) {
     case "GET": {
-      // 1. Try Prisma if available
+      // 1. Try Prisma if available (with fast 200ms timeout fallback)
       if (model) {
         try {
           if (id) {
-            const item = await model.findUnique({ where: { id } });
+            const item = await withTimeout(model.findUnique({ where: { id } }), 200);
             if (item) return res.status(200).json({ data: item });
           } else {
-            const items = await model.findMany({ orderBy: { createdAt: "desc" } });
+            const items = await withTimeout(model.findMany({ orderBy: { createdAt: "desc" } }), 200);
             if (items && items.length > 0) {
               return res.status(200).json({ data: items });
             }
           }
         } catch (dbErr) {
-          // Fall through to JSON store
+          // Fast fall through to local JSON store
         }
       }
 
@@ -249,11 +258,11 @@ export default async function handler(req, res) {
       const body = req.body || {};
       let createdPrisma = null;
 
-      // 1. Attempt Prisma if available
+      // 1. Attempt Prisma if available (with 400ms timeout)
       if (model) {
         try {
           const transformed = transformDataForDB(tableKey, body);
-          createdPrisma = await model.create({ data: transformed });
+          createdPrisma = await withTimeout(model.create({ data: transformed }), 400);
         } catch (e) {
           // Continue to JSON store
         }

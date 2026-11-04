@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
-// 6 Core AAC Focus Cards for the Helix
+// Primary AAC Section Cards for the Spiral Helix
 const CARDS = [
   {
     id: "projects",
@@ -13,6 +13,46 @@ const CARDS = [
     link: "/projects",
     scatter: -0.38,
     spin: -25,
+  },
+  {
+    id: "research",
+    title: "Research & Innovation Labs",
+    tag: "DEEP TECH",
+    subtitle: "Assistive wearables, cognitive AI & smart sensors",
+    image: "/images/8.webp",
+    link: "/Research",
+    scatter: 0.35,
+    spin: 20,
+  },
+  {
+    id: "events",
+    title: "Events & Conclaves",
+    tag: "HACKATHONS",
+    subtitle: "Flagship championships, symposiums & bootcamps",
+    image: "/images/AAC2.png",
+    link: "/Events",
+    scatter: -0.25,
+    spin: -15,
+  },
+  {
+    id: "patents",
+    title: "Patents & Technology IP",
+    tag: "IP PORTFOLIO",
+    subtitle: "Officially published national patents & utility models",
+    image: "/images/AAC1.png",
+    link: "/Patents",
+    scatter: 0.28,
+    spin: 18,
+  },
+  {
+    id: "publications",
+    title: "Research Publications",
+    tag: "PEER REVIEW",
+    subtitle: "Scopus journals, conference papers & treatises",
+    image: "/images/AAC3.png",
+    link: "/Publications",
+    scatter: -0.32,
+    spin: -22,
   },
   {
     id: "news",
@@ -54,16 +94,6 @@ const CARDS = [
     scatter: -0.45,
     spin: -30,
   },
-  {
-    id: "patents",
-    title: "Patents & Technology IP",
-    tag: "PATENT CELL",
-    subtitle: "Officially published national patents & utility models",
-    image: "/images/8.webp",
-    link: "/Patents",
-    scatter: 0.28,
-    spin: 15,
-  },
 ];
 
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
@@ -93,6 +123,8 @@ export default function GarcyTornado({ onNavigateProjects, onNavigateHome }) {
   const pointerRef = useRef(null);
   const lastPointerXRef = useRef(0);
   const lastPointerYRef = useRef(0);
+  const startPointerXRef = useRef(0);
+  const startPointerYRef = useRef(0);
   const dragDistanceRef = useRef(0);
   const animFrameRef = useRef(null);
   const lastTimeRef = useRef(0);
@@ -214,12 +246,16 @@ export default function GarcyTornado({ onNavigateProjects, onNavigateHome }) {
     pointerRef.current = e.pointerId;
     lastPointerXRef.current = e.clientX;
     lastPointerYRef.current = e.clientY;
+    startPointerXRef.current = e.clientX;
+    startPointerYRef.current = e.clientY;
     dragDistanceRef.current = 0;
     velocityRef.current = 0;
     setIsDragging(true);
 
-    if (sceneRef.current) {
-      sceneRef.current.setPointerCapture(e.pointerId);
+    if (sceneRef.current && !e.target.closest(".tornado-card-item")) {
+      try {
+        sceneRef.current.setPointerCapture(e.pointerId);
+      } catch (err) {}
     }
   };
 
@@ -227,7 +263,10 @@ export default function GarcyTornado({ onNavigateProjects, onNavigateHome }) {
     if (e.pointerId !== pointerRef.current) return;
     const dx = e.clientX - lastPointerXRef.current;
     const dy = e.clientY - lastPointerYRef.current;
-    dragDistanceRef.current = Math.max(dragDistanceRef.current, Math.hypot(dx, dy));
+    dragDistanceRef.current = Math.hypot(
+      e.clientX - startPointerXRef.current,
+      e.clientY - startPointerYRef.current
+    );
 
     targetYawRef.current += dx * 0.28;
     velocityRef.current = clamp(dx * 0.2, -4, 4);
@@ -265,11 +304,12 @@ export default function GarcyTornado({ onNavigateProjects, onNavigateHome }) {
     return () => window.removeEventListener("wheel", handleWheel);
   }, [onNavigateProjects, onNavigateHome, router]);
 
-  const handleCardClick = (link) => {
-    if (dragDistanceRef.current > 7) return; // Ignore drag clicks
+  const handleCardClick = (link, e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (dragDistanceRef.current > 15) return; // Ignore drag clicks
     try {
       sessionStorage.setItem("aac_last_section", "moment");
-    } catch (e) {}
+    } catch (err) {}
     router.push(link);
   };
 
@@ -370,7 +410,12 @@ export default function GarcyTornado({ onNavigateProjects, onNavigateHome }) {
             }}
             onMouseEnter={() => setHoveredCardId(card.id)}
             onMouseLeave={() => setHoveredCardId(null)}
-            onClick={() => handleCardClick(card.link)}
+            onClick={(e) => handleCardClick(card.link, e)}
+            onPointerUp={(e) => {
+              if (dragDistanceRef.current <= 15) {
+                handleCardClick(card.link, e);
+              }
+            }}
           >
             {/* Card Image Thumbnail */}
             <div className="relative w-full h-[54%] overflow-hidden bg-[#08090C]">

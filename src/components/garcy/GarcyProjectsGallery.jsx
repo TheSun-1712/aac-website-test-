@@ -1,6 +1,16 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
-import { FaTimes, FaExternalLinkAlt, FaGithub } from "react-icons/fa";
+import {
+  FaTimes,
+  FaExternalLinkAlt,
+  FaGithub,
+  FaGlobe,
+  FaBookOpen,
+  FaShareAlt,
+  FaCheck,
+  FaArrowLeft,
+  FaTerminal,
+} from "react-icons/fa";
 import { useDatabase } from "@/hooks/useDatabase";
 
 // AAC Core Engineering Projects & Prototypes
@@ -8,101 +18,137 @@ const DOME_PROJECTS = [
   {
     id: "uav",
     title: "Autonomous Multi-Rotor UAV",
-    services: "AERIAL ROBOTICS",
+    subtitle: "Next-gen aerial autonomy with sub-millisecond edge obstacle avoidance",
+    client: "AAC ROBOTICS & AUTONOMOUS SYSTEMS LAB",
+    field: "AERIAL ROBOTICS / EDGE AI",
+    services: "PX4 AUTOPILOT, ROS2, JETSON NANO, LIDAR ODOMETRY",
     image: "/images/8.webp",
     link: "/projects",
     year: "2024–2025",
     desc: "Autonomous multi-rotor UAV platform featuring edge obstacle avoidance, GPS waypoint guidance, and live telemetry downlink developed at AAC Robotics Lab.",
+    content: "Engineered from first principles with custom carbon-fiber airframes, onboard NVIDIA Jetson edge inference compute, and dual optical flow sensors for GPS-denied indoor flight stabilization. The platform streams high-throughput telemetry to the ground station over encrypted 5.8GHz links.",
     githubRepo: "https://github.com/AAC-GRIET",
     team: "AAC Robotics Lab Team",
   },
   {
     id: "nav",
     title: "Intelligent Campus Navigation",
-    services: "AR & INDOOR POSITIONING",
+    subtitle: "Sub-meter AR indoor positioning and directional wayfinding",
+    client: "AAC MOBILE & AR RESEARCH LAB",
+    field: "AUGMENTED REALITY / SPATIAL MAPPING",
+    services: "AR SPATIAL MAPPING, INDOOR POSITIONING, LOW-LATENCY PATHFINDING",
     image: "/images/pic.webp",
     link: "/projects",
     year: "2024–2025",
     desc: "Sub-meter AR indoor positioning and directional wayfinding system mapping GRIET campus complexes.",
+    content: "Combines localized radio fingerprinting, inertial dead-reckoning, and camera-based AR visual odometry. Eliminates orientation friction across collegiate corridors without external satellite reception.",
     githubRepo: "https://github.com/AAC-GRIET",
     team: "Abhiram Pedamallu, V. Dinesh Chandra, Seetaram Koushik",
   },
   {
     id: "pill",
     title: "Automated Pill Reminder",
-    services: "PATENT 201941002559",
+    subtitle: "Indian Patent 201941002559 — Patented Two-Way Medication Compliance",
+    client: "AAC BIOMEDICAL IP INVENTIONS CELL",
+    field: "BIOMEDICAL DEVICES / EMBEDDED HEALTHCARE IP",
+    services: "PATENT PROSECUTION, TWO-WAY VERIFICATION, CUSTOM PCB, REPLACEABLE MODULES",
     image: "/images/AAC1.png",
     link: "/Patents",
-    year: "PATENT PUBLISHED",
+    year: "PATENT GRANTED",
     desc: "Patented assistive medical adherence system with modular dosage cartridges and two-way verification.",
+    content: "Features automated dispensing carousels, tactile auditory reminders, and cryptographic two-way compliance logging to eradicate medication double-dosing among elderly patients.",
     githubRepo: "https://github.com/AAC-GRIET",
-    team: "Yelma Chethan Reddy, Alence Abhinay, B.S.V.S Anoop",
+    team: "Yelma Chethan Reddy, Alence Abhinay, B.S.V.S Anoop, M Srikanth, D. Naga pavan, G Pradeep Reddy",
   },
   {
     id: "glove",
     title: "Smart Sign Language Glove",
-    services: "PATENT 202041038106",
+    subtitle: "Indian Patent 202041038106 — Real-Time Sensory Gesture Translation",
+    client: "AAC ASSISTIVE WEARABLES LAB",
+    field: "ASSISTIVE TECH / WEARABLE MECHATRONICS",
+    services: "FLEX TRANSDUCERS, REAL-TIME DSP, TEXT-TO-SPEECH, SENSOR FUSION",
     image: "/images/AAC3.png",
     link: "/Patents",
     year: "PATENT PUBLISHED",
     desc: "Low-latency sensory wearable interpreting Indian Sign Language gestures into synthesized speech.",
+    content: "Integrates 5 conductive polymer flex sensors, 9-DOF IMU motion tracking, and embedded speech synthesis firmware operating with under 25ms end-to-end latency.",
     githubRepo: "https://github.com/AAC-GRIET",
-    team: "Jashwanth Kranthi Bopanna, Santosh Sanjeev, Bharath Varma",
+    team: "Jashwanth Kranthi Bopanna, Santosh Sanjeev, Bharath Varma Kantheti, Gowtham Sai Ponnekanti, Suhas Gangireddy, G Pradeep Reddy",
   },
   {
     id: "energy",
     title: "Smart Campus Energy Grid",
-    services: "IOT & SUSTAINABILITY",
+    subtitle: "Real-time MQTT telemetry and predictive institutional load-balancing",
+    client: "AAC IOT & SMART GRID LAB",
+    field: "IOT / PREDICTIVE ANALYTICS / CLEAN-TECH",
+    services: "DISTRIBUTED CT SENSORS, MQTT BROKER, EDGE ML, POWER FORECASTING",
     image: "/images/AAC2.png",
     link: "/projects",
     year: "2023–2025",
     desc: "Intelligent power telemetry network balancing building energy loads and optimizing institutional consumption.",
+    content: "Monitors electrical substations across campus using custom ESP32 current transducer arrays. An autoregressive ML model dynamically shifts non-critical loads to prevent peak demand penalties.",
     githubRepo: "https://github.com/AAC-GRIET",
     team: "Abhiram Dodda, Manav, Srija Cherukuri",
   },
   {
     id: "satellite",
     title: "Earth Imaging Space Payload",
-    services: "ISRO NRSC MoU",
+    subtitle: "Multispectral sensor instrumentation in partnership with ISRO NRSC",
+    client: "ISRO NRSC RESEARCH ALLIANCE",
+    field: "AEROSPACE INSTRUMENTATION / REMOTE SENSING",
+    services: "MULTISPECTRAL SENSORS, RADIATION-HARDENED FPGA, TELEMETRY",
     image: "/images/AAC1.png",
     link: "/News",
     year: "RESEARCH MoU",
     desc: "High-resolution multispectral imaging payload designed under academic partnership with National Remote Sensing Centre.",
+    content: "Engineered under institutional scientific agreement with NRSC, focusing on low-earth orbit imaging architectures and compression algorithms optimized for ground station transmission.",
     githubRepo: "https://github.com/AAC-GRIET",
-    team: "AAC Space Payload Cell",
+    team: "AAC Space Payload Cell & Faculty Mentors",
   },
   {
     id: "rover",
     title: "Autonomous Solar Rover",
-    services: "AUTONOMOUS VEHICLES",
+    subtitle: "All-terrain research rover utilizing adaptive solar tracking & LiDAR SLAM",
+    client: "AAC VEHICULAR AUTONOMY CELL",
+    field: "ROVER MECHATRONICS / FIELD ROBOTICS",
+    services: "LIDAR SLAM, MPPT SOLAR HARVESTING, BRUSHLESS DRIVE, TELEMETRY",
     image: "/images/8.webp",
     link: "/projects",
     year: "2025",
     desc: "All-terrain research rover utilizing solar harvesting and real-time obstacle avoidance telemetry.",
+    content: "Designed for unstructured outdoor terrain mapping, combining a 4-wheel independent rocker-bogie suspension with real-time 2D LiDAR SLAM and sun-tracking photovoltaic arrays.",
     githubRepo: "https://github.com/AAC-GRIET",
     team: "Autonomous Vehicles Group",
   },
   {
     id: "matrix",
     title: "AAC Core R&D Ecosystem",
-    services: "LAB ECOSYSTEM",
+    subtitle: "Flagship innovation cluster incubating student engineering prototypes",
+    client: "ADVANCED ACADEMIC CENTER // GRIET",
+    field: "INTERDISCIPLINARY SYSTEMS / INNOVATION HUB",
+    services: "HARDWARE RAPID PROTOTYPING, PATENT DRAFTING, EMBEDDED LABS",
     image: "/images/grietlogo.png",
     link: "/Research",
     year: "ROOM 3614",
     desc: "Flagship innovation hub incubating student engineering prototypes, patents, and multi-disciplinary research.",
+    content: "Operating out of Room 3614 at GRIET, AAC provides undergraduate researchers with precision lab benches, RF spectrum analyzers, 3D printing farms, and high-performance compute clusters.",
     githubRepo: "https://github.com/AAC-GRIET",
-    team: "Core Committee & Fellows",
+    team: "Core Committee, Alumni & Faculty Mentors",
   },
   {
     id: "gprime",
     title: "G-Prime Competitive Judge",
-    services: "DISTRIBUTED SOFTWARE",
+    subtitle: "High-concurrency distributed sandbox engine for algorithmic championships",
+    client: "GPRIME STEERING COMMITTEE",
+    field: "DISTRIBUTED SOFTWARE / SANDBOX RUNTIMES",
+    services: "DOCKER RUNTIME, SECURE EVALUATION, WEBSOCKET TELEMETRY, CIPHER",
     image: "/images/AAC2.png",
     link: "/gprime2026-results",
     year: "CONTEST INFRA",
     desc: "Distributed sandboxed code evaluation engine supporting high-concurrency national coding competitions.",
+    content: "Evaluates untrusted multi-language user submissions within micro-sandboxes with sub-80ms response times, real-time telemetry leaderboards, and automated test-case generation.",
     githubRepo: "https://github.com/AAC-GRIET",
-    team: "Software Systems Engineering",
+    team: "Software Systems Engineering Cohort",
   },
 ];
 
@@ -134,32 +180,71 @@ function quadMatrix([p0, p1, p2, p3], width, height) {
   return `matrix3d(${a / width},${d / width},0,${g / width},${b / height},${e / height},0,${h / height},0,0,1,0,${p0.x},${p0.y},0,1)`;
 }
 
-export default function GarcyProjectsGallery({ onSelectCase, onNavigateBack }) {
-  const { data: dbProjects } = useDatabase("projects");
+export default function GarcyProjectsGallery({
+  initialProjects = [],
+  onSelectCase,
+  onNavigateBack,
+}) {
+  const { data: dbProjects } = useDatabase("projects", initialProjects);
   const rootRef = useRef(null);
   const surfaceRef = useRef(null);
 
   const [selectedProject, setSelectedProject] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [copiedRef, setCopiedRef] = useState(false);
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && selectedProject) {
+        setSelectedProject(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedProject]);
+
+  const handleCopyProjectRef = (proj) => {
+    if (typeof window !== "undefined") {
+      const url = `${window.location.origin}/projects#${proj.id}`;
+      navigator.clipboard?.writeText(url);
+      setCopiedRef(true);
+      setTimeout(() => setCopiedRef(false), 2000);
+    }
+  };
 
   const projectsData = useMemo(() => {
-    if (dbProjects && dbProjects.length > 0) {
-      return dbProjects.map((p) => ({
+    const list =
+      dbProjects && dbProjects.length > 0
+        ? dbProjects
+        : initialProjects && initialProjects.length > 0
+        ? initialProjects
+        : DOME_PROJECTS;
+
+    return list.map((p) => {
+      const teamStr = Array.isArray(p.names)
+        ? p.names.join(", ")
+        : (Array.isArray(p.authors) ? p.authors.join(", ") : (p.names || p.author || p.team || "AAC Research Cohort"));
+      const categoryStr = (p.categories || p.category || "Autonomous Systems").toUpperCase();
+      return {
         id: p.id || p._id || p.slug || `proj-${Math.random()}`,
-        title: p.title || "Project",
-        services: (p.categories || p.category || "ENGINEERING").toUpperCase(),
+        title: p.title || "Engineering Project",
+        subtitle: p.subtitle || p.tagline || `${categoryStr} Research Prototype`,
+        client: p.client || p.lab || "AAC RESEARCH LAB // GRIET",
+        field: p.field || p.domain || categoryStr,
+        services: p.techStack || p.services || (p.technologies ? (Array.isArray(p.technologies) ? p.technologies.join(", ") : p.technologies) : categoryStr),
         image: p.mainImageUrl || p.image || "/images/pic.webp",
-        link: p.link || `/projects/${p.id || p._id || p.slug || ""}`,
+        link: p.website || p.demoLink || p.liveUrl || p.link || `/projects/${p.id || p._id || p.slug || ""}`,
+        githubRepo: p.githubRepo || p.github || p.githubUrl || p.repo || "https://github.com/AAC-GRIET",
+        paperLink: p.paperLink || p.docLink || p.documentation || "",
         year: p.publishedAt ? new Date(p.publishedAt).getFullYear().toString() : (p.year || "2025"),
-        desc: p.description || p.content || "",
-        content: p.content || "",
-        githubRepo: p.githubRepo || p.github || p.githubUrl || p.repo || "",
-        team: Array.isArray(p.names) ? p.names.join(", ") : (p.names || p.author || p.team || ""),
+        desc: p.description || p.intro || p.content || "Autonomous engineering prototype engineered at the Advanced Academic Center.",
+        content: p.content || p.description || "",
+        team: teamStr,
         raw: p,
-      }));
-    }
-    return DOME_PROJECTS;
-  }, [dbProjects]);
+      };
+    });
+  }, [dbProjects, initialProjects]);
 
   // Dome coordinate state refs
   const stateRef = useRef({
@@ -685,93 +770,260 @@ export default function GarcyProjectsGallery({ onSelectCase, onNavigateBack }) {
         </button>
       </div>
 
-      {/* Detail Modal Overlay when clicking a project */}
+      {/* Full-Viewport Garcy Studio Project Showcase Overlay (as in reference video) */}
       {selectedProject && (
         <div
-          className="case-modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-2xl animate-fade-in pointer-events-auto"
+          className="case-modal fixed inset-0 z-50 bg-[#08090C]/96 backdrop-blur-2xl p-3 sm:p-5 lg:p-7 flex flex-col justify-center items-center pointer-events-auto animate-fadeIn overflow-y-auto"
           onClick={() => setSelectedProject(null)}
         >
           <div
-            className="relative w-full max-w-2xl bg-[#111318] border border-[#2A261F] rounded-2xl p-6 sm:p-8 shadow-[0_30px_90px_rgba(0,0,0,0.95)] max-h-[90vh] overflow-y-auto"
+            className="w-full max-w-[1720px] h-full max-h-[96vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <button
-              onClick={() => setSelectedProject(null)}
-              className="absolute top-5 right-5 text-[#9E988A] hover:text-white p-2 text-sm cursor-pointer rounded-lg hover:bg-white/5 transition-colors"
-              aria-label="Close modal"
-            >
-              <FaTimes />
-            </button>
-
-            <div className="flex flex-wrap items-center gap-2 mb-3">
-              <span className="font-mono text-[10px] uppercase tracking-widest text-[#E5A93C] font-bold px-2.5 py-1 rounded bg-[#E5A93C]/10 border border-[#2A261F]">
-                {selectedProject.services}
-              </span>
-              {selectedProject.year && (
-                <span className="font-mono text-[10px] uppercase tracking-widest text-[#9E988A] px-2.5 py-1 rounded bg-white/5 border border-[#2A261F]">
-                  {selectedProject.year}
-                </span>
-              )}
-            </div>
-
-            <h2 className="font-sans font-bold text-2xl sm:text-3xl text-white mb-2">
-              {selectedProject.title}
-            </h2>
-
-            {selectedProject.team && (
-              <div className="flex items-center gap-2 text-xs font-mono text-[#9E988A] mb-4">
-                <span className="text-[#E5A93C]">Team:</span>
-                <span className="text-white/80">{selectedProject.team}</span>
-              </div>
-            )}
-
-            <div className="relative w-full h-56 sm:h-64 rounded-xl overflow-hidden mb-6 border border-[#2A261F]">
-              <Image
-                src={selectedProject.image}
-                alt={selectedProject.title}
-                fill
-                className="object-cover"
-              />
-            </div>
-
-            <p className="font-sans text-sm sm:text-base text-[#FAF6ED]/85 leading-relaxed mb-4">
-              {selectedProject.desc}
-            </p>
-
-            {selectedProject.content && selectedProject.content !== selectedProject.desc && (
-              <div className="font-sans text-xs sm:text-sm text-[#9E988A] leading-relaxed mb-6 bg-white/[0.02] p-4 rounded-xl border border-white/5 whitespace-pre-line">
-                {selectedProject.content}
-              </div>
-            )}
-
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-[#2A261F]">
-              <button
-                onClick={() => setSelectedProject(null)}
-                className="font-mono text-xs uppercase tracking-wider text-[#9E988A] hover:text-white transition-colors cursor-pointer"
-              >
-                ← Return to Collage
-              </button>
+            <div className="w-full h-full grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-stretch">
               
-              <div className="flex items-center gap-3">
-                {selectedProject.githubRepo && (
-                  <a
-                    href={selectedProject.githubRepo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-white bg-[#181A20] hover:bg-[#20242C] border border-[#2A261F] hover:border-[#E5A93C]/40 px-4 py-2.5 rounded-lg font-semibold transition-all shadow-md"
-                  >
-                    <FaGithub className="text-sm text-[#E5A93C]" />
-                    <span>GitHub Repo</span>
-                  </a>
-                )}
-                <a
-                  href={selectedProject.link}
-                  className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-[#08090C] bg-[#E5A93C] hover:bg-[#F6C463] px-5 py-2.5 rounded-lg font-bold transition-all shadow-md"
-                >
-                  <span>Full Project Page</span>
-                  <FaExternalLinkAlt className="text-[10px]" />
-                </a>
+              {/* ====================================================================
+                  LEFT COLUMN: THE BIG PANEL WITH UPLOADED IMAGE (50-55% width)
+                  ==================================================================== */}
+              <div className="lg:col-span-6 h-[440px] sm:h-[520px] lg:h-full relative rounded-2xl sm:rounded-3xl overflow-hidden border border-[#2A261F] bg-[#111318] shadow-[0_25px_60px_rgba(0,0,0,0.9)] group flex flex-col justify-between">
+                {/* The Full Uploaded Image */}
+                <img
+                  src={selectedProject.image}
+                  alt={selectedProject.title}
+                  className="w-full h-full object-cover absolute inset-0 select-none group-hover:scale-[1.02] transition-transform duration-700 ease-out"
+                />
+
+                {/* Subtle vignette gradient for legibility */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#08090C]/90 via-transparent to-[#08090C]/70 pointer-events-none" />
+
+                {/* Top-Left Bar over image: Brand + Back Pill Button */}
+                <div className="relative z-10 p-5 sm:p-7 flex items-center justify-between pointer-events-auto">
+                  <div className="flex flex-col gap-2.5">
+                    <span className="font-mono text-[11px] uppercase tracking-[0.25em] text-white/80 font-bold drop-shadow">
+                      aac // griet
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedProject(null)}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/60 hover:bg-black/90 backdrop-blur-md border border-white/20 text-white font-sans text-xs font-semibold hover:border-[#E5A93C] transition-all cursor-pointer shadow-lg active:scale-95 group/back"
+                    >
+                      <FaArrowLeft className="text-[10px] text-[#E5A93C] group-hover/back:-translate-x-0.5 transition-transform" />
+                      <span>Back</span>
+                    </button>
+                  </div>
+
+                  <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-[10px] font-mono text-[#E5A93C] uppercase tracking-wider font-bold">
+                    {selectedProject.services?.split(",")[0] || "AUTONOMOUS PROTOTYPE"}
+                  </span>
+                </div>
+
+                {/* Bottom Over Image: Archival Specimen Indicator */}
+                <div className="relative z-10 p-5 sm:p-7">
+                  <span className="font-mono text-[9.5px] text-[#9E988A] uppercase tracking-widest block mb-0.5">
+                    // SPECIMEN ARCHIVE
+                  </span>
+                  <p className="font-mono text-xs text-white/90 font-bold truncate">
+                    REF: {selectedProject.id.toUpperCase()} // RESOLUTION: HIGH-DEF
+                  </p>
+                </div>
               </div>
+
+              {/* ====================================================================
+                  RIGHT COLUMN: TWO STACKED PANELS
+                  ==================================================================== */}
+              <div className="lg:col-span-6 flex flex-col gap-4 lg:gap-6 h-full min-h-0">
+                
+                {/* ------------------------------------------------------------------
+                    TOP-RIGHT PANEL: BRIEF, SPECS TABLE, AND PROJECT TITLE
+                    ------------------------------------------------------------------ */}
+                <div className="flex-1 bg-[#111318] border border-[#2A261F] rounded-2xl sm:rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-xl relative overflow-y-auto">
+                  {/* Top utility row */}
+                  <div className="flex items-center justify-between border-b border-[#2A261F] pb-3 mb-4">
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-[#E5A93C] font-bold">
+                      // SPECIFICATION DOSSIER
+                    </span>
+
+                    <div className="flex items-center gap-2">
+                      <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#08090C] border border-[#2A261F] text-[#9E988A] font-mono text-[10px]">
+                        <span className="text-[#E5A93C]">⌘K</span>
+                        <span>SEARCH</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedProject(null)}
+                        className="w-8 h-8 rounded-lg bg-[#08090C] border border-[#2A261F] text-[#9E988A] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                        aria-label="Close project"
+                      >
+                        <FaTimes className="text-xs" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Overview paragraph */}
+                  <div className="space-y-3 mb-4">
+                    <p className="font-sans text-xs sm:text-sm text-[#FAF6ED]/85 leading-relaxed font-normal">
+                      {selectedProject.desc || selectedProject.content || "The Advanced Academic Center team engineered this high-performance system combining distributed intelligence, edge inference, and sensory feedback."}
+                    </p>
+                  </div>
+
+                  {/* Monospaced Technical Specifications Table */}
+                  <div className="grid grid-cols-2 gap-y-3 gap-x-6 my-2 py-4 border-y border-[#2A261F] font-mono text-[10.5px] sm:text-[11.5px]">
+                    <div>
+                      <span className="text-[#9E988A] uppercase tracking-wider block text-[10px] mb-0.5">CLIENT</span>
+                      <span className="text-white font-semibold uppercase">{selectedProject.client || "AAC RESEARCH LAB"}</span>
+                    </div>
+                    <div>
+                      <span className="text-[#9E988A] uppercase tracking-wider block text-[10px] mb-0.5">FIELD</span>
+                      <span className="text-white font-semibold uppercase">{selectedProject.field || selectedProject.services}</span>
+                    </div>
+                    <div>
+                      <span className="text-[#9E988A] uppercase tracking-wider block text-[10px] mb-0.5">SERVICES</span>
+                      <span className="text-white font-semibold uppercase truncate block" title={selectedProject.services}>
+                        {selectedProject.services || "HARDWARE, EMBEDDED C++, EDGE AI"}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-[#9E988A] uppercase tracking-wider block text-[10px] mb-0.5">YEAR</span>
+                      <span className="text-[#E5A93C] font-bold uppercase">{selectedProject.year || "2024–2025"}</span>
+                    </div>
+                  </div>
+
+                  {/* Project Title and Subtitle */}
+                  <div className="pt-3">
+                    <h2 className="font-sans font-extrabold text-2xl sm:text-3xl lg:text-4xl text-white tracking-tight leading-tight">
+                      {selectedProject.title}
+                    </h2>
+                    <p className="font-sans text-xs sm:text-sm text-[#9E988A] mt-1.5 font-normal">
+                      {selectedProject.subtitle || "Quietly disrupting the boundaries of autonomous engineering."}
+                    </p>
+                  </div>
+                </div>
+
+                {/* ------------------------------------------------------------------
+                    BOTTOM-RIGHT PANEL: CONTENT & ICON BUTTONS
+                    ------------------------------------------------------------------ */}
+                <div className="flex-1 bg-[#111318] border border-[#2A261F] rounded-2xl sm:rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-xl relative overflow-y-auto">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between border-b border-[#2A261F] pb-3 font-mono text-[10px] text-[#9E988A] uppercase tracking-wider">
+                      <span className="flex items-center gap-1.5 text-emerald-400 font-bold">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        ENGINEERING TELEMETRY &amp; ACCESS
+                      </span>
+                      <span className="text-[#9E988A]">AAC REPOSITORY // VERIFIED</span>
+                    </div>
+
+                    {/* Detailed Body Paragraphs / Team */}
+                    <div className="font-sans text-xs sm:text-sm text-[#9E988A] leading-relaxed max-h-36 overflow-y-auto pr-2 custom-scroll">
+                      <p className="text-white/80">
+                        {selectedProject.content && selectedProject.content !== selectedProject.desc
+                          ? selectedProject.content
+                          : "Full project source code, schematic blueprints, and benchmark logs are maintained within the AAC central repository. Research fellows may clone the test environment or review published patents."}
+                      </p>
+
+                      {selectedProject.team && (
+                        <div className="mt-3 pt-3 border-t border-[#2A261F]/60 flex items-center gap-2 font-mono text-[10.5px]">
+                          <span className="text-[#E5A93C] uppercase font-bold">Contributors:</span>
+                          <span className="text-white/90">{selectedProject.team}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Tactile Icon Buttons for Opening Project Links */}
+                  <div className="pt-4 border-t border-[#2A261F] flex flex-wrap items-center justify-between gap-4">
+                    <div className="flex items-center gap-2 font-mono text-[10px] text-[#9E988A] uppercase tracking-widest">
+                      <span>PROJECT LINKS // ACTION PROTOCOLS:</span>
+                    </div>
+
+                    {/* Row of Tactile Icon Buttons */}
+                    <div className="flex items-center gap-3">
+                      {/* 1. GitHub Icon Button */}
+                      {selectedProject.githubRepo && (
+                        <a
+                          href={selectedProject.githubRepo}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="relative group w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#08090C] border border-[#2A261F] hover:border-[#E5A93C] text-[#9E988A] hover:text-[#E5A93C] hover:bg-[#181A20] flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-[0_0_20px_rgba(229,169,60,0.35)] active:scale-95 cursor-pointer"
+                          aria-label="GitHub Repository"
+                          title="Open GitHub Repository"
+                        >
+                          <FaGithub className="text-lg sm:text-xl" />
+                          <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-[#08090C] border border-[#2A261F] text-[9.5px] font-mono text-[#E5A93C] uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-lg z-20">
+                            GitHub
+                          </span>
+                        </a>
+                      )}
+
+                      {/* 2. Live Project / Demo Icon Button */}
+                      {(selectedProject.link || selectedProject.demoLink) && (
+                        <a
+                          href={selectedProject.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="relative group w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#08090C] border border-[#2A261F] hover:border-[#E5A93C] text-[#9E988A] hover:text-[#E5A93C] hover:bg-[#181A20] flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-[0_0_20px_rgba(229,169,60,0.35)] active:scale-95 cursor-pointer"
+                          aria-label="Live Project Page"
+                          title="Open Live Project Page"
+                        >
+                          <FaGlobe className="text-lg sm:text-xl" />
+                          <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-[#08090C] border border-[#2A261F] text-[9.5px] font-mono text-[#E5A93C] uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-lg z-20">
+                            Live Demo
+                          </span>
+                        </a>
+                      )}
+
+                      {/* 3. Paper / Patent Documentation Icon Button */}
+                      {(selectedProject.paperLink || selectedProject.services?.includes("PATENT")) && (
+                        <a
+                          href={selectedProject.paperLink || "/Patents"}
+                          target={selectedProject.paperLink ? "_blank" : "_self"}
+                          rel="noopener noreferrer"
+                          className="relative group w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#08090C] border border-[#2A261F] hover:border-[#E5A93C] text-[#9E988A] hover:text-[#E5A93C] hover:bg-[#181A20] flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-[0_0_20px_rgba(229,169,60,0.35)] active:scale-95 cursor-pointer"
+                          aria-label="Documentation / Patent"
+                          title="View Patent / Research Docs"
+                        >
+                          <FaBookOpen className="text-base sm:text-lg" />
+                          <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-[#08090C] border border-[#2A261F] text-[9.5px] font-mono text-[#E5A93C] uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-lg z-20">
+                            Patent Docs
+                          </span>
+                        </a>
+                      )}
+
+                      {/* 4. Direct External Link Icon Button */}
+                      <a
+                        href={selectedProject.link || "/projects"}
+                        className="relative group w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#08090C] border border-[#2A261F] hover:border-[#E5A93C] text-[#9E988A] hover:text-[#E5A93C] hover:bg-[#181A20] flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-[0_0_20px_rgba(229,169,60,0.35)] active:scale-95 cursor-pointer"
+                        aria-label="Direct Link"
+                        title="Open Project Direct Link"
+                      >
+                        <FaExternalLinkAlt className="text-base" />
+                        <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-[#08090C] border border-[#2A261F] text-[9.5px] font-mono text-[#E5A93C] uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-lg z-20">
+                          Direct Link
+                        </span>
+                      </a>
+
+                      {/* 5. Share / Copy Link Icon Button */}
+                      <button
+                        type="button"
+                        onClick={() => handleCopyProjectRef(selectedProject)}
+                        className="relative group w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#08090C] border border-[#2A261F] hover:border-[#E5A93C] text-[#9E988A] hover:text-[#E5A93C] hover:bg-[#181A20] flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-[0_0_20px_rgba(229,169,60,0.35)] active:scale-95 cursor-pointer"
+                        aria-label="Share / Copy Link"
+                        title="Share Project"
+                      >
+                        {copiedRef ? (
+                          <FaCheck className="text-emerald-400 text-sm" />
+                        ) : (
+                          <FaShareAlt className="text-base" />
+                        )}
+                        <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-[#08090C] border border-[#2A261F] text-[9.5px] font-mono text-[#E5A93C] uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-lg z-20">
+                          {copiedRef ? "Copied!" : "Share Link"}
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
             </div>
           </div>
         </div>
